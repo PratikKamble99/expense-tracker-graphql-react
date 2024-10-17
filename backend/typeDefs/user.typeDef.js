@@ -9,10 +9,10 @@ const userTypeDef = `#graphql
             gender: String!,
         }
 
-        type query {
+        type Query {
             users:[User!],
             authenticatedUser:User,
-            user(userId:Id!): User
+            user(userId:ID!): User
         }
 
         type Mutation {
@@ -37,3 +37,5 @@ const userTypeDef = `#graphql
             message: String!
         }
     `;
+
+export default userTypeDef;
