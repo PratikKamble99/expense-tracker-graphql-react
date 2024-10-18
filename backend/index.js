@@ -75,7 +75,7 @@ app.use(
   }),
   express.json(),
   expressMiddleware(server, {
-    context: async ({ req }) => buildContext({ token: req.headers.token }),
+    context: async ({ req, res }) => buildContext({req, res}),
   })
 );
 
