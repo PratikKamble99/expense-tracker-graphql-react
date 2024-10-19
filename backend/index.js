@@ -1,5 +1,4 @@
 import { ApolloServer } from "@apollo/server"; // preserve-line
-import { startStandaloneServer } from "@apollo/server/standalone"; // preserve-line
 
 import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
@@ -16,7 +15,7 @@ import { buildContext } from "graphql-passport";
 
 import mergedResolvers from "./resolvers/index.js";
 import mergedTypeDefs from "./typeDefs/index.js";
-import { connectDB } from "./db/connectDb.js";
+import { connectDB } from "./db/connectDB.js";
 import { configurePassport } from "./passport/passport.config.js";
 import path from "path";
 
