@@ -1,5 +1,6 @@
 import { transactions } from "../dummyData/data.js";
 import Transaction from "../models/transaction.model.js";
+import User from "../models/user.model.js";
 
 const transactionResolver = {
   Query: {
@@ -21,6 +22,29 @@ const transactionResolver = {
 
         const transaction = await Transaction.findById(transactionId);
         return transaction;
+      } catch (error) {
+        console.log(error);
+        throw new Error(error.message || "Internal server error");
+      }
+    },
+    categoryStatistics: async (_, __, context) => {
+      try {
+        const user = await context.getUser();
+        if (!user) throw new Error("unauthenticated");
+        const transactions = await Transaction.find({ userId: user._id });
+
+        const categoryStatistics = transactions.reduce((acc, transaction) => {
+          if (!acc[transaction.category]) {
+            acc[transaction.category] = transaction.amount;
+          } else {
+            acc[transaction.category] += transaction.amount;
+          }
+          return acc;
+        }, {});
+
+        return Object.entries(categoryStatistics).map(
+          ([category, totalAmount]) => ({ category, totalAmount })
+        );
       } catch (error) {
         console.log(error);
         throw new Error(error.message || "Internal server error");
@@ -72,7 +96,19 @@ const transactionResolver = {
         throw new Error(error.message || "Internal server error");
       }
     },
-    // TODO => ADD TRANSACTION/USER RELATIONSHIP 
+    // TODO => ADD TRANSACTION/USER RELATIONSHIP
+  },
+  // RELATIONSHIPS IN WITH USER
+  Transaction: {
+    user: async (parent, _, __) => {
+      try {
+        const user = await User.findById(parent.userId);
+        return user;
+      } catch (error) {
+        console.log(error);
+        throw new Error(error.message || "Internal server error");
+      }
+    },
   },
 };
 

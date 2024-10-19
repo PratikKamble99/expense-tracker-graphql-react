@@ -11,6 +11,9 @@ const GET_TRANSACTIONS = gql`
             amount
             location
             date
+            user {
+                profilePicture
+            }
         }
     }
 `;
@@ -26,8 +29,23 @@ const GET_TRANSACTION_BY_ID = gql`
             amount
             location
             date
+            user {
+                _id
+                name
+                profilePicture
+                username
+            }
         }
     }
 `;
 
-export { GET_TRANSACTIONS, GET_TRANSACTION_BY_ID };
+const GET_CATEGORY_STATISTICS = gql`
+    query fetchCategoryStatistics {
+        categoryStatistics {
+            category
+            totalAmount
+        }
+    }
+`;
+
+export { GET_TRANSACTIONS, GET_TRANSACTION_BY_ID, GET_CATEGORY_STATISTICS };
