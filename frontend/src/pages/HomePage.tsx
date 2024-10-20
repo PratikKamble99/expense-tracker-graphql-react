@@ -12,6 +12,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { LOG_OUT } from "../graphql/mutations/user.mutation";
 import { GET_CATEGORY_STATISTICS } from "../graphql/query/transaction.query";
 import { GET_AUTH_USER } from "../graphql/query/user.query";
+import ProfileDrawer from "@/components/custom/ProfileDrawer";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -20,18 +21,17 @@ const HomePage = () => {
     refetchQueries: ["GetAuthenticatedUser"],
   });
 
-  const  { data: authUserData } = useQuery(GET_AUTH_USER);
+  const { data: authUserData } = useQuery(GET_AUTH_USER);
 
-
-  const { data } = useQuery( GET_CATEGORY_STATISTICS );
+  const { data } = useQuery(GET_CATEGORY_STATISTICS);
 
   const backgroundColor = data?.categoryStatistics.map((state) => {
-    if(state.category == "expense") return  "rgba(255, 99, 132)";
-    if(state.category == "saving") return  "rgba(75, 192, 192)";
-    if(state.category == "investment") return  "rgba(54, 162, 235)";
-  })
+    if (state.category == "expense") return "rgba(255, 99, 132)";
+    if (state.category == "saving") return "rgba(75, 192, 192)";
+    if (state.category == "investment") return "rgba(54, 162, 235)";
+  });
 
-  console.log(backgroundColor,'backgroundColor')
+  console.log(backgroundColor, "backgroundColor");
 
   const chartData = {
     labels: data?.categoryStatistics.map((item) => item.category) || [],
@@ -64,11 +64,7 @@ const HomePage = () => {
         <p className="md:text-4xl text-2xl lg:text-4xl font-bold text-center relative z-50 mb-4 mr-4 bg-gradient-to-r from-pink-600 via-indigo-500 to-pink-400 inline-block text-transparent bg-clip-text">
           Spend wisely, {authUserData?.authenticatedUser.name}
         </p>
-        <img
-          src={authUserData?.authenticatedUser.profilePicture}
-          className="w-11 h-11 rounded-full border cursor-pointer"
-          alt="Avatar"
-        />
+        <ProfileDrawer />
         {!loading && (
           <MdLogout
             className="mx-2 w-5 h-5 cursor-pointer"
@@ -81,9 +77,11 @@ const HomePage = () => {
         )}
       </div>
       <div className="flex flex-wrap w-full justify-center items-center gap-6">
-        { data?.categoryStatistics.length > 0 && <div className="h-[330px] w-[330px] md:h-[360px] md:w-[360px]  ">
-          <Doughnut data={chartData} />
-        </div>}
+        {data?.categoryStatistics.length > 0 && (
+          <div className="h-[330px] w-[330px] md:h-[360px] md:w-[360px]  ">
+            <Doughnut data={chartData} />
+          </div>
+        )}
 
         <TransactionForm />
       </div>

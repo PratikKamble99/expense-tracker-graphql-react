@@ -32,7 +32,7 @@ export const configurePassport = async () => {
 
         done(null, user);
       } catch (error) {
-        return done(err);
+        return done(error);
       }
     })
   );

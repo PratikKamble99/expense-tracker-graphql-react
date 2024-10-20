@@ -20,6 +20,18 @@ const LOGIN = gql`
   }
 `;
 
+const EDIT_USER = gql`
+  mutation EditUser($input: EditUserInput!) {
+    editUser(input: $input) {
+      _id
+      name
+      username
+      gender
+      profilePicture
+    }
+  }
+`;
+
 const LOG_OUT = gql`
   mutation logoutUser {
     logout {
@@ -28,4 +40,4 @@ const LOG_OUT = gql`
   }
 `;
 
-export { SIGN_UP, LOGIN, LOG_OUT };
+export { SIGN_UP, LOGIN, LOG_OUT, EDIT_USER };

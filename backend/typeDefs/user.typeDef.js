@@ -21,6 +21,7 @@ const userTypeDef = `#graphql
             signup(input: SignupInput!): User
             login(input: LoginInput!): User
             logout: LogoutResponse
+            editUser(input: EditUserInput!): User
         }
 
         input SignupInput {
@@ -29,6 +30,15 @@ const userTypeDef = `#graphql
             password: String!
             gender: String!
         }
+
+        input EditUserInput  {
+            username: String,
+            name: String,
+            password: String,
+            profilePicture:String,
+            gender: String
+        }
+
 
         input LoginInput {
             username: String!

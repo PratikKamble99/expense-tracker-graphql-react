@@ -108,13 +108,29 @@ const userResolver = {
         throw new Error(error.message || "Internal server error");
       }
     },
+    editUser: async (_, { input }, context) => {
+      try {
+        const user = await context.getUser();
+        if (!user) throw new Error("unauthenticated");
+
+        const updatedUser = await User.findByIdAndUpdate(
+          user._id,
+          { $set: input },
+          { new: true }
+        );
+        return updatedUser;
+      } catch (error) {
+        console.log(error);
+        throw new Error(error.message || "Internal server error");
+      }
+    },
   },
   // RELATIONSHIPS IN GRAPHQL
   User: {
     transactions: async (parent, _, __) => {
       try {
         const transactions = await Transaction.find({ userId: parent._id });
-        return transactions
+        return transactions;
       } catch (error) {
         console.log(error);
         throw new Error(error.message || "Internal server error");
