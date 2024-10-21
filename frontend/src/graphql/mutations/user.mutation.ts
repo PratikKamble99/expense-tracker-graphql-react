@@ -32,6 +32,14 @@ const EDIT_USER = gql`
   }
 `;
 
+const CHANGE_PASSWORD = gql`
+  mutation ChangePassword($input: ChangePasswordInput!) {
+    changePassword(input: $input) {
+      message
+    }
+  }
+`;
+
 const LOG_OUT = gql`
   mutation logoutUser {
     logout {
@@ -40,4 +48,12 @@ const LOG_OUT = gql`
   }
 `;
 
-export { SIGN_UP, LOGIN, LOG_OUT, EDIT_USER };
+const FORGOT_PASSWORD = gql`
+  mutation ForgotPassword($input: String!) {
+    forgotPassword(email: $input) {
+      message
+    }
+  }
+`;
+
+export { SIGN_UP, LOGIN, LOG_OUT, EDIT_USER, FORGOT_PASSWORD, CHANGE_PASSWORD };

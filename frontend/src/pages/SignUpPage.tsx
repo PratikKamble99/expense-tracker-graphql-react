@@ -13,6 +13,7 @@ const SignUpPage = () => {
   });
   const [signUpData, setSignUpData] = useState({
     name: "",
+    email: "",
     username: "",
     password: "",
     gender: "",
@@ -64,6 +65,13 @@ const SignUpPage = () => {
                 id="name"
                 name="name"
                 value={signUpData.name}
+                onChange={handleChange}
+              />
+              <InputField
+                label="Email"
+                id="email"
+                name="email"
+                value={signUpData.email}
                 onChange={handleChange}
               />
               <InputField

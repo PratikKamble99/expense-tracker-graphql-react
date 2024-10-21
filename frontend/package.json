@@ -22,6 +22,7 @@
     "cloudinary": "^2.5.1",
     "clsx": "^2.1.1",
     "expense-tracker": "file:..",
+    "formik": "^2.4.6",
     "framer-motion": "^11.11.9",
     "graphql": "^16.9.0",
     "lucide-react": "^0.453.0",

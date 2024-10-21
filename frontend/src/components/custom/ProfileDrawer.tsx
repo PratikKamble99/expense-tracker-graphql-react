@@ -17,11 +17,19 @@ import axios from "axios";
 import { EDIT_USER } from "@/graphql/mutations/user.mutation";
 import Pencil from "../icons/Pencil";
 
+import EditProfileForm from "./EditProfileForm";
+import ListItem from "../ui/ListItem";
+import ChangePasswordForm from "./ChangePasswordForm";
+
 const ProfileDrawer = () => {
   const { data: authUserData } = useQuery(GET_AUTH_USER);
+
   const [EditUser, { loading, data, error }] = useMutation(EDIT_USER, {
     refetchQueries: ["GetAuthenticatedUser"],
   });
+
+  const [editProfile, setEditProfile] = useState(false);
+  const [changePassword, setChangePassword] = useState(false);
 
   const inputRef = useRef(null);
 
@@ -82,53 +90,76 @@ const ProfileDrawer = () => {
   };
 
   return (
-    <Sheet>
-      <SheetTrigger>
-        <img
-          src={authUserData?.authenticatedUser.profilePicture}
-          className="w-11 h-11 rounded-full border cursor-pointer"
-          alt="Avatar"
-        />
-      </SheetTrigger>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>
-            <div className="flex flex-col items-center">
-              <div className="relative">
-                <Avatar className="h-20 w-20">
-                  <AvatarImage src={ImageUrl} alt="profile-picture" className="" />
-                  <AvatarFallback>
-                    {authUserData?.authenticatedUser.name.charAt(0) +
-                      authUserData?.authenticatedUser.name.charAt(1)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="absolute bottom-1 right-0 bg-gray-500 p-1 rounded-full outline outline-1 outline-white cursor-pointer" onClick={handleUploadImage}>
-                  <Pencil fill="white" />
+    <>
+      <Sheet>
+        <SheetTrigger>
+          <img
+            src={authUserData?.authenticatedUser.profilePicture}
+            className="w-11 h-11 rounded-full border cursor-pointer"
+            alt="Avatar"
+          />
+        </SheetTrigger>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>
+              <div className="flex flex-col items-center">
+                <div className="relative">
+                  <Avatar className="h-20 w-20">
+                    <AvatarImage
+                      src={ImageUrl}
+                      alt="profile-picture"
+                      className=""
+                    />
+                    <AvatarFallback>
+                      {authUserData?.authenticatedUser.name.charAt(0) +
+                        authUserData?.authenticatedUser.name.charAt(1)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div
+                    className="absolute bottom-1 right-0 bg-gray-500 p-1 rounded-full outline outline-1 outline-white cursor-pointer"
+                    onClick={handleUploadImage}
+                  >
+                    <Pencil fill="white" />
+                  </div>
                 </div>
+                <input
+                  ref={inputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={pickedHandler}
+                />
+                {/* <Button onClick={handleUploadImage}>Edit Profile Photo</Button> */}
+                <p className="text-xl font-bold">
+                  {authUserData?.authenticatedUser.name}
+                </p>
+                <p className="text-xl ">
+                  {authUserData?.authenticatedUser.email}
+                </p>
               </div>
-              <input
-                ref={inputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={pickedHandler}
-              />
-              {/* <Button onClick={handleUploadImage}>Edit Profile Photo</Button> */}
-              <p className="text-xl font-bold">
-                {authUserData?.authenticatedUser.name}
-              </p>
-            </div>
-          </SheetTitle>
-          <hr />
-          <ul>
-            <li>Change password</li>
-            <li>toggle theme</li>
-            <li>logout</li>
-          </ul>
-          <SheetDescription></SheetDescription>
-        </SheetHeader>
-      </SheetContent>
-    </Sheet>
+            </SheetTitle>
+            <hr />
+            <ul className="flex flex-col gap-2">
+              <ListItem onClick={() => setEditProfile(true)}>
+                Edit Profile
+              </ListItem>
+              <ListItem onClick={() => setChangePassword(true)}>
+                Change Password
+              </ListItem>
+              <ListItem>toggle theme</ListItem>
+              <ListItem>logout</ListItem>
+            </ul>
+            <SheetDescription></SheetDescription>
+          </SheetHeader>
+        </SheetContent>
+      </Sheet>
+      {editProfile && (
+        <EditProfileForm isOpen={editProfile} setOpen={setEditProfile} />
+      )}
+      {changePassword && (
+        <ChangePasswordForm isOpen={changePassword} setOpen={setChangePassword} />
+      )}
+    </>
   );
 };
 

@@ -6,6 +6,9 @@ const GET_AUTH_USER = gql`
       _id
       profilePicture
       name
+      email
+      username
+      gender
     }
   }
 `;

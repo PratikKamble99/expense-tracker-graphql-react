@@ -2,6 +2,8 @@ import bcrypt from "bcryptjs";
 
 import User from "../models/user.model.js";
 import Transaction from "../models/transaction.model.js";
+import { generatePassword } from "../utils/utils.js";
+import { getTransporter } from "../mail-service/sendMail.js";
 
 const userResolver = {
   Query: {
@@ -37,9 +39,9 @@ const userResolver = {
   Mutation: {
     signup: async (_, { input }, context) => {
       try {
-        const { username, password, gender, name } = input;
+        const { email, username, password, gender, name } = input;
 
-        if (!username || !password || !gender || !name) {
+        if (!email || !username || !password || !gender || !name) {
           throw new Error("All field are required");
         }
 
@@ -56,6 +58,7 @@ const userResolver = {
         }?username=${username}`;
 
         const newUser = new User({
+          email,
           username,
           password: hashedPassword,
           gender,
@@ -124,7 +127,77 @@ const userResolver = {
         throw new Error(error.message || "Internal server error");
       }
     },
+    forgotPassword: async (_, { email }) => {
+      try {
+        const user = await User.findOne({ email });
+        if (!user) throw new Error("User not found");
+
+        const newPassword = generatePassword(6);
+
+        const salt = await bcrypt.genSalt(10); // 10 means length of 10 chars
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        const updatedUser = await User.updateOne(
+          { email },
+          { $set: { password: hashedPassword } }
+        );
+
+        const transporter = getTransporter();
+        console.log(email);
+
+        const info = await transporter.sendMail({
+          from: '"Maddison Foo Koch 👻" <maddison53@ethereal.email>', // sender address
+          to: email, // list of receivers
+          subject: "Hello ✔", // Subject line
+          text: "Hello world?", // plain text body
+          html: "<b>Hello world?</b>", // html body
+        });
+
+        console.log("Message sent: %s", info.messageId);
+
+        return { message: "Password sent to your email" };
+      } catch (error) {
+        console.log(error);
+        throw new Error(error.message || "Internal server error");
+      }
+    },
+    changePassword: async (_, { input }, context) => {
+      try {
+        const { currentPassword, newPassword, confirmPassword } = input;
+        const user = await context.getUser();
+        if (!user) throw new Error("unauthenticated");
+
+        const findUser = await User.findById({_id: user._id});
+        const isValidPassword = await bcrypt.compare(
+          currentPassword,
+          findUser.password
+          );
+          if (!isValidPassword) throw new Error("Invalid current password");
+          
+          if (newPassword !== confirmPassword) {
+            throw new Error("Passwords do not match");
+          }
+          
+          const salt = await bcrypt.genSalt(10); // 10 means length of 10 chars
+          const hashedPassword = await bcrypt.hash(newPassword, salt);
+          
+          console.log(hashedPassword, 'hashedPassword');
+
+        const updatedUser = await User.updateOne(
+          { _id: user.userId },
+          { $set: { password: hashedPassword } }
+        );
+
+        console.log(updatedUser)
+
+        return { message : "Changed password successfully"}
+      } catch (error) {
+        console.log(error);
+        throw new Error(error.message || "Internal server error");
+      }
+    },
   },
+
   // RELATIONSHIPS IN GRAPHQL
   User: {
     transactions: async (parent, _, __) => {

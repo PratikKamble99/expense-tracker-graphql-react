@@ -4,8 +4,10 @@ type Props = {
   id: string;
   name: string;
   type?: string;
+  placeholder?: string;
   onChange: (e: any) => void;
   value: string;
+  disabled?: boolean;
 };
 
 const InputField = ({
@@ -13,8 +15,10 @@ const InputField = ({
   id,
   name,
   type = "text",
+  placeholder ="",
   onChange,
   value,
+  disabled=false,
 }: Props) => {
   return (
     <div>
@@ -22,12 +26,14 @@ const InputField = ({
         {label}
       </label>
       <input
-        className="mt-1 p-2 w-full border rounded-md text-black focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300"
+        className="mt-1 p-2 w-full border rounded-md text-black focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300 disabled:cursor-not-allowed"
         id={id}
         type={type}
         name={name}
         value={value}
         onChange={onChange}
+        placeholder={placeholder}
+        disabled={disabled}
       />
     </div>
   );
