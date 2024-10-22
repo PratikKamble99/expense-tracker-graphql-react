@@ -14,17 +14,22 @@ import { useMutation, useQuery } from "@apollo/client";
 import { Button } from "../ui/button";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { EDIT_USER } from "@/graphql/mutations/user.mutation";
+import { EDIT_USER, LOG_OUT } from "@/graphql/mutations/user.mutation";
 import Pencil from "../icons/Pencil";
 
 import EditProfileForm from "./EditProfileForm";
 import ListItem from "../ui/ListItem";
 import ChangePasswordForm from "./ChangePasswordForm";
+import { ThemeToggle } from "../ui/ThemeToggle";
 
 const ProfileDrawer = () => {
   const { data: authUserData } = useQuery(GET_AUTH_USER);
 
   const [EditUser, { loading, data, error }] = useMutation(EDIT_USER, {
+    refetchQueries: ["GetAuthenticatedUser"],
+  });
+
+  const [logoutUser, { client }] = useMutation(LOG_OUT, {
     refetchQueries: ["GetAuthenticatedUser"],
   });
 
@@ -66,7 +71,6 @@ const ProfileDrawer = () => {
           }/image/upload`,
           formData
         );
-        console.log(response);
 
         await EditUser({
           variables: {
@@ -86,6 +90,15 @@ const ProfileDrawer = () => {
     // accessing input with useRef hook
     if (inputRef?.current) {
       inputRef.current?.click();
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      client.resetStore();
+    } catch (error) {
+      toast.error(error?.message);
     }
   };
 
@@ -146,8 +159,7 @@ const ProfileDrawer = () => {
               <ListItem onClick={() => setChangePassword(true)}>
                 Change Password
               </ListItem>
-              <ListItem>toggle theme</ListItem>
-              <ListItem>logout</ListItem>
+              <ListItem onClick={handleLogout}>logout</ListItem>
             </ul>
             <SheetDescription></SheetDescription>
           </SheetHeader>

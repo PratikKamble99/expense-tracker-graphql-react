@@ -130,7 +130,7 @@ const userResolver = {
     forgotPassword: async (_, { email }) => {
       try {
         const user = await User.findOne({ email });
-        if (!user) throw new Error("User not found");
+        if (!user) throw new Error("Incorrect email");
 
         const newPassword = generatePassword(6);
 
@@ -167,30 +167,26 @@ const userResolver = {
         const user = await context.getUser();
         if (!user) throw new Error("unauthenticated");
 
-        const findUser = await User.findById({_id: user._id});
+        const findUser = await User.findById({ _id: user._id });
+
         const isValidPassword = await bcrypt.compare(
           currentPassword,
           findUser.password
-          );
-          if (!isValidPassword) throw new Error("Invalid current password");
-          
-          if (newPassword !== confirmPassword) {
-            throw new Error("Passwords do not match");
-          }
-          
-          const salt = await bcrypt.genSalt(10); // 10 means length of 10 chars
-          const hashedPassword = await bcrypt.hash(newPassword, salt);
-          
-          console.log(hashedPassword, 'hashedPassword');
-
-        const updatedUser = await User.updateOne(
-          { _id: user.userId },
-          { $set: { password: hashedPassword } }
         );
+        if (!isValidPassword) throw new Error("Invalid current password");
 
-        console.log(updatedUser)
+        if (newPassword !== confirmPassword) {
+          throw new Error("Passwords do not match");
+        }
 
-        return { message : "Changed password successfully"}
+        const salt = await bcrypt.genSalt(10); // 10 means length of 10 chars
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        findUser.password = hashedPassword;
+
+        await findUser.save();
+        
+        return { message: "Changed password successfully" };
       } catch (error) {
         console.log(error);
         throw new Error(error.message || "Internal server error");

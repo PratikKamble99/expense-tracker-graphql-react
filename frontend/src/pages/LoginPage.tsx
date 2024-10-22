@@ -35,7 +35,6 @@ const LoginPage = () => {
     } catch (error) {
       toast.error(error?.message);
     }
-    console.log(loginData);
   };
 
   return (
@@ -85,11 +84,11 @@ const LoginPage = () => {
                   Sign Up
                 </Link>
               </p>
-              <p>
+              {/* <p>
                 <Link to="/forgot-password" className="text-black hover:underline">
                   forgot password?
                 </Link>
-              </p>
+              </p> */}
             </div>
           </div>
         </div>

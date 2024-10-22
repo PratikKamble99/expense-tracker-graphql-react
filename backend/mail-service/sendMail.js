@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 const host = "smtp.gmail.com";
 const port = 587;
@@ -9,16 +9,14 @@ export const getTransporter = () => {
   let transporter;
 
   transporter = nodemailer.createTransport({
-    service: "gmail",
-    host: host,
-    port: port,
-    secure: true, // true for port 465, false for other ports
+    host: "smtp.ethereal.email",
+    port: 587,
+    secure: false, // true for port 465, false for other ports
     auth: {
-      user: from,
-      pass: password,
+      user: "maddison53@ethereal.email",
+      pass: "jn7jnAPss4f63QBp6D",
     },
   });
 
   return transporter;
 };
-

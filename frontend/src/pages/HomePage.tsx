@@ -31,8 +31,6 @@ const HomePage = () => {
     if (state.category == "investment") return "rgba(54, 162, 235)";
   });
 
-  console.log(backgroundColor, "backgroundColor");
-
   const chartData = {
     labels: data?.categoryStatistics.map((item) => item.category) || [],
     datasets: [

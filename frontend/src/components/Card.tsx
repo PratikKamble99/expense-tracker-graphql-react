@@ -38,7 +38,6 @@ const Card = ({ data }: { data: any }) => {
 
   const handleDelete = async () => {
     // Add your delete transaction logic here
-    console.log(_id)
     try {
       await deleteTransaction({
         variables: {

@@ -9,48 +9,55 @@ import { GET_AUTH_USER } from "./graphql/query/user.query";
 import { Toaster } from "react-hot-toast";
 import SignUpPage from "./pages/SignUpPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+
+import { ThemeProvider } from "@/components/ThemProvider";
+
 function App() {
-  const authUser = true;
   const { loading, error, data } = useQuery(GET_AUTH_USER);
 
-  console.log(loading, error, data);
   if (loading) return null;
 
   return (
     <>
-      {data?.authenticatedUser && <Header />}
-      <Routes>
-        <Route
-          path="/"
-          element={
-            data?.authenticatedUser ? <HomePage /> : <Navigate to={"/login"} />
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            !data?.authenticatedUser ? <LoginPage /> : <Navigate to={"/"} />
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            !data?.authenticatedUser ? <SignUpPage /> : <Navigate to={"/"} />
-          }
-        />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route
-          path="/transaction/:id"
-          element={
-            data?.authenticatedUser ? (
-              <TransactionPage />
-            ) : (
-              <Navigate to={"/login"} />
-            )
-          }
-        />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        {data?.authenticatedUser && <Header />}
+        <Routes>
+          <Route
+            path="/"
+            element={
+              data?.authenticatedUser ? (
+                <HomePage />
+              ) : (
+                <Navigate to={"/login"} />
+              )
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              !data?.authenticatedUser ? <LoginPage /> : <Navigate to={"/"} />
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              !data?.authenticatedUser ? <SignUpPage /> : <Navigate to={"/"} />
+            }
+          />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route
+            path="/transaction/:id"
+            element={
+              data?.authenticatedUser ? (
+                <TransactionPage />
+              ) : (
+                <Navigate to={"/login"} />
+              )
+            }
+          />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </ThemeProvider>
       <Toaster />
     </>
   );

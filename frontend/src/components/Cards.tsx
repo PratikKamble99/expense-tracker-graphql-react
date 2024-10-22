@@ -14,8 +14,6 @@ const Cards = () => {
       },
   });
 
-  console.log(data, 'user and transactions')
-
   // TO-DO => ADD RELATIONSHIPS
 
   return (

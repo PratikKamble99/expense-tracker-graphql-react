@@ -53,7 +53,6 @@ const ChangePasswordForm = ({ isOpen, setOpen }: Props) => {
 
   const handleChange = (e: any) => {
     const { name, value, type } = e.target;
-    console.log(e.target.name);
     setFieldValue(name, value);
   };
 

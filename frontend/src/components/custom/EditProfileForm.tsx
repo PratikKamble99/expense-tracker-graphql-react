@@ -25,7 +25,6 @@ const EditProfileForm = ({ isOpen, setOpen }: Props) => {
 
   const [EditUser] = useMutation(EDIT_USER);
 
-  console.log(authUserData);
   const { values, handleSubmit, setFieldValue, setValues } = useFormik({
     initialValues: {
       name: "",
