@@ -19,7 +19,7 @@ function App() {
 
   return (
     <>
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      {/* <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme"> */}
         {data?.authenticatedUser && <Header />}
         <Routes>
           <Route
@@ -57,7 +57,7 @@ function App() {
           />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </ThemeProvider>
+      {/* </ThemeProvider> */}
       <Toaster />
     </>
   );
