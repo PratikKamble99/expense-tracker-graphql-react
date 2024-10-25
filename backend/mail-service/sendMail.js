@@ -12,7 +12,7 @@ export const getTransporter = () => {
     secure: false, // true for port 465, false for other ports
     auth: {
       user: process.env.NODEMAILER_USER_EMAIL,
-      pass: process.env.NODEMAILER_USER_EMAIL_PASSWORD,
+      pass: process.env.NODEMAILER_USER_EMAIL_APP_PASSWORD,
     },
   });
 

@@ -19,6 +19,7 @@ function ForgotPasswordPage() {
       navigate('/login')
       console.log(result);
     } catch (error) {
+      toast.error(error.message)
       console.log(error);
     }
   };
