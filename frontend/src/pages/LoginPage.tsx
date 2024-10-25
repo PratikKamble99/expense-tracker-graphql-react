@@ -6,6 +6,7 @@ import InputField from "../components/InputField";
 import toast from "react-hot-toast";
 import { useMutation } from "@apollo/client";
 import { LOGIN } from "../graphql/mutations/user.mutation";
+import HelmetComponent from "@/seo/Helmet";
 
 const LoginPage = () => {
   const [loginUser, { data, loading, error }] = useMutation(LOGIN, {
@@ -38,6 +39,8 @@ const LoginPage = () => {
   };
 
   return (
+    <>
+    <HelmetComponent subTitle="login" />
     <div className="flex justify-center items-center h-screen">
       <div className="flex rounded-lg overflow-hidden z-50 bg-gray-300">
         <div className="w-full bg-gray-100 min-w-80 sm:min-w-96 flex items-center justify-center">
@@ -84,16 +87,17 @@ const LoginPage = () => {
                   Sign Up
                 </Link>
               </p>
-              {/* <p>
+              <p>
                 <Link to="/forgot-password" className="text-black hover:underline">
                   forgot password?
                 </Link>
-              </p> */}
+              </p>
             </div>
           </div>
         </div>
       </div>
     </div>
+    </>
   );
 };
 export default LoginPage;

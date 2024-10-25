@@ -134,26 +134,22 @@ const userResolver = {
 
         const newPassword = generatePassword(6);
 
+        const transporter = getTransporter();
+
+        const info = await transporter.sendMail({
+          from: `<${process.env.NODEMAILER_USER_EMAIL}>`, // sender address
+          to: email, // list of receivers
+          subject: "Updated password", // Subject line
+          text: "You this password to login", // plain text body
+          html:  `<h3>Your <b>${newPassword}</b> password to login</h3>`, // html body
+        });
+
         const salt = await bcrypt.genSalt(10); // 10 means length of 10 chars
         const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-        const updatedUser = await User.updateOne(
-          { email },
-          { $set: { password: hashedPassword } }
-        );
+        user.password = hashedPassword;
 
-        const transporter = getTransporter();
-        console.log(email);
-
-        const info = await transporter.sendMail({
-          from: '"Maddison Foo Koch 👻" <maddison53@ethereal.email>', // sender address
-          to: email, // list of receivers
-          subject: "Hello ✔", // Subject line
-          text: "Hello world?", // plain text body
-          html: "<b>Hello world?</b>", // html body
-        });
-
-        console.log("Message sent: %s", info.messageId);
+        await user.save();
 
         return { message: "Password sent to your email" };
       } catch (error) {
@@ -185,7 +181,7 @@ const userResolver = {
         findUser.password = hashedPassword;
 
         await findUser.save();
-        
+
         return { message: "Changed password successfully" };
       } catch (error) {
         console.log(error);

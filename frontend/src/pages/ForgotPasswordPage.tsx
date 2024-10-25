@@ -2,9 +2,11 @@ import InputField from "@/components/InputField";
 import { FORGOT_PASSWORD } from "@/graphql/mutations/user.mutation";
 import { useMutation } from "@apollo/client";
 import React from "react";
-import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
 
 function ForgotPasswordPage() {
+  const navigate = useNavigate();
   const [ForgotPassword, { data, loading, error }] = useMutation(FORGOT_PASSWORD);
 
   const [email, setEmail] = React.useState("");
@@ -13,6 +15,8 @@ function ForgotPasswordPage() {
     e.preventDefault();
     try {
       const result = await ForgotPassword({ variables: { input: email } });
+      toast.success('Password send to your email.');
+      navigate('/login')
       console.log(result);
     } catch (error) {
       console.log(error);
@@ -48,8 +52,9 @@ function ForgotPasswordPage() {
               type="submit"
               className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black  focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300
               disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading}
             >
-              Send New Password
+              {loading ? 'Sending...': "Send New Password"} 
             </button>
           </form>
           <Link
