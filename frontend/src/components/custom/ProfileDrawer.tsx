@@ -153,13 +153,13 @@ const ProfileDrawer = () => {
             </SheetTitle>
             <hr />
             <ul className="flex flex-col gap-2">
-              <ListItem onClick={() => setEditProfile(true)}>
+              {/* <ListItem onClick={() => setEditProfile(true)}>
                 Edit Profile
-              </ListItem>
+              </ListItem> */}
               <ListItem onClick={() => setChangePassword(true)}>
                 Change Password
               </ListItem>
-              <ListItem onClick={handleLogout}>logout</ListItem>
+              {/* <ListItem onClick={handleLogout}>logout</ListItem> */}
             </ul>
             <SheetDescription></SheetDescription>
           </SheetHeader>
@@ -169,7 +169,10 @@ const ProfileDrawer = () => {
         <EditProfileForm isOpen={editProfile} setOpen={setEditProfile} />
       )}
       {changePassword && (
-        <ChangePasswordForm isOpen={changePassword} setOpen={setChangePassword} />
+        <ChangePasswordForm
+          isOpen={changePassword}
+          setOpen={setChangePassword}
+        />
       )}
     </>
   );

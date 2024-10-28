@@ -1,26 +1,15 @@
 import { useEffect } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import RadioButton from "../RadioButton";
-import InputField from "../InputField";
-
 import { useFormik } from "formik";
 import { useMutation, useQuery } from "@apollo/client";
 import { GET_AUTH_USER } from "@/graphql/query/user.query";
 import { EDIT_USER } from "@/graphql/mutations/user.mutation";
 import toast from "react-hot-toast";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { Label } from "../ui/label";
 
-type Props = {
-  isOpen: boolean;
-  setOpen: (value: boolean) => void;
-};
+type Props = {};
 
-const EditProfileForm = ({ isOpen, setOpen }: Props) => {
+const EditProfileForm = ({}: Props) => {
   const { data: authUserData, loading } = useQuery(GET_AUTH_USER);
 
   const [EditUser] = useMutation(EDIT_USER);
@@ -34,6 +23,14 @@ const EditProfileForm = ({ isOpen, setOpen }: Props) => {
     },
     onSubmit: async (values) => {
       try {
+        if (
+          authUserData.authenticatedUser.name == values.name &&
+          authUserData.authenticatedUser.email == values.email &&
+          authUserData.authenticatedUser.username == values.username &&
+          authUserData.authenticatedUser.gender == values.gender
+        )
+          return toast.error("Please change at least one field value");
+
         await EditUser({
           variables: {
             input: {
@@ -44,7 +41,6 @@ const EditProfileForm = ({ isOpen, setOpen }: Props) => {
           },
         });
         toast.success("Profile updated successfully.");
-        setOpen(false);
       } catch (error) {
         console.log(error);
         toast.error(error?.message);
@@ -65,72 +61,101 @@ const EditProfileForm = ({ isOpen, setOpen }: Props) => {
 
   const handleChange = (e: any) => {
     const { name, value, type } = e.target;
-    console.log(e.target.name);
     setFieldValue(name, value);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setOpen}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Edit Profile</DialogTitle>
-          <DialogDescription>
-            <form className="space-y-4" onSubmit={handleSubmit}>
-              <InputField
-                label="Full Name"
-                id="name"
-                name="name"
-                value={values.name}
-                onChange={handleChange}
-              />
-              <InputField
-                label="Email"
-                id="email"
-                name="email"
-                value={values.email}
-                onChange={handleChange}
-                disabled={true}
-              />
-              <InputField
-                label="Username"
-                id="username"
-                name="username"
-                value={values.username}
-                onChange={handleChange}
-              />
-              <div className="flex gap-10">
-                <RadioButton
-                  id="male"
-                  label="Male"
-                  name="gender"
-                  value="male"
-                  onChange={handleChange}
-                  checked={values.gender === "male"}
-                />
-                <RadioButton
-                  id="female"
-                  label="Female"
-                  name="gender"
-                  value="female"
-                  onChange={handleChange}
-                  checked={values.gender === "female"}
-                />
-              </div>
+    <form className="space-y-4 w-[50%]" onSubmit={handleSubmit}>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="name" className="text-white">
+          FullName
+        </label>
+        <input
+          id="name"
+          className="p-2 rounded-md bg-inherit border border-[#292A2E]"
+          type="name"
+          name="name"
+          value={values.name}
+          onChange={handleChange}
+        />
+      </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="email" className="text-white">
+          Email
+        </label>
+        <input
+          id="email"
+          className="p-2 rounded-md bg-inherit border border-[#292A2E] disabled:cursor-not-allowed"
+          type="email"
+          name="email"
+          value={values.email}
+          onChange={handleChange}
+          disabled
+        />
+      </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="username" className="text-white">
+          Username
+        </label>
+        <input
+          id="username"
+          className="p-2 rounded-md bg-inherit border border-[#292A2E]"
+          type="username"
+          name="username"
+          value={values.username}
+          onChange={handleChange}
+        />
+      </div>
+      <div className="flex gap-10">
+        <RadioGroup
+          value={values.gender}
+          className="flex"
+          name="gender"
+          onChange={handleChange}
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem
+              value="male"
+              id="r1"
+              onClick={(e) =>
+                handleChange({
+                  target: {
+                    name: "gender",
+                    value: e.currentTarget.value,
+                  },
+                })
+              }
+            />
+            <Label htmlFor="r1">Male</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem
+              value="female"
+              id="r2"
+              onClick={(e) =>
+                handleChange({
+                  target: {
+                    name: "gender",
+                    value: e.currentTarget.value,
+                  },
+                })
+              }
+            />
+            <Label htmlFor="r2">Female</Label>
+          </div>
+        </RadioGroup>
+      </div>
 
-              <div>
-                <button
-                  type="submit"
-                  className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black  focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={loading}
-                >
-                  {loading ? "Saving..." : "Save"}
-                </button>
-              </div>
-            </form>
-          </DialogDescription>
-        </DialogHeader>
-      </DialogContent>
-    </Dialog>
+      <div>
+        <button
+          type="submit"
+          className="w-full bg-black text-white p-2 rounded-md hover:bg-[#868686] focus:outline-none focus:bg-black  focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={loading}
+        >
+          {loading ? "Saving..." : "Save"}
+        </button>
+      </div>
+    </form>
   );
 };
 
