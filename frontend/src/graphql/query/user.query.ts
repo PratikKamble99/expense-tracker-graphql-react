@@ -9,6 +9,7 @@ const GET_AUTH_USER = gql`
       email
       username
       gender
+      updatedAt
     }
   }
 `;

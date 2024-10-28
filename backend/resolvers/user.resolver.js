@@ -5,6 +5,7 @@ import Transaction from "../models/transaction.model.js";
 import { generatePassword } from "../utils/utils.js";
 import { getTransporter } from "../mail-service/sendMail.js";
 
+
 const userResolver = {
   Query: {
     users: async (parent, args, context) => {

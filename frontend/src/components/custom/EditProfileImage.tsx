@@ -1,16 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { EDIT_USER } from "@/graphql/mutations/user.mutation";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { GET_AUTH_USER } from "@/graphql/query/user.query";
 
-type Props = {};
+type Props = {
+  authUserData: any
+};
 
-const EditProfileImage = ({}: Props) => {
-  const { data: authUserData } = useQuery(GET_AUTH_USER);
+const EditProfileImage = ({authUserData}: Props) => {
 
   const [EditUser] = useMutation(EDIT_USER, {
     refetchQueries: ["GetAuthenticatedUser"],

@@ -65,8 +65,8 @@ const EditProfileForm = ({}: Props) => {
   };
 
   return (
-    <form className="space-y-4 w-[50%]" onSubmit={handleSubmit}>
-      <div className="flex flex-col gap-2">
+    <form className="space-y-4 w-full sm:w-[50%]" onSubmit={handleSubmit}>
+      <div className="flex flex-col gap-2 ">
         <label htmlFor="name" className="text-white">
           FullName
         </label>

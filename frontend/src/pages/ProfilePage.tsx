@@ -7,20 +7,23 @@ import React from "react";
 
 import EditProfileForm from "@/components/custom/EditProfileForm";
 import EditProfileImage from "@/components/custom/EditProfileImage";
+import { formatDate } from "@/lib/utils";
 
 const ProfilePage = () => {
+  const { data: authUserData } = useQuery(GET_AUTH_USER);
+
   return (
     <div className="m-6 bg-[#1b1b1b] rounded-xl">
       <div className="px-8 py-4">
         <div>
           <p className="text-3xl font-bold">Your Profile</p>
           <p className="">
-            Last edit on <span className="font-bold">12 feb 2024</span>
+            Last edit on <span className="font-bold">{formatDate(authUserData?.authenticatedUser.updatedAt)}</span>
           </p>
         </div>
         <div className="mt-4">
           <SectionHeading icon={<Image />} label="Profile Picture" />
-          <EditProfileImage />
+          <EditProfileImage authUserData={authUserData}/>
           <div>
             <SectionHeading icon={<User />} label="Personal Information" />
             <EditProfileForm />

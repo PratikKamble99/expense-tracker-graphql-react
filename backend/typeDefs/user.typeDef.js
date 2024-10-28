@@ -10,6 +10,7 @@ const userTypeDef = `#graphql
             profilePicture:String,
             gender: String!,
             transactions:  [Transaction!]!
+            updatedAt: String
         }
 
         type Query {

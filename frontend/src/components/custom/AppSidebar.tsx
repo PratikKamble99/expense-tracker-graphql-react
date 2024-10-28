@@ -27,7 +27,7 @@ import toast from "react-hot-toast";
 import RouterLink from "../modified/RouterLink";
 
 // Menu items.
-const items = [
+export const items = [
   {
     title: "Home",
     url: "dashboard",
@@ -63,6 +63,7 @@ export default function AppSidebar() {
       await logoutUser();
       client.resetStore();
     } catch (error) {
+      //@ts-ignore
       toast.error(error?.message);
     }
   };
