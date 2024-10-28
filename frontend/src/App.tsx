@@ -11,6 +11,7 @@ import SignUpPage from "./pages/SignUpPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 
 import { ThemeProvider } from "@/components/ThemProvider";
+import AllRoutes from "./utils/AllRoutes";
 
 function App() {
   const { loading, error, data } = useQuery(GET_AUTH_USER);
@@ -20,43 +21,8 @@ function App() {
   return (
     <>
       {/* <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme"> */}
-        {data?.authenticatedUser && <Header />}
-        <Routes>
-          <Route
-            path="/"
-            element={
-              data?.authenticatedUser ? (
-                <HomePage />
-              ) : (
-                <Navigate to={"/login"} />
-              )
-            }
-          />
-          <Route
-            path="/login"
-            element={
-              !data?.authenticatedUser ? <LoginPage /> : <Navigate to={"/"} />
-            }
-          />
-          <Route
-            path="/signup"
-            element={
-              !data?.authenticatedUser ? <SignUpPage /> : <Navigate to={"/"} />
-            }
-          />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route
-            path="/transaction/:id"
-            element={
-              data?.authenticatedUser ? (
-                <TransactionPage />
-              ) : (
-                <Navigate to={"/login"} />
-              )
-            }
-          />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        {/* {data?.authenticatedUser && <Header />} */}
+        <AllRoutes/>
       {/* </ThemeProvider> */}
       <Toaster />
     </>
