@@ -61,6 +61,7 @@ const EditProfileImage = ({authUserData}: Props) => {
         });
         toast.success("Profile picture updated");
       } catch (error) {
+        toast.error(error?.message)
         console.log(error);
       }
     }
@@ -92,7 +93,7 @@ const EditProfileImage = ({authUserData}: Props) => {
           onChange={pickedHandler}
         />
       </div>
-      <div className="flex gap-x-2">
+      <div className="flex gap-x-2 flex-col gap-y-2 sm:flex-row sm:gap-y-0">
         <Button
           className="bg-[#442CB8] hover:bg-[#442CB8] border border-[#292A2E]"
           onClick={handleUploadImage}
