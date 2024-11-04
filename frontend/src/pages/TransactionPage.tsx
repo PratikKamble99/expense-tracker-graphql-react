@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
-import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { GET_TRANSACTION_BY_ID } from "../graphql/query/transaction.query";
 import { useMutation, useQuery } from "@apollo/client";

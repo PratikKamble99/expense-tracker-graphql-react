@@ -35,7 +35,7 @@ export const items = [
   },
   {
     title: "Transactions",
-    url: "#",
+    url: "transactions",
     icon: Inbox,
   },
   {

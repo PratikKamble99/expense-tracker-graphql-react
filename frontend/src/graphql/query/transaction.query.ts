@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 const GET_TRANSACTIONS = gql`
-    query fetchTransactions {
-        transactions {
+    query fetchTransactions($input: transactionInput) {
+        transactions(input:$input) {
             _id
             userId
             description

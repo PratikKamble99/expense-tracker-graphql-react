@@ -4,12 +4,24 @@ import User from "../models/user.model.js";
 
 const transactionResolver = {
   Query: {
-    transactions: async (_, __, context) => {
+    transactions: async (_, { input }, context) => {
       try {
         const user = await context.getUser();
         if (!user) throw new Error("unauthenticated");
-        const transactions = await Transaction.find({ userId: user._id });
-        return transactions;
+
+        if (input?.startDate && input?.endDate) {          
+          const transactions = await Transaction.find({
+            userId: user._id,
+            date: {
+              $gte: input.startDate.toString(),
+              $lte: input.endDate.toString(),
+            },
+          }).sort({date:1});
+          return transactions;
+        } else {
+          const transactions = await Transaction.find({ userId: user._id });
+          return transactions;
+        }
       } catch (error) {
         console.log(error);
         throw new Error(error.message || "Internal server error");

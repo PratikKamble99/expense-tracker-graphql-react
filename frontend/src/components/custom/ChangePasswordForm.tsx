@@ -5,16 +5,12 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import ListItem from "../ui/ListItem";
-import RadioButton from "../RadioButton";
 import InputField from "../InputField";
 
 import { useFormik } from "formik";
-import { useMutation, useQuery } from "@apollo/client";
-import { GET_AUTH_USER } from "@/graphql/query/user.query";
-import { CHANGE_PASSWORD, EDIT_USER } from "@/graphql/mutations/user.mutation";
+import { useMutation } from "@apollo/client";
+import { CHANGE_PASSWORD } from "@/graphql/mutations/user.mutation";
 import toast from "react-hot-toast";
 
 type Props = {
@@ -69,6 +65,7 @@ const ChangePasswordForm = ({ isOpen, setOpen }: Props) => {
                 name="currentPassword"
                 value={values.currentPassword}
                 onChange={handleChange}
+                autoComplete="off"
               />
               <InputField
                 label="New Password"
@@ -76,6 +73,7 @@ const ChangePasswordForm = ({ isOpen, setOpen }: Props) => {
                 name="newPassword"
                 value={values.newPassword}
                 onChange={handleChange}
+                autoComplete="new-password"
               />
               <InputField
                 label="Confirm Password"
@@ -83,14 +81,15 @@ const ChangePasswordForm = ({ isOpen, setOpen }: Props) => {
                 name="confirmPassword"
                 value={values.confirmPassword}
                 onChange={handleChange}
+                autoComplete="off"
               />
               <div>
                 <button
                   type="submit"
                   className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black  focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                  // disabled={loading}
+                  disabled={loading}
                 >
-                  {/* {loading ? "Saving..." : "Save"} */}
+                  {loading ? "Saving..." : "Save"}
                   Save
                 </button>
               </div>

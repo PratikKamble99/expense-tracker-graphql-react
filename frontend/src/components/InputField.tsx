@@ -1,4 +1,3 @@
-
 type Props = {
   label: string;
   id: string;
@@ -8,6 +7,7 @@ type Props = {
   onChange: (e: any) => void;
   value: string;
   disabled?: boolean;
+  autoComplete?: string;
 };
 
 const InputField = ({
@@ -15,10 +15,11 @@ const InputField = ({
   id,
   name,
   type = "text",
-  placeholder ="",
+  placeholder = "",
   onChange,
   value,
-  disabled=false,
+  disabled = false,
+  ...props
 }: Props) => {
   return (
     <div>
@@ -34,6 +35,7 @@ const InputField = ({
         onChange={onChange}
         placeholder={placeholder}
         disabled={disabled}
+        {...props}
       />
     </div>
   );

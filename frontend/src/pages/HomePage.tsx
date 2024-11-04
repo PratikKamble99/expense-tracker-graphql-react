@@ -6,13 +6,11 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import Cards from "../components/Cards";
 import TransactionForm from "../components/TransactionForm";
 
-import { MdLogout } from "react-icons/md";
 import toast from "react-hot-toast";
 import { useMutation, useQuery } from "@apollo/client";
 import { LOG_OUT } from "../graphql/mutations/user.mutation";
 import { GET_CATEGORY_STATISTICS } from "../graphql/query/transaction.query";
 import { GET_AUTH_USER } from "../graphql/query/user.query";
-import ProfileDrawer from "@/components/custom/ProfileDrawer";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -62,7 +60,6 @@ const HomePage = () => {
         <p className="md:text-4xl text-2xl lg:text-4xl font-bold text-center relative z-50 mb-4 mr-4 bg-gradient-to-r from-pink-600 via-indigo-500 to-pink-400 inline-block text-transparent bg-clip-text">
           Spend wisely, {authUserData?.authenticatedUser.name}
         </p>
-        <ProfileDrawer />
         {/* loading spinner */}
         {loading && (
           <div className="w-6 h-6 border-t-2 border-b-2 mx-2 rounded-full animate-spin"></div>

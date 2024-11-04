@@ -10,6 +10,7 @@ import { useQuery } from "@apollo/client";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import ProtectedRoutes from "./ProtectedRoutes";
 import ProfilePage from "@/pages/ProfilePage";
+import TransactionsPage from "@/pages/TransactionsPage";
 
 const AllRoutes = () => {
   const location = useLocation();
@@ -43,6 +44,7 @@ const AllRoutes = () => {
       <Route element={<ProtectedRoutes />}>
         <Route path="/" element={<RootLayout />}>
           <Route index path="/dashboard" element={<HomePage />} />
+          <Route index path="/transactions" element={<TransactionsPage />} />
           <Route index path="/profile" element={<ProfilePage />} />
           <Route path="/transaction/:id" element={<TransactionPage />} />
         </Route>

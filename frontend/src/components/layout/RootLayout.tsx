@@ -89,6 +89,7 @@ const RootLayout = () => {
               <ul className="font-medium flex flex-col gap-y-2 p-4 md:p-0 mt-4 rounded-lg  md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
                 {items.map((item) => (
                   <SidebarMenuItem
+                    key={item.url}
                     className={`bg-[#28282a] py-2 rounded-md ${
                       location.pathname.includes(item.url)
                         ? "text-[#04c8b7] font-bold"
