@@ -120,8 +120,8 @@ const TransactionsPage = () => {
   });
 
   return (
-    <div className="mt-2 px-8 py-4 h-full">
-      <div className="rounded-xl p-4 bg-[#1B1B1B]">
+    <div className="flex mt-2 px-8 py-4 h-full bg-black ">
+      <div className=" flex-grow rounded-xl p-4 bg-[#1B1B1B]">
         <p className="text-3xl font-bold">Transactions</p>
         <Separator className="my-4 bg-zinc-600" />
         <div className="flex flex-wrap gap-2">
@@ -194,39 +194,41 @@ const TransactionsPage = () => {
               <Skeleton className=" w-full bg-zinc-700"></Skeleton>
             ) : (
               <div className=" flex flex-col justify-between">
-                <table className="w-full">
-                  <thead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                      <tr key={headerGroup.id} className="border-b">
-                        {headerGroup.headers.map((header) => (
-                          <th key={header.id} align="left" className="py-2">
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
-                          </th>
-                        ))}
-                      </tr>
-                    ))}
-                  </thead>
-                  <tbody>
-                    {table.getRowModel().rows.map((row) => (
-                      <tr key={row.id}>
-                        {row.getVisibleCells().map((cell) => (
-                          <td key={cell.id} className="py-2">
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <div className="flex justify-end">
+                <div className="w-[300px] sm:w-full relative overflow-x-auto">
+                  <table className="w-full text-sm text-left rtl:text-right">
+                    <thead className="uppercase">
+                      {table.getHeaderGroups().map((headerGroup) => (
+                        <tr key={headerGroup.id} className="border-b">
+                          {headerGroup.headers.map((header) => (
+                            <th key={header.id} align="left" scope="col" className="py-2">
+                              {header.isPlaceholder
+                                ? null
+                                : flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext()
+                                  )}
+                            </th>
+                          ))}
+                        </tr>
+                      ))}
+                    </thead>
+                    <tbody>
+                      {table.getRowModel().rows.map((row) => (
+                        <tr key={row.id}>
+                          {row.getVisibleCells().map((cell) => (
+                            <td key={cell.id} scope="row" className="py-2">
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="mt-3 flex justify-center sm:justify-end">
                   {table.getPageCount() > 1 ? (
                     <nav aria-label="Page navigation example">
                       <ul className="inline-flex -space-x-px text-sm">
@@ -235,23 +237,26 @@ const TransactionsPage = () => {
                             className="rounded-s-lg flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 disabled:text-opacity-50 "
                             disabled={!table.getCanPreviousPage()}
                             onClick={() => table.previousPage()}
-                            >
+                          >
                             Previous
                           </button>
                         </li>
-                        {Array.from({ length: table.getPageCount() }, (_, index) => (
-                          <li>
-                            <button
-                              className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                              onClick={() => {
-                                console.log(index, "index");
-                                table.setPageIndex(index);
-                              }}
-                            >
-                              {index + 1}
-                            </button>
-                          </li>
-                        ))}
+                        {Array.from(
+                          { length: table.getPageCount() },
+                          (_, index) => (
+                            <li>
+                              <button
+                                className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                                onClick={() => {
+                                  console.log(index, "index");
+                                  table.setPageIndex(index);
+                                }}
+                              >
+                                {index + 1}
+                              </button>
+                            </li>
+                          )
+                        )}
                         <li>
                           <button
                             className=" rounded-e-lg flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300  disabled:text-opacity-50 "
