@@ -191,7 +191,7 @@ const TransactionsPage = () => {
         <div>
           <div className="p-2">
             {loading ? (
-              <Skeleton className=" w-full bg-zinc-700"></Skeleton>
+              <Skeleton className="h-screen w-full bg-zinc-700"></Skeleton>
             ) : (
               <div className=" flex flex-col justify-between">
                 <div className="w-[300px] sm:w-full relative overflow-x-auto">
