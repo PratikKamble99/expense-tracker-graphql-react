@@ -27,7 +27,7 @@ type Transaction = {
 
 const columnHelper = createColumnHelper<Transaction>();
 
-const columns = [
+export const columns = [
   columnHelper.accessor("description", {
     cell: (info) => info.getValue(),
     footer: (info) => info.column.id,
@@ -193,14 +193,19 @@ const TransactionsPage = () => {
             {loading ? (
               <Skeleton className="h-screen w-full bg-zinc-700"></Skeleton>
             ) : (
-              <div className=" flex flex-col justify-between">
+              <div className="flex flex-col justify-between">
                 <div className="w-[300px] sm:w-full relative overflow-x-auto">
                   <table className="w-full text-sm text-left rtl:text-right">
                     <thead className="uppercase">
                       {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id} className="border-b">
                           {headerGroup.headers.map((header) => (
-                            <th key={header.id} align="left" scope="col" className="py-2">
+                            <th
+                              key={header.id}
+                              align="left"
+                              scope="col"
+                              className="py-2"
+                            >
                               {header.isPlaceholder
                                 ? null
                                 : flexRender(
@@ -213,18 +218,24 @@ const TransactionsPage = () => {
                       ))}
                     </thead>
                     <tbody>
-                      {table.getRowModel().rows.map((row) => (
-                        <tr key={row.id}>
-                          {row.getVisibleCells().map((cell) => (
-                            <td key={cell.id} scope="row" className="py-2">
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext()
-                              )}
-                            </td>
-                          ))}
+                      {table.getRowCount() <= 0 ? (
+                        <tr>
+                          <td colSpan={5} align="center">No transactions found</td>
                         </tr>
-                      ))}
+                      ) : (
+                        table.getRowModel().rows.map((row) => (
+                          <tr key={row.id}>
+                            {row.getVisibleCells().map((cell) => (
+                              <td key={cell.id} scope="row" className="py-2">
+                                {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext()
+                                )}
+                              </td>
+                            ))}
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>

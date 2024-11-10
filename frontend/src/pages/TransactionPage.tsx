@@ -20,7 +20,7 @@ const TransactionPage = () => {
 
   const [updateTransaction, { loading, error }] = useMutation(
     UPDATE_TRANSACTION,
-    { refetchQueries: ["fetchCategoryStatistics"] }
+    { refetchQueries: ["fetchCategoryStatistics, fetchTransactions"] }
   );
 
   const [formData, setFormData] = useState({
