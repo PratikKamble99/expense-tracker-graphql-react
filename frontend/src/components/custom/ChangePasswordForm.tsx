@@ -90,7 +90,6 @@ const ChangePasswordForm = ({ isOpen, setOpen }: Props) => {
                   disabled={loading}
                 >
                   {loading ? "Saving..." : "Save"}
-                  Save
                 </button>
               </div>
             </form>

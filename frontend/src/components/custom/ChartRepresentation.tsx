@@ -4,16 +4,9 @@ import {
 } from "@/graphql/query/transaction.query";
 import { useQuery } from "@apollo/client";
 import { DateTime } from "luxon";
-import {
-  VictoryBar,
-  VictoryChart,
-  VictoryGroup,
-  VictoryTheme,
-  VictoryTooltip,
-  VictoryAxis,
-} from "victory";
+
 import { Separator } from "../ui/separator";
-import { Doughnut } from "react-chartjs-2";
+import Chart from "react-apexcharts";
 
 const ChartRepresentation = () => {
   const { data, loading } = useQuery(GET_TRANSACTIONS, {
@@ -52,137 +45,146 @@ const ChartRepresentation = () => {
     if (state.category == "investment") return "rgba(54, 162, 235)";
   });
 
-  const options = {
-    plugins: {
-      legend: {
-        position: "bottom",
-        labels: {
-          boxHeight: 20,
-          boxWidth: 20,
+  const dataKeys = Object.keys(obj);
+  const bars = ["saving", "expense"];
+
+  const barChartDataConsumption = bars.map((type, index) => ({
+    name: type,
+    data: dataKeys.map((key) => {
+      console.log(obj[key][type], "---->");
+      return obj[key][type];
+    }),
+  }));
+
+  const barChartOptionsConsumption = {
+    chart: {
+      stacked: false,
+      toolbar: {
+        show: false,
+      },
+    },
+    tooltip: {
+      style: {
+        fontSize: "12px",
+        fontFamily: undefined,
+      },
+      onDatasetHover: {
+        style: {
+          fontSize: "12px",
+          fontFamily: undefined,
+        },
+      },
+      theme: "dark",
+    },
+    xaxis: {
+      categories: dataKeys,
+      show: false,
+      labels: {
+        show: true,
+        style: {
+          colors: "#A3AED0",
+          fontSize: "14px",
+          fontWeight: "500",
+        },
+      },
+      axisBorder: {
+        show: false,
+      },
+      axisTicks: {
+        show: false,
+      },
+    },
+    yaxis: {
+      show: true,
+      color: "white",
+      labels: {
+        show: true,
+        formatter: (value) => {
+          return value + " ₹";
+        },
+        style: {
+          colors: "#ffffff",
+          fontSize: "14px",
+          fontWeight: "500",
+        },
+      },
+      axisBorder: {
+        show: false,
+        color: "gray",
+        offsetX: 0,
+        offsetY: 0,
+      },
+    },
+
+    grid: {
+      borderColor: "rgba(163, 174, 208, 0.3)",
+      show: true,
+      yaxis: {
+        lines: {
+          show: true,
+          opacity: 0.5,
+        },
+      },
+      row: {
+        opacity: 0.5,
+      },
+      xaxis: {
+        lines: {
+          show: false,
         },
       },
     },
-  };
-
-  const chartData = {
-    labels:
-      statisticsData?.categoryStatistics.map((item) => item.category) || [],
-    datasets: [
-      {
-        label: "%",
-        data:
-          statisticsData?.categoryStatistics.map((item) => item.totalAmount) ||
-          [],
-        backgroundColor: backgroundColor,
-        borderColor: backgroundColor,
-        borderWidth: 1,
-        borderRadius: 30,
-        spacing: 10,
-        cutout: 130,
+    fill: {
+      type: "solid",
+      colors: ["rgba(75, 192, 192)", "rgba(255, 99, 132)"],
+    },
+    legend: {
+      show: true,
+      labels: {
+        colors: undefined,
+        useSeriesColors: true,
       },
-    ],
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    plotOptions: {
+      bar: {
+        borderRadius: 4,
+        columnWidth: "20px",
+      },
+    },
+    // noData: {
+    //   text: "no data",
+    //   align: 'center',
+    //   verticalAlign: 'middle',
+    //   offsetX: 0,
+    //   offsetY: 0,
+    //   style: {
+    //     color: 'white',
+    //     fontSize: '14px',
+    //     fontFamily: undefined
+    //   }
+    // },
   };
-
-  const dataKeys = Object.keys(obj);
-  const bars = ["saving", "expense"];
-  const colors = ["rgba(75, 192, 192)", "rgba(255, 99, 132)"];
 
   return (
-    <div className="rounded-xl p-4 bg-[#1B1B1B] mt-6  flex flex-col sm:flex-row gap-2">
-      <div className="flex-1">
-        <p className="text-xl font-bold">Monthly Report</p>
-        <Separator className="mt-4 bg-zinc-600" />
+    <div className="rounded-xl p-4 bg-[#1B1B1B] mt-6  flex flex-col lg:flex-row gap-2">
+      <div className="flex-1 flex flex-col">
         <div>
-          <VictoryChart
-            padding={{ top: 20, bottom: 40, left: 60, right: 40 }}
-            theme={VictoryTheme.clean}
-          >
-            <VictoryAxis
-              dependentAxis
-              tickFormat={(tick) => tick + " ₹"}
-              style={{
-                axis: {
-                  stroke: "",
-                },
-                tickLabels: {
-                  fill: "white", //CHANGE COLOR OF X-AXIS LABELS
-                },
-                grid: {
-                  stroke: "gray", //CHANGE COLOR OF X-AXIS GRID LINES
-                },
-              }}
+          <p className="text-xl font-bold">Monthly Report</p>
+          <Separator className="mt-4 bg-zinc-600" />
+        </div>
+        <div className="flex-1 flex">
+          <div className="h-[360px] flex-1 self-center">
+            <Chart
+              options={barChartOptionsConsumption}
+              series={barChartDataConsumption}
+              type="bar"
+              width="100%"
+              height="100%"
             />
-            <VictoryAxis
-              style={{
-                axis: {
-                  stroke: "gray",
-                },
-                tickLabels: {
-                  fill: "white",
-                },
-              }}
-            />
-            <VictoryGroup offset={20} style={{ data: { width: 15 } }}>
-              {/* 
-              {Object.keys(obj).map((key, index) => {
-              return (
-                <VictoryBar
-                  data={Object.keys(obj).map((item, i) => ({
-                    x: item,
-                    y: index == 0 ? obj[item].saving : obj[item].expense,
-                  }))}
-                  labelComponent={<VictoryTooltip />}
-                  labels={({ datum }) => {
-                    console.log(datum);
-                    return datum.y;
-                  }}
-                  style={{
-                    data: {
-                      fill:
-                        index == 0
-                          ? "rgba(75, 192, 192)"
-                          : "rgba(255, 99, 132)",
-                      fillOpacity: 1,
-                      // stroke: "#c43a31",
-                      strokeWidth: 2,
-                    },
-                    labels: {
-                      fontSize: 12,
-                      fill: "#c43a31",
-                    },
-                  }}
-                />
-              );
-            })}
-            */}
-              {/* OPTIMIZE VERSION OF ABOVE CODE */}
-              {bars.map((type, index) => (
-                <VictoryBar
-                  key={type}
-                  data={dataKeys.map((key) => ({
-                    x: key,
-                    y: obj[key][type],
-                  }))}
-                  labelComponent={<VictoryTooltip />}
-                  labels={({ datum }) => {
-                    console.log(datum);
-                    return type + ": " + datum.y + " ₹";
-                  }}
-                  style={{
-                    data: {
-                      fill: colors[index],
-                      fillOpacity: 1,
-                      strokeWidth: 2,
-                    },
-                    labels: {
-                      fontSize: 12,
-                      fill: "black",
-                    },
-                  }}
-                />
-              ))}
-            </VictoryGroup>
-          </VictoryChart>
+          </div>
         </div>
       </div>
       <div className="flex flex-col flex-1">
@@ -190,9 +192,35 @@ const ChartRepresentation = () => {
           <p className="text-xl font-bold">Overall Report</p>
           <Separator className="mt-4 bg-zinc-600" />
         </div>
-        <div className="flex-1 items-center self-center h-[360px] w-[330px] md:h-[360px] md:w-[360px] pt-6">
+        <div className="flex-1 items-center self-center pt-6">
           {statisticsData?.categoryStatistics.length > 0 && (
-            <Doughnut data={chartData} options={options} />
+            <div className="h-[360px]">
+              <Chart
+                options={{
+                  labels:
+                    statisticsData?.categoryStatistics.map(
+                      (item) => item.category
+                    ) || [],
+                  colors: backgroundColor,
+                  legend: {
+                    show: true,
+                    position: "top",
+                    labels: {
+                      colors: "white",
+                      useSeriesColors: true,
+                    },
+                  },
+                }}
+                series={
+                  statisticsData?.categoryStatistics.map(
+                    (item) => item.totalAmount
+                  ) || []
+                }
+                type="donut"
+                width="100%"
+                height="100%"
+              />
+            </div>
           )}
         </div>
       </div>
