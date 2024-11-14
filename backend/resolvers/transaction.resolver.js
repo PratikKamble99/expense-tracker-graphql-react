@@ -9,7 +9,6 @@ const transactionResolver = {
         const user = await context.getUser();
         if (!user) throw new Error("unauthenticated");
 
-        console.log(input,'input')
         const limit = input?.limit || 0;
 
         if (input?.startDate && input?.endDate) {          
@@ -23,6 +22,7 @@ const transactionResolver = {
           return transactions;
         } else {
           const transactions = await Transaction.find({ userId: user._id }).limit(limit).sort({date: limit ? -1 : 1});
+          console.log('-->', transactions)
           return transactions;
         }
       } catch (error) {

@@ -7,40 +7,42 @@ import toast from "react-hot-toast";
 import { useMutation } from "@apollo/client";
 import { LOGIN } from "../graphql/mutations/user.mutation";
 import HelmetComponent from "@/seo/Helmet";
-import { EyeClosed, EyeOff } from "lucide-react";
 import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 
+import * as yup from "yup";
+import { useFormik } from "formik";
+
+const validationSchema = yup.object().shape({
+  username: yup.string().required(),
+  password: yup.string().required(),
+});
+
 const LoginPage = () => {
-  const [loginUser, { data, loading, error }] = useMutation(LOGIN, {
+  const [loginUser, { loading }] = useMutation(LOGIN, {
     refetchQueries: ["GetAuthenticatedUser"],
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [loginData, setLoginData] = useState({
-    username: "",
-    password: "",
-  });
 
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
-    setLoginData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    try {
-      await loginUser({
-        variables: {
-          input: loginData,
-        },
-      });
-    } catch (error) {
-      toast.error(error?.message);
-    }
-  };
+  const { values, handleChange, handleSubmit, handleBlur, errors, touched } =
+    useFormik({
+      initialValues: {
+        username: "",
+        password: "",
+      },
+      async onSubmit(values, formikHelpers) {
+        try {
+          await loginUser({
+            variables: {
+              input: values,
+            },
+          });
+        } catch (error) {
+          toast.error(error?.message);
+        }
+      },
+      validationSchema,
+    });
 
   return (
     <>
@@ -60,24 +62,37 @@ const LoginPage = () => {
                   label="Username"
                   id="username"
                   name="username"
-                  value={loginData.username}
+                  value={values.username}
                   onChange={handleChange}
+                  error={
+                    touched.username && errors.username ? errors.username : null
+                  }
+                  onBlur={handleBlur}
                 />
-                <div className="flex group focus-within:ring-2 focus-within:ring-gray-300 focus-within:ring-offset-2 focus-within:border-gray-200 transition-colors duration-300">
-                  <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    className="rounded-none rounded-s-lg bg-gray-50 border-gray-300   block flex-1 min-w-0 text-sm  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 p-2 w-full border text-black focus:outline-none transition-colors duration-300 disabled:cursor-not-allowed"
-                    value={loginData.password}
-                    onChange={handleChange}
-                  />
-                  <span
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    className="cursor-pointer inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-gray-300 rounded-e-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600 transition-colors duration-300 focus-within:ring-2 focus-within:ring-gray-300 focus-within:ring-offset-2 focus-within:border-gray-200"
-                  >
-                    {showPassword ? <EyeOpenIcon/> : <EyeClosedIcon /> }
-                  </span>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Password
+                  </label>
+                  <div className="flex group focus-within:ring-2 focus-within:ring-gray-300 focus-within:ring-offset-2 focus-within:border-gray-200 transition-colors duration-300">
+                    <input
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      className="rounded-none rounded-s-lg bg-gray-50 border-gray-300   block flex-1 min-w-0 text-sm  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 p-2 w-full border text-black focus:outline-none transition-colors duration-300 disabled:cursor-not-allowed"
+                      value={values.password}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    <span
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="cursor-pointer inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-gray-300 rounded-e-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600 transition-colors duration-300 focus-within:ring-2 focus-within:ring-gray-300 focus-within:ring-offset-2 focus-within:border-gray-200"
+                    >
+                      {showPassword ? <EyeOpenIcon /> : <EyeClosedIcon />}
+                    </span>
+                  </div>
+                  {touched.password && errors.password ? (
+                    <p className="text-red-500">{errors.password}</p>
+                  ) : null}
                 </div>
                 <div>
                   <button

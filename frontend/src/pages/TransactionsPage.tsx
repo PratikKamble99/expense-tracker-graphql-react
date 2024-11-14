@@ -7,57 +7,31 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { GET_TRANSACTIONS } from "@/graphql/query/transaction.query";
 import { formatDate } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { DateTime } from "luxon";
 import { Button } from "@/components/ui/button";
+import { Pencil, Trash2 } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import { DELETE_TRANSACTION } from "@/graphql/mutations/transaction.mutation";
+import toast from "react-hot-toast";
 
 type Transaction = {
+  _id: string | number;
   description: string;
   category: string;
   amount: number;
   paymentType: "cash" | "card";
   date: string;
   location: number;
+  _: React.ReactNode;
 };
 
 const columnHelper = createColumnHelper<Transaction>();
-
-export const columns = [
-  columnHelper.accessor("description", {
-    cell: (info) => info.getValue(),
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor((row) => row.category, {
-    id: "category",
-    cell: (info) => <span>{info.getValue()}</span>,
-    header: () => <span>Category</span>,
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor("amount", {
-    header: () => "Amount",
-    cell: (info) => info.renderValue(),
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor("paymentType", {
-    header: () => <span>PaymentType</span>,
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor("date", {
-    header: "date",
-    footer: (info) => info.column.id,
-    cell: (info) => formatDate(info.getValue()),
-  }),
-  columnHelper.accessor("location", {
-    header: "Location",
-    footer: (info) => info.column.id,
-    cell: (info) => info.getValue() || "N/A",
-  }),
-];
 
 const FilterButton = ({
   label,
@@ -83,11 +57,17 @@ const FilterButton = ({
 };
 
 const TransactionsPage = () => {
+  // const [searchParams, setSearchParams] = useSearchParams();
+
+  // const filterType = searchParams.get('filter');
+
   const [date, setDate] = useState({
     dateOptionValue: 1,
     startDate: DateTime.now().startOf("day").toMillis(),
     endDate: DateTime.now().endOf("day").toMillis(),
   });
+
+  // useEffect()
 
   const [pagination, setPagination] = useState({
     pageIndex: 0, //initial page index
@@ -106,7 +86,59 @@ const TransactionsPage = () => {
     // skip:
   });
 
-  console.log(data, "transactions");
+  const [deleteTransaction, { loading: delLoading, error }] = useMutation(
+    DELETE_TRANSACTION,
+    { refetchQueries: ["fetchTransactions", "fetchCategoryStatistics"] }
+  );
+
+  const columns = [
+    columnHelper.accessor("description", {
+      cell: (info) => info.getValue(),
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor((row) => row.category, {
+      id: "category",
+      cell: (info) => <span>{info.getValue()}</span>,
+      header: () => <span>Category</span>,
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor("amount", {
+      header: () => "Amount",
+      cell: (info) => info.renderValue(),
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor("paymentType", {
+      header: () => <span>PaymentType</span>,
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor("date", {
+      header: "date",
+      footer: (info) => info.column.id,
+      cell: (info) => formatDate(info.getValue()),
+    }),
+    columnHelper.accessor("location", {
+      header: "Location",
+      footer: (info) => info.column.id,
+      cell: (info) => info.getValue() || "N/A",
+    }),
+    columnHelper.accessor("_", {
+      header: "Action",
+      footer: (info) => info.column.id,
+      cell: (info) => {
+        return (
+          <div className="flex items-center gap-x-1">
+            <Link to={`/transaction/${info.row.original._id}`}>
+              <Pencil className="h-4 cursor-pointer" />
+            </Link>
+            <Trash2
+              className="h-5 cursor-pointer text-red-500"
+              onClick={() => handleDelete(info.row.original._id)}
+            />
+          </div>
+        );
+      },
+    }),
+  ];
 
   const table = useReactTable({
     data: data?.transactions || [],
@@ -119,8 +151,22 @@ const TransactionsPage = () => {
     },
   });
 
+  async function handleDelete(id: number | string) {
+    // Add your delete transaction logic here
+    try {
+      await deleteTransaction({
+        variables: {
+          input: id,
+        },
+      });
+      toast.success("Transaction deleted successfully");
+    } catch (error) {
+      toast.error(error?.message);
+    }
+  }
+
   return (
-    <div className="flex mt-2 px-8 py-4 h-full bg-black ">
+    <div className="flex mt-2 px-8 py-4 min-h-[calc(100vh_-_72px)] sm:h-screen bg-black ">
       <div className=" flex-grow rounded-xl p-4 bg-[#1B1B1B]">
         <p className="text-3xl font-bold">Transactions</p>
         <Separator className="my-4 bg-zinc-600" />
@@ -130,6 +176,7 @@ const TransactionsPage = () => {
             date={date}
             selectedOption={1}
             onClick={() => {
+              // setSearchParams({["filter"]: 'today'})       
               setDate({
                 dateOptionValue: 1,
                 startDate: DateTime.now().startOf("day").toMillis(),
@@ -142,6 +189,7 @@ const TransactionsPage = () => {
             date={date}
             selectedOption={2}
             onClick={() => {
+              // setSearchParams({["filter"]: 'this-week'})       
               setDate({
                 dateOptionValue: 2,
                 startDate: DateTime.local().startOf("week").toMillis(),
@@ -154,6 +202,7 @@ const TransactionsPage = () => {
             date={date}
             selectedOption={3}
             onClick={() => {
+              // setSearchParams({["filter"]: 'this-month'})       
               setDate({
                 dateOptionValue: 3,
                 startDate: DateTime.local().startOf("month").toMillis(),
@@ -166,6 +215,7 @@ const TransactionsPage = () => {
             date={date}
             selectedOption={4}
             onClick={() => {
+              // setSearchParams({["filter"]: 'this-year'})       
               setDate({
                 dateOptionValue: 4,
                 startDate: DateTime.local().startOf("year").toMillis(),
@@ -178,6 +228,7 @@ const TransactionsPage = () => {
               !date.dateOptionValue ? "bg-[#262626]" : ""
             } cursor-pointer hover:bg-[#262626]`}
             onClick={() => {
+              // setSearchParams({["filter"]: 'all'})       
               setDate((prev) => ({
                 ...prev,
                 dateOptionValue: 0,
@@ -220,7 +271,9 @@ const TransactionsPage = () => {
                     <tbody>
                       {table.getRowCount() <= 0 ? (
                         <tr>
-                          <td colSpan={5} align="center">No transactions found</td>
+                          <td colSpan={5} align="center">
+                            No transactions found
+                          </td>
                         </tr>
                       ) : (
                         table.getRowModel().rows.map((row) => (

@@ -51,10 +51,11 @@ const ChartRepresentation = () => {
   const barChartDataConsumption = bars.map((type, index) => ({
     name: type,
     data: dataKeys.map((key) => {
-      console.log(obj[key][type], "---->");
       return obj[key][type];
     }),
   }));
+
+  // const barChartDataConsumption = []
 
   const barChartOptionsConsumption = {
     chart: {
@@ -154,18 +155,6 @@ const ChartRepresentation = () => {
         columnWidth: "20px",
       },
     },
-    // noData: {
-    //   text: "no data",
-    //   align: 'center',
-    //   verticalAlign: 'middle',
-    //   offsetX: 0,
-    //   offsetY: 0,
-    //   style: {
-    //     color: 'white',
-    //     fontSize: '14px',
-    //     fontFamily: undefined
-    //   }
-    // },
   };
 
   return (
@@ -176,18 +165,19 @@ const ChartRepresentation = () => {
           <Separator className="mt-4 bg-zinc-600" />
         </div>
         <div className="flex-1 flex">
-          <div className="h-[360px] flex-1 self-center">
+          <div className={`h-[360px] flex-1 self-center ${barChartDataConsumption.length <= 0 ? 'flex items-center justify-center' :''}`}>
+            {barChartDataConsumption.length <= 0 ? <p className="text-lg font-semibold">No Transactions found</p> :
             <Chart
               options={barChartOptionsConsumption}
               series={barChartDataConsumption}
               type="bar"
               width="100%"
               height="100%"
-            />
+            />}
           </div>
         </div>
       </div>
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-col flex-1 pt-2 sm:pt-0">
         <div>
           <p className="text-xl font-bold">Overall Report</p>
           <Separator className="mt-4 bg-zinc-600" />

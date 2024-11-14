@@ -5,9 +5,13 @@ type Props = {
   type?: string;
   placeholder?: string;
   onChange: (e: any) => void;
+  onBlur?: (e: any) => void;
   value: string;
   disabled?: boolean;
   autoComplete?: string;
+  error?: string | null
+  required?: boolean
+
 };
 
 const InputField = ({
@@ -19,6 +23,8 @@ const InputField = ({
   onChange,
   value,
   disabled = false,
+  error,
+  onBlur,
   ...props
 }: Props) => {
   return (
@@ -33,10 +39,12 @@ const InputField = ({
         name={name}
         value={value}
         onChange={onChange}
+        onBlur={onBlur}
         placeholder={placeholder}
         disabled={disabled}
         {...props}
       />
+      {error ? <p className="text-red-600">{error}</p>: null}
     </div>
   );
 };

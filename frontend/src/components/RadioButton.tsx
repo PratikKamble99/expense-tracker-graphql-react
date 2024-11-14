@@ -4,12 +4,13 @@ type Props = {
   id: string;
   label: string;
   onChange: (e: any) => void;
+  onBlur: (e: any) => void;
   value: string;
   name?: string;
   checked: boolean;
 };
 
-const RadioButton = ({ id, label, onChange, value, checked, name='' }: Props) => {
+const RadioButton = ({ id, label, onChange, value, checked, name='', onBlur }: Props) => {
   return (
     <div className="inline-flex items-center">
       <label
@@ -23,6 +24,7 @@ const RadioButton = ({ id, label, onChange, value, checked, name='' }: Props) =>
           id={id}
           value={value}
           onChange={onChange}
+          onBlur={onBlur}
           checked={checked}
         />
         <span className="absolute text-gray-900 transition-opacity opacity-0 pointer-events-none top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 peer-checked:opacity-100">

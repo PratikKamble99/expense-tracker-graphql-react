@@ -1,15 +1,58 @@
 import { GET_TRANSACTIONS } from "@/graphql/query/transaction.query";
-import { columns } from "@/pages/TransactionsPage";
 import { useQuery } from "@apollo/client";
 import {
+  createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { table } from "console";
-import React from "react";
 import { Link } from "react-router-dom";
 import { Separator } from "../ui/separator";
+import { formatDate } from "@/lib/utils";
+
+type Transaction = {
+  _id: string | number;
+  description: string;
+  category: string;
+  amount: number;
+  paymentType: "cash" | "card";
+  date: string;
+  location: number;
+};
+
+const columnHelper = createColumnHelper<Transaction>();
+
+const columns = [
+  columnHelper.accessor("description", {
+    cell: (info) => info.getValue(),
+    footer: (info) => info.column.id,
+  }),
+  columnHelper.accessor((row) => row.category, {
+    id: "category",
+    cell: (info) => <span>{info.getValue()}</span>,
+    header: () => <span>Category</span>,
+    footer: (info) => info.column.id,
+  }),
+  columnHelper.accessor("amount", {
+    header: () => "Amount",
+    cell: (info) => info.renderValue(),
+    footer: (info) => info.column.id,
+  }),
+  columnHelper.accessor("paymentType", {
+    header: () => <span>PaymentType</span>,
+    footer: (info) => info.column.id,
+  }),
+  columnHelper.accessor("date", {
+    header: "date",
+    footer: (info) => info.column.id,
+    cell: (info) => formatDate(info.getValue()),
+  }),
+  columnHelper.accessor("location", {
+    header: "Location",
+    footer: (info) => info.column.id,
+    cell: (info) => info.getValue() || "N/A",
+  }),
+];
 
 const RecentTransactions = () => {
   const { data, loading } = useQuery(GET_TRANSACTIONS, {
@@ -27,7 +70,7 @@ const RecentTransactions = () => {
   });
 
   return (
-    <div className="rounded-xl p-4 bg-[#1B1B1B]">
+    <div className="min-h-[250px] rounded-xl p-4 bg-[#1B1B1B]">
       <div className="flex justify-between">
         <p className="text-xl  font-bold">Recent 5 Transactions</p>
         <p className="underline">

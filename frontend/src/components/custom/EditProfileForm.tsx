@@ -77,6 +77,7 @@ const EditProfileForm = ({}: Props) => {
           name="name"
           value={values.name}
           onChange={handleChange}
+          required
         />
       </div>
       <div className="flex flex-col gap-2">
@@ -104,6 +105,7 @@ const EditProfileForm = ({}: Props) => {
           name="username"
           value={values.username}
           onChange={handleChange}
+          required
         />
       </div>
       <div className="flex gap-10">

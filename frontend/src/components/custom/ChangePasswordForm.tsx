@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -21,7 +20,7 @@ type Props = {
 const ChangePasswordForm = ({ isOpen, setOpen }: Props) => {
   const [ChangePassword, { loading }] = useMutation(CHANGE_PASSWORD);
 
-  const { values, handleSubmit, setFieldValue, setValues } = useFormik({
+  const { values, handleSubmit, setFieldValue } = useFormik({
     initialValues: {
       currentPassword: "",
       newPassword: "",
@@ -54,9 +53,9 @@ const ChangePasswordForm = ({ isOpen, setOpen }: Props) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setOpen}>
-      <DialogContent>
+      <DialogContent className="w-[80%] rounded-xl">
         <DialogHeader>
-          <DialogTitle>Change Password</DialogTitle>
+          <DialogTitle className="mb-2 text-xl font-bold">Change Password</DialogTitle>
           <DialogDescription>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <InputField
@@ -66,6 +65,7 @@ const ChangePasswordForm = ({ isOpen, setOpen }: Props) => {
                 value={values.currentPassword}
                 onChange={handleChange}
                 autoComplete="off"
+                required
               />
               <InputField
                 label="New Password"
@@ -74,6 +74,7 @@ const ChangePasswordForm = ({ isOpen, setOpen }: Props) => {
                 value={values.newPassword}
                 onChange={handleChange}
                 autoComplete="new-password"
+                required
               />
               <InputField
                 label="Confirm Password"
@@ -82,6 +83,7 @@ const ChangePasswordForm = ({ isOpen, setOpen }: Props) => {
                 value={values.confirmPassword}
                 onChange={handleChange}
                 autoComplete="off"
+                required
               />
               <div>
                 <button

@@ -51,14 +51,6 @@ const HomePage = () => {
     ],
   };
 
-  // const handleLogout = async () => {
-  //   try {
-  //     await logoutUser();
-  //     client.resetStore();
-  //   } catch (error) {
-  //     toast.error(error?.message);
-  //   }
-  // };
 
   return (
     <div className="flex flex-col gap-6 p-8 z-20 relative justify-center w-full pt-4">
