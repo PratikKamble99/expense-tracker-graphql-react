@@ -250,7 +250,7 @@ const TransactionsPage = () => {
                 <Skeleton className="h-screen w-full bg-zinc-700"></Skeleton>
               ) : (
                 <div className="flex flex-col justify-between">
-                  <div className="w-[350px] self-center sm:w-full relative overflow-x-auto">
+                  <div className="w-[300px] sm:w-full self-center relative overflow-x-auto">
                     <table className="w-full text-sm text-left rtl:text-right">
                       <thead className="uppercase">
                         {table.getHeaderGroups().map((headerGroup) => (
