@@ -1,12 +1,12 @@
-import InputField from "@/components/InputField";
 import { FORGOT_PASSWORD } from "@/graphql/mutations/user.mutation";
+import useNavigation from "@/hooks/useNavigate";
 import { useMutation } from "@apollo/client";
 import React from "react";
 import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function ForgotPasswordPage() {
-  const navigate = useNavigate();
+  const navigate = useNavigation();
   const [ForgotPassword, { data, loading, error }] = useMutation(FORGOT_PASSWORD);
 
   const [email, setEmail] = React.useState("");

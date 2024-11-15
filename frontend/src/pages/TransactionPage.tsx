@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { GET_TRANSACTION_BY_ID } from "../graphql/query/transaction.query";
 import { useMutation, useQuery } from "@apollo/client";
 import { UPDATE_TRANSACTION } from "../graphql/mutations/transaction.mutation";
 import toast from "react-hot-toast";
 import TransactionFormSkeleton from "../components/skeletons/TransactionFormSkeleton";
+import useNavigation from "@/hooks/useNavigate";
 
 const TransactionPage = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigation();
 
   const { id } = useParams();
 
@@ -58,7 +59,7 @@ const TransactionPage = () => {
         },
       });
       toast.success("Transaction updated successfully");
-      navigate("/");
+      navigate("/transactions");
     } catch (error) {
       toast.error(error?.message);
     }

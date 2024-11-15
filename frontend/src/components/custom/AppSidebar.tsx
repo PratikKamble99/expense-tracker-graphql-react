@@ -35,7 +35,7 @@ export const items = [
   },
   {
     title: "Transactions",
-    url: "transactions",
+    url: "transactions?filter=today",
     icon: Inbox,
   },
   {
@@ -94,7 +94,7 @@ export default function AppSidebar() {
                 <SidebarMenuItem
                   key={item.title}
                   className={`bg-[#28282a] py-2 rounded-md ${
-                    location.pathname.includes(item.url)
+                    location.pathname.includes(item.url.split('?')[0])
                       ? "text-[#04c8b7] font-bold"
                       : "text-inherit"
                   } px-2`}
