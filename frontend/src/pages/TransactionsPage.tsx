@@ -13,7 +13,6 @@ import { formatDate, getDateRangeBasedOnFilter } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEffect, useState } from "react";
 
-import { DateTime } from "luxon";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -74,10 +73,9 @@ const TransactionsPage = () => {
   });
 
   useEffect(() => {
+    if (!filterType) setSearchParams({ ["filter"]: "today" });
 
-    if(!filterType) setSearchParams({ ["filter"] : 'today' });
-
-    setDate(getDateRangeBasedOnFilter(filterType ? filterType : 'today'));
+    setDate(getDateRangeBasedOnFilter(filterType ? filterType : "today"));
   }, [filterType]);
 
   const [openDeleteDialogId, setOpenDeleteDialogId] = useState<string | null>(
@@ -99,6 +97,30 @@ const TransactionsPage = () => {
     },
     // skip:
   });
+
+  const totalExpense =
+    data?.transactions.reduce((acc, curr) => {
+      if (curr.category == "expense") {
+        acc += curr.amount;
+      }
+      return acc;
+    }, 0) || 0;
+
+  const totalIncome =
+    data?.transactions.reduce((acc, curr) => {
+      if (curr.category == "savings") {
+        acc += curr.amount;
+      }
+      return acc;
+    }, 0) || 0;
+
+  const totalInvestment =
+    data?.transactions.reduce((acc, curr) => {
+      if (curr.category == "investment") {
+        acc += curr.amount;
+      }
+      return acc;
+    }, 0) || 0;
 
   const [deleteTransaction, { loading: delLoading, error }] = useMutation(
     DELETE_TRANSACTION,
@@ -339,6 +361,9 @@ const TransactionsPage = () => {
                       </nav>
                     ) : null}
                   </div>
+                  <div>Total Expense: {totalExpense}</div>
+                  <div>Total Investment: {totalInvestment}</div>
+                  <div>Total Income: {totalIncome}</div>
                 </div>
               )}
             </div>
