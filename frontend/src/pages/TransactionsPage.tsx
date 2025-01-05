@@ -343,7 +343,7 @@ export default function TransactionsPage() {
                   Previous
                 </button>
               </li>
-              {/* {Array.from({ length: table.getPageCount() }, (_, index) => (
+              {Array.from({ length: table.getPageCount() }, (_, index) => (
                 <li key={index}>
                   <button
                     className="flex items-center justify-center px-3 h-8 leading-tight text-[#04c8b7] bg-[#1b1b1b] border border-[#04c8b7] hover:bg-[#04c8b7] hover:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
@@ -355,7 +355,7 @@ export default function TransactionsPage() {
                     {index + 1}
                   </button>
                 </li>
-              ))} */}
+              ))}
               <li>
                 <button
                   className="rounded-e-lg flex items-center justify-center px-3 h-8 leading-tight text-[#04c8b7] bg-[#1b1b1b] border border-[#04c8b7] disabled:text-opacity-50"
