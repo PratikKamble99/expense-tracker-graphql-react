@@ -86,8 +86,8 @@ const RecentTransactions = () => {
       <Separator className="bg-zinc-600" />
 
       {/* Table Section */}
-      <div className="mt-4 overflow-x-auto">
-        <table className="w-full text-sm text-left text-gray-400">
+      <div className="relative overflow-x-auto">
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="uppercase bg-[#292929] text-gray-300">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr
@@ -98,7 +98,7 @@ const RecentTransactions = () => {
                   <th
                     key={header.id}
                     scope="col"
-                    className="px-4 py-3 text-xs font-medium tracking-wide"
+                    className="py-3 text-xs font-medium tracking-wide"
                   >
                     {header.isPlaceholder
                       ? null

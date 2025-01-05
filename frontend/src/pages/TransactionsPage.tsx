@@ -206,7 +206,7 @@ export default function TransactionsPage() {
     <div className="bg-[#1b1b1b] text-[#868686] min-h-screen p-6">
       {/* Filter Section */}
       <div className="bg-[#28282a] p-4 rounded-md shadow-lg mb-6">
-        <div className="flex flex-wrap gap-4 items-center">
+        <div className="flex flex-wrap gap-4 items-end">
           {/* Search */}
           {/* <div className="flex items-center bg-[#1b1b1b] rounded-md p-2 w-full lg:w-auto">
             <Search className="text-[#04c8b7] mr-2" />
@@ -225,7 +225,7 @@ export default function TransactionsPage() {
             name="category"
             value={filters.category}
             onChange={handleFilterChange}
-            className="bg-[#1b1b1b] text-white p-2 rounded-md border border-[#04c8b7]"
+            className="bg-[#1b1b1b] text-white p-2 rounded-md border border-[#04c8b7] w-full sm:w-auto"
           >
             <option value="">All Categories</option>
             <option value="expense">Expense</option>
@@ -238,7 +238,7 @@ export default function TransactionsPage() {
             name="paymentType"
             value={filters.paymentType}
             onChange={handleFilterChange}
-            className="bg-[#1b1b1b] text-white p-2 rounded-md border border-[#04c8b7]"
+            className="bg-[#1b1b1b] text-white p-2 rounded-md border border-[#04c8b7] w-full sm:w-auto"
           >
             <option value="">All Payment Types</option>
             <option value="card">Card</option>
@@ -246,34 +246,41 @@ export default function TransactionsPage() {
           </select>
 
           {/* Date Range */}
-          <div className="flex gap-2 items-center">
-            <label htmlFor="startDate">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            {/* <label htmlFor="startDate">
               <Calendar className="text-[#04c8b7]" />
-            </label>
-            <input
-              type="date"
-              name="startDate"
-              value={convertMiliSecIntoDate(dateRange.startDate)}
-              onChange={handleDateChange}
-              className="bg-[#1b1b1b] text-white p-2 rounded-md border border-[#04c8b7]"
-            />
-            <span className="text-[#04c8b7]">to</span>
+            </label> */}
+            <div>
+              <p>Start Date</p>
+              <input
+                type="date"
+                name="startDate"
+                value={convertMiliSecIntoDate(dateRange.startDate)}
+                onChange={handleDateChange}
+                className="bg-[#1b1b1b] text-white p-2 rounded-md border border-[#04c8b7] w-full sm:w-auto"
+              />
+            </div>
+          </div>
+          <div className="w-full sm:w-auto">
+            <p>End Date</p>
             <input
               type="date"
               name="endDate"
               value={convertMiliSecIntoDate(dateRange.endDate)}
               onChange={handleDateChange}
-              className="bg-[#1b1b1b] text-white p-2 rounded-md border border-[#04c8b7]"
+              className="bg-[#1b1b1b] text-white p-2 rounded-md border border-[#04c8b7] w-full sm:w-auto"
             />
           </div>
 
           {/* Clear Filters */}
-          <button
-            onClick={clearFilters}
-            className="bg-[#04c8b7] text-white py-2 px-4 rounded-md"
-          >
-            Clear Filters
-          </button>
+          <div className="flex w-full sm:w-auto justify-end">
+            <button
+              onClick={clearFilters}
+              className="bg-[#04c8b7] text-white py-2 px-4 rounded-md sm:self-end"
+            >
+              Clear Filters
+            </button>
+          </div>
         </div>
       </div>
 
