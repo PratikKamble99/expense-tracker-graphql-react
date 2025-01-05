@@ -11,7 +11,6 @@ type Props = {};
 
 const EditProfileForm = ({}: Props) => {
   const { data: authUserData, loading } = useQuery(GET_AUTH_USER);
-
   const [EditUser] = useMutation(EDIT_USER);
 
   const { values, handleSubmit, setFieldValue, setValues } = useFormik({
@@ -24,10 +23,10 @@ const EditProfileForm = ({}: Props) => {
     onSubmit: async (values) => {
       try {
         if (
-          authUserData.authenticatedUser.name == values.name &&
-          authUserData.authenticatedUser.email == values.email &&
-          authUserData.authenticatedUser.username == values.username &&
-          authUserData.authenticatedUser.gender == values.gender
+          authUserData.authenticatedUser.name === values.name &&
+          authUserData.authenticatedUser.email === values.email &&
+          authUserData.authenticatedUser.username === values.username &&
+          authUserData.authenticatedUser.gender === values.gender
         )
           return toast.error("Please change at least one field value");
 
@@ -42,8 +41,8 @@ const EditProfileForm = ({}: Props) => {
         });
         toast.success("Profile updated successfully.");
       } catch (error) {
-        console.log(error);
-        toast.error(error?.message);
+        console.error(error);
+        toast.error(error?.message || "An error occurred.");
       }
     },
   });
@@ -60,65 +59,74 @@ const EditProfileForm = ({}: Props) => {
   }, [authUserData]);
 
   const handleChange = (e: any) => {
-    const { name, value, type } = e.target;
+    const { name, value } = e.target;
     setFieldValue(name, value);
   };
 
   return (
-    <form className="space-y-4 w-full sm:w-[50%]" onSubmit={handleSubmit}>
-      <div className="flex flex-col gap-2 ">
-        <label htmlFor="name" className="text-white">
-          FullName
+    <form className="space-y-6 w-full sm:w-[50%]" onSubmit={handleSubmit}>
+      {/* Name Field */}
+      <div className="flex flex-col gap-2">
+        <label htmlFor="name" className="text-[#04c8b7] font-medium">
+          Full Name
         </label>
         <input
           id="name"
-          className="p-2 rounded-md bg-inherit border border-[#292A2E]"
-          type="name"
           name="name"
+          type="text"
           value={values.name}
           onChange={handleChange}
+          className="p-3 rounded-md bg-[#1b1b1b] text-white border border-[#292A2E] focus:outline-none focus:ring-2 focus:ring-[#04c8b7] focus:border-[#04c8b7]"
           required
         />
       </div>
+
+      {/* Email Field */}
       <div className="flex flex-col gap-2">
-        <label htmlFor="email" className="text-white">
+        <label htmlFor="email" className="text-[#04c8b7] font-medium">
           Email
         </label>
         <input
           id="email"
-          className="p-2 rounded-md bg-inherit border border-[#292A2E] disabled:cursor-not-allowed"
-          type="email"
           name="email"
+          type="email"
           value={values.email}
           onChange={handleChange}
           disabled
+          className="p-3 rounded-md bg-[#1b1b1b] text-gray-500 border border-[#292A2E] focus:outline-none disabled:cursor-not-allowed"
         />
       </div>
+
+      {/* Username Field */}
       <div className="flex flex-col gap-2">
-        <label htmlFor="username" className="text-white">
+        <label htmlFor="username" className="text-[#04c8b7] font-medium">
           Username
         </label>
         <input
           id="username"
-          className="p-2 rounded-md bg-inherit border border-[#292A2E]"
-          type="username"
           name="username"
+          type="text"
           value={values.username}
           onChange={handleChange}
+          className="p-3 rounded-md bg-[#1b1b1b] text-white border border-[#292A2E] focus:outline-none focus:ring-2 focus:ring-[#04c8b7] focus:border-[#04c8b7]"
           required
         />
       </div>
-      <div className="flex gap-10">
+
+      {/* Gender Field */}
+      <div className="flex flex-col gap-2">
+        <label className="text-[#04c8b7] font-medium">Gender</label>
         <RadioGroup
-          value={values.gender}
-          className="flex"
           name="gender"
+          value={values.gender}
           onChange={handleChange}
+          className="flex gap-4"
         >
           <div className="flex items-center space-x-2">
             <RadioGroupItem
+              id="male"
               value="male"
-              id="r1"
+              className="focus:ring-[#04c8b7]"
               onClick={(e) =>
                 handleChange({
                   target: {
@@ -128,12 +136,15 @@ const EditProfileForm = ({}: Props) => {
                 })
               }
             />
-            <Label htmlFor="r1">Male</Label>
+            <Label htmlFor="male" className="text-white">
+              Male
+            </Label>
           </div>
           <div className="flex items-center space-x-2">
             <RadioGroupItem
+              id="female"
               value="female"
-              id="r2"
+              className="focus:ring-[#04c8b7]"
               onClick={(e) =>
                 handleChange({
                   target: {
@@ -143,18 +154,21 @@ const EditProfileForm = ({}: Props) => {
                 })
               }
             />
-            <Label htmlFor="r2">Female</Label>
+            <Label htmlFor="female" className="text-white">
+              Female
+            </Label>
           </div>
         </RadioGroup>
       </div>
 
+      {/* Submit Button */}
       <div>
         <button
           type="submit"
-          className="w-full bg-black text-white p-2 rounded-md hover:bg-[#868686] focus:outline-none focus:bg-black  focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={loading}
+          className="w-full py-3 bg-[#04c8b7] text-white font-bold rounded-md hover:bg-[#03b6a4] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#04c8b7] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? "Saving..." : "Save"}
+          {loading ? "Saving..." : "Save Changes"}
         </button>
       </div>
     </form>

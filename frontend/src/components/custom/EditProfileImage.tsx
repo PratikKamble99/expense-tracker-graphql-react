@@ -7,34 +7,33 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 type Props = {
-  authUserData: any
+  authUserData: any;
 };
 
-const EditProfileImage = ({authUserData}: Props) => {
-
+const EditProfileImage = ({ authUserData }: Props) => {
   const [EditUser] = useMutation(EDIT_USER, {
     refetchQueries: ["GetAuthenticatedUser"],
   });
 
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [imageUrl, setImageUrl] = useState<string | undefined>(
     authUserData?.authenticatedUser.profilePicture
   );
 
-  const pickedHandler = async (event: any) => {
+  const pickedHandler = async (event: React.ChangeEvent<HTMLInputElement>) => {
     let pickedFile;
     if (event.target.files && event.target.files.length === 1) {
       pickedFile = event.target.files[0];
       if (!pickedFile.type.startsWith("image/")) {
         event.target.value = "";
         setImageUrl("");
-        return toast.error("Please select an image file.");
+        return toast.error("Please select a valid image file.");
       }
 
-      const fileReader: any = new FileReader();
+      const fileReader = new FileReader();
       fileReader.onload = () => {
-        setImageUrl(fileReader.result);
+        setImageUrl(fileReader.result as string);
       };
       fileReader.readAsDataURL(pickedFile);
 
@@ -59,30 +58,28 @@ const EditProfileImage = ({authUserData}: Props) => {
             },
           },
         });
-        toast.success("Profile picture updated");
+        toast.success("Profile picture updated successfully.");
       } catch (error) {
-        toast.error(error?.message)
-        console.log(error);
+        console.error(error);
+        toast.error("Failed to upload the profile picture.");
       }
     }
   };
 
   const handleUploadImage = () => {
-    // accessing input with useRef hook
     if (inputRef?.current) {
-      //@ts-ignore
-      inputRef.current?.click();
+      inputRef.current.click();
     }
   };
 
   return (
-    <div className="flex py-4 items-center gap-x-3">
+    <div className="flex flex-col sm:flex-row items-center gap-4 py-6">
+      {/* Avatar */}
       <div>
-        <Avatar className="w-20 h-20">
-          <AvatarImage src={imageUrl} />
-          <AvatarFallback>
-            {authUserData?.authenticatedUser.name.charAt(0) +
-              authUserData?.authenticatedUser.name.charAt(1)}
+        <Avatar className="w-24 h-24 border-2 border-[#04c8b7]">
+          <AvatarImage src={imageUrl} alt="Profile Picture" />
+          <AvatarFallback className="bg-[#292A2E] text-[#04c8b7] font-bold">
+            {authUserData?.authenticatedUser.name?.slice(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <input
@@ -93,16 +90,18 @@ const EditProfileImage = ({authUserData}: Props) => {
           onChange={pickedHandler}
         />
       </div>
-      <div className="flex gap-x-2 flex-col gap-y-2 sm:flex-row sm:gap-y-0">
+
+      {/* Buttons */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
         <Button
-          className="bg-[#442CB8] hover:bg-[#442CB8] border border-[#292A2E]"
+          className="bg-[#04c8b7] text-white hover:bg-[#03b6a4] focus:ring-2 focus:ring-offset-2 focus:ring-[#04c8b7] transition-all duration-300"
           onClick={handleUploadImage}
         >
           Change Picture
         </Button>
         <Button
-          className="bg-[#281E21] text-[#D96665] border border-[#292A2E]"
-          onClick={() => alert("coming soon")}
+          className="bg-[#D96665] text-white hover:bg-[#c65554] focus:ring-2 focus:ring-offset-2 focus:ring-[#D96665] transition-all duration-300"
+          onClick={() => toast.error("Delete Picture feature coming soon!")}
         >
           Delete Picture
         </Button>

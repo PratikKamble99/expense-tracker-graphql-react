@@ -4,9 +4,9 @@ import { CREATE_TRANSACTION } from "../graphql/mutations/transaction.mutation";
 import toast from "react-hot-toast";
 
 const TransactionForm = () => {
-  const [createTransaction, { loading, data, error }] = useMutation(CREATE_TRANSACTION, { refetchQueries:['fetchTransactions', 'fetchCategoryStatistics']});
-
-    // TO-DO => WHEN RELATIONSHIPS ADDED, CHANGE THE REFETCH QUERY
+  const [createTransaction, { loading }] = useMutation(CREATE_TRANSACTION, {
+    refetchQueries: ["fetchTransactions", "fetchCategoryStatistics"],
+  });
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -17,7 +17,7 @@ const TransactionForm = () => {
       description: formData.get("description"),
       paymentType: formData.get("paymentType"),
       category: formData.get("category"),
-      amount: parseFloat(formData.get("amount")),
+      amount: parseFloat(formData.get("amount") as string),
       location: formData.get("location"),
       date: formData.get("date"),
     };
@@ -26,7 +26,7 @@ const TransactionForm = () => {
       await createTransaction({
         variables: {
           input: transactionData,
-        },  
+        },
       });
 
       form.reset();
@@ -38,7 +38,7 @@ const TransactionForm = () => {
 
   return (
     <form
-      className="w-full max-w-lg flex flex-col gap-5 px-3"
+      className="w-full max-w-lg flex flex-col gap-5 px-3 bg-[#1b1b1b] text-white p-2 rounded-md "
       onSubmit={handleSubmit}
     >
       {/* TRANSACTION */}
@@ -51,7 +51,7 @@ const TransactionForm = () => {
             Transaction
           </label>
           <input
-            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            className="appearance-none block w-full bg-[#2d2d2d] text-white border border-[#04c8b7] rounded py-3 px-4 leading-tight focus:outline-none focus:bg-[#3e3e3e] focus:border-[#04c8b7]"
             id="description"
             name="description"
             type="text"
@@ -71,14 +71,14 @@ const TransactionForm = () => {
           </label>
           <div className="relative">
             <select
-              className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              className="block appearance-none w-full bg-[#2d2d2d] text-white border border-[#04c8b7] py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-[#3e3e3e] focus:border-[#04c8b7]"
               id="paymentType"
               name="paymentType"
             >
               <option value={"card"}>Card</option>
               <option value={"cash"}>Cash</option>
             </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
               <svg
                 className="fill-current h-4 w-4"
                 xmlns="http://www.w3.org/2000/svg"
@@ -100,7 +100,7 @@ const TransactionForm = () => {
           </label>
           <div className="relative">
             <select
-              className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              className="block appearance-none w-full bg-[#2d2d2d] text-white border border-[#04c8b7] py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-[#3e3e3e] focus:border-[#04c8b7]"
               id="category"
               name="category"
             >
@@ -108,7 +108,7 @@ const TransactionForm = () => {
               <option value={"expense"}>Expense</option>
               <option value={"investment"}>Investment</option>
             </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
               <svg
                 className="fill-current h-4 w-4"
                 xmlns="http://www.w3.org/2000/svg"
@@ -129,7 +129,7 @@ const TransactionForm = () => {
             Amount($)
           </label>
           <input
-            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            className="appearance-none block w-full bg-[#2d2d2d] text-white border border-[#04c8b7] rounded py-3 px-4 leading-tight focus:outline-none focus:bg-[#3e3e3e] focus:border-[#04c8b7]"
             id="amount"
             name="amount"
             type="number"
@@ -150,7 +150,7 @@ const TransactionForm = () => {
             Location
           </label>
           <input
-            className="appearance-none block w-full bg-gray-200 text-gray-700 border  rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+            className="appearance-none block w-full bg-[#2d2d2d] text-white border border-[#04c8b7] rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-[#3e3e3e]"
             id="location"
             name="location"
             type="text"
@@ -170,8 +170,7 @@ const TransactionForm = () => {
             type="date"
             name="date"
             id="date"
-            className="appearance-none block w-full bg-gray-200 text-gray-700 border  rounded py-[11px] px-4 mb-3 leading-tight focus:outline-none
-						 focus:bg-white"
+            className="appearance-none block w-full bg-[#2d2d2d] text-white border border-[#04c8b7] rounded py-[11px] px-4 mb-3 leading-tight focus:outline-none focus:bg-[#3e3e3e] focus:border-[#04c8b7]"
             placeholder="Select date"
             required
           />
@@ -179,12 +178,11 @@ const TransactionForm = () => {
       </div>
       {/* SUBMIT BUTTON */}
       <button
-        className="text-white font-bold w-full rounded px-4 py-2 bg-gradient-to-br
-          from-pink-500 to-pink-500 hover:from-pink-600 hover:to-pink-600
-						disabled:opacity-70 disabled:cursor-not-allowed"
+        className="text-white font-bold w-full rounded px-4 py-2 bg-gradient-to-br from-pink-500 to-pink-500 hover:from-pink-600 hover:to-pink-600 disabled:opacity-70 disabled:cursor-not-allowed"
         type="submit"
+        disabled={loading}
       >
-        {loading ? "loading..." : "Add Transaction"}
+        {loading ? "Loading..." : "Add Transaction"}
       </button>
     </form>
   );

@@ -35,7 +35,9 @@ const transactionTypeDefs = `#graphql
     input transactionInput {
         startDate: Float,
         endDate: Float,
-        limit: Float
+        limit: Float,
+        category: String,
+        paymentType: String
     }
 
     input updateTransactionInput {

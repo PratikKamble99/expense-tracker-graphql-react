@@ -55,7 +55,9 @@ const ChangePasswordForm = ({ isOpen, setOpen }: Props) => {
     <Dialog open={isOpen} onOpenChange={setOpen}>
       <DialogContent className="w-[80%] rounded-xl">
         <DialogHeader>
-          <DialogTitle className="mb-2 text-xl font-bold">Change Password</DialogTitle>
+          <DialogTitle className="mb-2 text-xl font-bold">
+            Change Password
+          </DialogTitle>
           <DialogDescription>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <InputField

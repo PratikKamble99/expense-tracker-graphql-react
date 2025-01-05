@@ -1,5 +1,5 @@
-import { Separator } from "@/components/ui/separator";
-
+import React, { useState } from "react";
+import { Calendar, Pencil, Search, Trash2 } from "lucide-react";
 import {
   createColumnHelper,
   flexRender,
@@ -7,23 +7,23 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useMutation, useQuery } from "@apollo/client";
+import {
+  convertMiliSecIntoDate,
+  formatDate,
+  getDateRangeBasedOnFilter,
+} from "@/lib/utils";
 import { GET_TRANSACTIONS } from "@/graphql/query/transaction.query";
-import { formatDate, getDateRangeBasedOnFilter } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useEffect, useState } from "react";
-
-import { Button } from "@/components/ui/button";
-import { Pencil, Trash2 } from "lucide-react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useMutation, useQuery } from "@apollo/client";
 import { DELETE_TRANSACTION } from "@/graphql/mutations/transaction.mutation";
 import toast from "react-hot-toast";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
 } from "@/components/ui/dialog";
-import useNavigation from "@/hooks/useNavigate";
+import { Link } from "react-router-dom";
+import { DateTime } from "luxon";
 
 type Transaction = {
   _id: string;
@@ -38,45 +38,25 @@ type Transaction = {
 
 const columnHelper = createColumnHelper<Transaction>();
 
-const FilterButton = ({
-  label,
-  date,
-  onClick,
-  selectedOption,
-}: {
-  label: string;
-  date: any;
-  selectedOption: number;
-  onClick: () => void;
-}) => {
-  return (
-    <Button
-      className={`p-2  rounded-md ${
-        date?.dateOptionValue == selectedOption ? "bg-[#262626]" : ""
-      } cursor-pointer hover:bg-[#262626]`}
-      onClick={onClick}
-    >
-      {label}
-    </Button>
+const empty = [];
+
+export default function TransactionsPage() {
+  const [deleteTransaction, { loading: delLoading, error }] = useMutation(
+    DELETE_TRANSACTION,
+    { refetchQueries: ["fetchTransactions", "fetchCategoryStatistics"] }
   );
-};
 
-const TransactionsPage = () => {
-  const navigate = useNavigation();
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const filterType = searchParams.get("filter");
-
-  const [date, setDate] = useState<any>({
-    dateOptionValue: 1,
-    ...getDateRangeBasedOnFilter("today"),
+  const [filters, setFilters] = useState({
+    category: "",
+    paymentType: "",
+    search: "",
   });
 
-  useEffect(() => {
-    if (!filterType) setSearchParams({ ["filter"]: "today" });
+  const [dateRange, setDateRange] = useState<any>({
+    ...getDateRangeBasedOnFilter("this-month"),
+  });
 
-    setDate(getDateRangeBasedOnFilter(filterType ? filterType : "today"));
-  }, [filterType]);
+  console.log(filters, "dateRange");
 
   const [openDeleteDialogId, setOpenDeleteDialogId] = useState<string | null>(
     null
@@ -86,46 +66,17 @@ const TransactionsPage = () => {
     pageSize: 10, //default page size
   });
 
-  const { data, loading } = useQuery(GET_TRANSACTIONS, {
+  const { data } = useQuery(GET_TRANSACTIONS, {
     variables: {
-      input: date
-        ? {
-            startDate: date.startDate,
-            endDate: date.endDate,
-          }
-        : null,
+      input: {
+        startDate: dateRange.startDate,
+        endDate: dateRange.endDate,
+        category: filters.category,
+        paymentType: filters.paymentType,
+      },
     },
     // skip:
   });
-
-  const totalExpense =
-    data?.transactions.reduce((acc, curr) => {
-      if (curr.category == "expense") {
-        acc += curr.amount;
-      }
-      return acc;
-    }, 0) || 0;
-
-  const totalIncome =
-    data?.transactions.reduce((acc, curr) => {
-      if (curr.category == "savings") {
-        acc += curr.amount;
-      }
-      return acc;
-    }, 0) || 0;
-
-  const totalInvestment =
-    data?.transactions.reduce((acc, curr) => {
-      if (curr.category == "investment") {
-        acc += curr.amount;
-      }
-      return acc;
-    }, 0) || 0;
-
-  const [deleteTransaction, { loading: delLoading, error }] = useMutation(
-    DELETE_TRANSACTION,
-    { refetchQueries: ["fetchTransactions", "fetchCategoryStatistics"] }
-  );
 
   const columns = [
     columnHelper.accessor("description", {
@@ -140,7 +91,7 @@ const TransactionsPage = () => {
     }),
     columnHelper.accessor("amount", {
       header: () => "Amount",
-      cell: (info) => info.renderValue(),
+      cell: (info) => "₹" + info.renderValue(),
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor("paymentType", {
@@ -163,8 +114,11 @@ const TransactionsPage = () => {
       cell: (info) => {
         return (
           <div className="flex items-center gap-x-1">
-            <Link to={`/transaction/${info.row.original._id}`}>
-              <Pencil className="h-4 cursor-pointer" />
+            <Link
+              to={`/transaction/${info.row.original._id}`}
+              className="cursor-pointer"
+            >
+              <Pencil className="h-4" />
             </Link>
             <Trash2
               className="h-5 cursor-pointer text-red-500"
@@ -177,7 +131,7 @@ const TransactionsPage = () => {
   ];
 
   const table = useReactTable({
-    data: data?.transactions || [],
+    data: data?.transactions || empty,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(), //load client-side pagination code
@@ -186,6 +140,8 @@ const TransactionsPage = () => {
       pagination,
     },
   });
+
+  console.log(table.getPageCount());
 
   async function handleDelete() {
     // Add your delete transaction logic here
@@ -202,206 +158,281 @@ const TransactionsPage = () => {
     }
   }
 
+  const totalExpense =
+    data?.transactions.reduce((acc, curr) => {
+      if (curr.category == "expense") {
+        acc += curr.amount;
+      }
+      return acc;
+    }, 0) || 0;
+
+  const totalIncome =
+    data?.transactions.reduce((acc, curr) => {
+      if (curr.category == "saving") {
+        acc += curr.amount;
+      }
+      return acc;
+    }, 0) || 0;
+
+  const totalInvestment =
+    data?.transactions.reduce((acc, curr) => {
+      if (curr.category == "investment") {
+        acc += curr.amount;
+      }
+      return acc;
+    }, 0) || 0;
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleDateChange = (e) => {
+    const { name, value } = e.target;
+    const date = DateTime.fromISO(value);
+    const millis = date.toMillis();
+    setDateRange((prev) => ({ ...prev, [name]: millis }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      category: "",
+      paymentType: "",
+      search: "",
+    });
+  };
+
   return (
-    <>
-      <div className="flex mt-2 px-8 py-4 min-h-[calc(100vh_-_72px)] sm:h-screen bg-black ">
-        <div className=" flex-grow rounded-xl p-4 bg-[#1B1B1B]">
-          <div className="flex justify-between">
-            <p className="text-3xl font-bold">Transactions</p>
-            <Button
-              className="max-w-fit self-end mt-1 sm:mt-0 border"
-              onClick={() => navigate("/add-transaction")}
-            >
-              Add Transactions
-            </Button>
+    <div className="bg-[#1b1b1b] text-[#868686] min-h-screen p-6">
+      {/* Filter Section */}
+      <div className="bg-[#28282a] p-4 rounded-md shadow-lg mb-6">
+        <div className="flex flex-wrap gap-4 items-center">
+          {/* Search */}
+          {/* <div className="flex items-center bg-[#1b1b1b] rounded-md p-2 w-full lg:w-auto">
+            <Search className="text-[#04c8b7] mr-2" />
+            <input
+              type="text"
+              name="search"
+              placeholder="Search..."
+              value={filters.search}
+              onChange={handleFilterChange}
+              className="bg-transparent border-none outline-none text-white w-full"
+            />
+          </div> */}
+
+          {/* Category Filter */}
+          <select
+            name="category"
+            value={filters.category}
+            onChange={handleFilterChange}
+            className="bg-[#1b1b1b] text-white p-2 rounded-md border border-[#04c8b7]"
+          >
+            <option value="">All Categories</option>
+            <option value="expense">Expense</option>
+            <option value="investment">Investment</option>
+            <option value="saving">Income</option>
+          </select>
+
+          {/* Payment Type Filter */}
+          <select
+            name="paymentType"
+            value={filters.paymentType}
+            onChange={handleFilterChange}
+            className="bg-[#1b1b1b] text-white p-2 rounded-md border border-[#04c8b7]"
+          >
+            <option value="">All Payment Types</option>
+            <option value="card">Card</option>
+            <option value="cash">Cash</option>
+          </select>
+
+          {/* Date Range */}
+          <div className="flex gap-2 items-center">
+            <label htmlFor="startDate">
+              <Calendar className="text-[#04c8b7]" />
+            </label>
+            <input
+              type="date"
+              name="startDate"
+              value={convertMiliSecIntoDate(dateRange.startDate)}
+              onChange={handleDateChange}
+              className="bg-[#1b1b1b] text-white p-2 rounded-md border border-[#04c8b7]"
+            />
+            <span className="text-[#04c8b7]">to</span>
+            <input
+              type="date"
+              name="endDate"
+              value={convertMiliSecIntoDate(dateRange.endDate)}
+              onChange={handleDateChange}
+              className="bg-[#1b1b1b] text-white p-2 rounded-md border border-[#04c8b7]"
+            />
           </div>
-          <Separator className="my-4 bg-zinc-600" />
-          <div className="flex flex-wrap gap-2">
-            <FilterButton
-              label="Todays"
-              date={date}
-              selectedOption={1}
-              onClick={() => {
-                setSearchParams({ ["filter"]: "today" });
-                setDate(getDateRangeBasedOnFilter("today"));
-              }}
-            />
-            <FilterButton
-              label="This week"
-              date={date}
-              selectedOption={2}
-              onClick={() => {
-                setSearchParams({ ["filter"]: "this-week" });
-                setDate(getDateRangeBasedOnFilter("this-week"));
-              }}
-            />
-            <FilterButton
-              label="This month"
-              date={date}
-              selectedOption={3}
-              onClick={() => {
-                setSearchParams({ ["filter"]: "this-month" });
-                setDate(getDateRangeBasedOnFilter("this-month"));
-              }}
-            />
-            <FilterButton
-              label="This year"
-              date={date}
-              selectedOption={4}
-              onClick={() => {
-                setSearchParams({ ["filter"]: "this-year" });
-                setDate(getDateRangeBasedOnFilter("this-year"));
-              }}
-            />
-            <Button
-              className={`p-2  rounded-md ${
-                !date.dateOptionValue ? "bg-[#262626]" : ""
-              } cursor-pointer hover:bg-[#262626]`}
-              onClick={() => {
-                setSearchParams({ ["filter"]: "all-time" });
-                setDate(getDateRangeBasedOnFilter("all-time"));
-              }}
-            >
-              All Expenses
-            </Button>
-          </div>
-          <Separator className="my-4 bg-zinc-600" />
-          <div>
-            <div className="p-2">
-              {loading ? (
-                <Skeleton className="h-screen w-full bg-zinc-700"></Skeleton>
-              ) : (
-                <div className="flex flex-col justify-between">
-                  <div className="w-[300px] sm:w-full self-center relative overflow-x-auto">
-                    <table className="w-full text-sm text-left rtl:text-right">
-                      <thead className="uppercase">
-                        {table.getHeaderGroups().map((headerGroup) => (
-                          <tr key={headerGroup.id} className="border-b">
-                            {headerGroup.headers.map((header) => (
-                              <th
-                                key={header.id}
-                                align="left"
-                                scope="col"
-                                className="py-2"
-                              >
-                                {header.isPlaceholder
-                                  ? null
-                                  : flexRender(
-                                      header.column.columnDef.header,
-                                      header.getContext()
-                                    )}
-                              </th>
-                            ))}
-                          </tr>
-                        ))}
-                      </thead>
-                      <tbody>
-                        {table.getRowCount() <= 0 ? (
-                          <tr>
-                            <td colSpan={5} align="center">
-                              No transactions found
-                            </td>
-                          </tr>
-                        ) : (
-                          table.getRowModel().rows.map((row) => (
-                            <tr key={row.id}>
-                              {row.getVisibleCells().map((cell) => (
-                                <td key={cell.id} scope="row" className="py-2">
-                                  {flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext()
-                                  )}
-                                </td>
-                              ))}
-                            </tr>
-                          ))
+
+          {/* Clear Filters */}
+          <button
+            onClick={clearFilters}
+            className="bg-[#04c8b7] text-white py-2 px-4 rounded-md"
+          >
+            Clear Filters
+          </button>
+        </div>
+      </div>
+
+      {/* Transactions Table */}
+      <div className="bg-[#28282a] p-4 rounded-md shadow-lg overflow-x-auto">
+        <table className="w-full text-white">
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr
+                key={headerGroup.id}
+                className="text-[#04c8b7] border-b border-[#1b1b1b]"
+              >
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} align="left" scope="col" className="py-2">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
                         )}
-                      </tbody>
-                    </table>
-                  </div>
-                  <div className="mt-3 flex justify-center sm:justify-end">
-                    {table.getPageCount() > 1 ? (
-                      <nav aria-label="Page navigation example">
-                        <ul className="inline-flex -space-x-px text-sm">
-                          <li>
-                            <button
-                              className="rounded-s-lg flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 disabled:text-opacity-50 "
-                              disabled={!table.getCanPreviousPage()}
-                              onClick={() => table.previousPage()}
-                            >
-                              Previous
-                            </button>
-                          </li>
-                          {Array.from(
-                            { length: table.getPageCount() },
-                            (_, index) => (
-                              <li>
-                                <button
-                                  className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                                  onClick={() => {
-                                    console.log(index, "index");
-                                    table.setPageIndex(index);
-                                  }}
-                                >
-                                  {index + 1}
-                                </button>
-                              </li>
-                            )
-                          )}
-                          <li>
-                            <button
-                              className=" rounded-e-lg flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300  disabled:text-opacity-50 "
-                              disabled={!table.getCanNextPage()}
-                              onClick={() => table.nextPage()}
-                            >
-                              Next
-                            </button>
-                          </li>
-                        </ul>
-                      </nav>
-                    ) : null}
-                  </div>
-                  <div>Total Expense: {totalExpense}</div>
-                  <div>Total Investment: {totalInvestment}</div>
-                  <div>Total Income: {totalIncome}</div>
-                </div>
-              )}
-            </div>
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowCount() <= 0 ? (
+              <tr>
+                <td colSpan={5} align="center">
+                  No transactions found
+                </td>
+              </tr>
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <tr key={row.id} className="border-b border-[#1b1b1b]">
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} scope="row" className="py-2">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+      <div className="mt-3 flex justify-center sm:justify-end">
+        {table.getPageCount() > 1 ? (
+          <nav aria-label="Page navigation example">
+            <ul className="inline-flex -space-x-px text-sm">
+              <li>
+                <button
+                  className="rounded-s-lg flex items-center justify-center px-3 h-8 leading-tight text-[#04c8b7] bg-[#1b1b1b] border border-[#04c8b7] disabled:text-opacity-50"
+                  disabled={!table.getCanPreviousPage()}
+                  onClick={() => table.previousPage()}
+                >
+                  Previous
+                </button>
+              </li>
+              {/* {Array.from({ length: table.getPageCount() }, (_, index) => (
+                <li key={index}>
+                  <button
+                    className="flex items-center justify-center px-3 h-8 leading-tight text-[#04c8b7] bg-[#1b1b1b] border border-[#04c8b7] hover:bg-[#04c8b7] hover:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                    onClick={() => {
+                      console.log(index, "index");
+                      table.setPageIndex(index);
+                    }}
+                  >
+                    {index + 1}
+                  </button>
+                </li>
+              ))} */}
+              <li>
+                <button
+                  className="rounded-e-lg flex items-center justify-center px-3 h-8 leading-tight text-[#04c8b7] bg-[#1b1b1b] border border-[#04c8b7] disabled:text-opacity-50"
+                  disabled={!table.getCanNextPage()}
+                  onClick={() => table.nextPage()}
+                >
+                  Next
+                </button>
+              </li>
+            </ul>
+          </nav>
+        ) : null}
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-6 sm:gap-12 mt-6">
+        <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
+          <div className="text-2xl font-semibold mb-2 text-[#04c8b7]">
+            Total Expense
+          </div>
+          <div className="text-3xl font-bold text-red-600">
+            {totalExpense.toLocaleString()}
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
+          <div className="text-2xl font-semibold mb-2 text-[#04c8b7]">
+            Total Investment
+          </div>
+          <div className="text-3xl font-bold text-green-500">
+            {totalInvestment.toLocaleString()}
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
+          <div className="text-2xl font-semibold mb-2 text-[#04c8b7]">
+            Total Income
+          </div>
+          <div className="text-3xl font-bold text-yellow-500">
+            {totalIncome.toLocaleString()}
           </div>
         </div>
       </div>
+
       <Dialog
         open={!!openDeleteDialogId}
         onOpenChange={() => {
           setOpenDeleteDialogId(null);
         }}
       >
-        <DialogContent className="rounded-xl sm:max-w-[425px] w-[80%]">
-          <div className="mb-2">
-            <div className="flex justify-center mb-2">
-              <Trash2 className="w-[40px] h-[40px]" />
+        <DialogContent className="rounded-xl sm:max-w-[425px] w-[80%] bg-[#2d2d2d] p-6 shadow-lg transition-all duration-300 transform scale-105">
+          <div className="mb-4">
+            <div className="flex justify-center mb-4">
+              <Trash2 className="w-[50px] h-[50px] text-[#f44336]" />
             </div>
-            <DialogDescription className="text-xl text-center">
-              Are you want to delete transaction{" "}
-              <span className="font-bold">{openDeleteDialogId}</span>?
+            <DialogDescription className="text-xl text-center text-white">
+              Are you sure you want to delete transaction{" "}
+              <span className="font-bold text-[#04c8b7]">
+                {openDeleteDialogId}
+              </span>
+              ?
             </DialogDescription>
           </div>
-          <div className="flex justify-center gap-2">
+          <div className="flex justify-center gap-4 mt-6">
             <Button
               onClick={() => {
                 setOpenDeleteDialogId(null);
               }}
+              className="bg-[#1b1b1b] text-[#04c8b7] hover:bg-[#333] transition-all duration-300"
             >
               Cancel
             </Button>
-            <Button className="bg-red-600" onClick={handleDelete}>
-              {delLoading ? "deleting..." : "Yes, I'm sure"}
+            <Button
+              className="bg-red-600 hover:bg-red-700 text-white transition-all duration-300"
+              onClick={handleDelete}
+            >
+              {delLoading ? (
+                <span className="animate-pulse">Deleting...</span>
+              ) : (
+                "Yes, I'm sure"
+              )}
             </Button>
           </div>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
-};
-
-export default TransactionsPage;
+}

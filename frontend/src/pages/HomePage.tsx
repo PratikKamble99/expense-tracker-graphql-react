@@ -20,7 +20,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const HomePage = () => {
   const navigate = useNavigation();
-  
+
   const [logoutUser, { loading, client }] = useMutation(LOG_OUT, {
     refetchQueries: ["GetAuthenticatedUser"],
   });
@@ -51,7 +51,6 @@ const HomePage = () => {
     ],
   };
 
-
   return (
     <div className="flex flex-col gap-6 p-8 z-20 relative justify-center w-full pt-4">
       <div className="flex flex-grow items-center">
@@ -59,17 +58,20 @@ const HomePage = () => {
           <p className="md:text-4xl text-2xl lg:text-4xl font-bold text-center relative z-50 bg-gradient-to-r from-pink-600 via-indigo-500 to-pink-400 inline-block text-transparent bg-clip-text">
             Spend wisely, {authUserData?.authenticatedUser.name}
           </p>
-          <Button className="max-w-fit self-end mt-1 sm:mt-0 border" onClick={()=>navigate('/add-transaction')}>Add Transactions</Button>
+          <Button
+            className="max-w-fit self-end mt-1 sm:mt-0 border"
+            onClick={() => navigate("/add-transaction")}
+          >
+            Add Transactions
+          </Button>
         </div>
         {/* loading spinner */}
         {loading && (
           <div className="w-6 h-6 border-t-2 border-b-2 mx-2 rounded-full animate-spin"></div>
         )}
       </div>
-      <div>
-        <RecentTransactions />
-        <ChartRepresentation />
-      </div>
+      <RecentTransactions />
+      <ChartRepresentation />
     </div>
   );
 };

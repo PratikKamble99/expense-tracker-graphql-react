@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import { useParams } from "react-router-dom";
 import { GET_TRANSACTION_BY_ID } from "../graphql/query/transaction.query";
 import { useMutation, useQuery } from "@apollo/client";
@@ -10,7 +9,6 @@ import useNavigation from "@/hooks/useNavigate";
 
 const TransactionPage = () => {
   const navigate = useNavigation();
-
   const { id } = useParams();
 
   const { data, loading: fetching } = useQuery(GET_TRANSACTION_BY_ID, {
@@ -19,10 +17,9 @@ const TransactionPage = () => {
     },
   });
 
-  const [updateTransaction, { loading, error }] = useMutation(
-    UPDATE_TRANSACTION,
-    { refetchQueries: ["fetchCategoryStatistics, fetchTransactions"] }
-  );
+  const [updateTransaction, { loading }] = useMutation(UPDATE_TRANSACTION, {
+    refetchQueries: ["fetchCategoryStatistics", "fetchTransactions"],
+  });
 
   const [formData, setFormData] = useState({
     description: "",
@@ -46,7 +43,7 @@ const TransactionPage = () => {
     }
   }, [data]);
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await updateTransaction({
@@ -60,11 +57,12 @@ const TransactionPage = () => {
       });
       toast.success("Transaction updated successfully");
       navigate("/transactions");
-    } catch (error) {
+    } catch (error: any) {
       toast.error(error?.message);
     }
   };
-  const handleInputChange = (e: any) => {
+
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -80,7 +78,7 @@ const TransactionPage = () => {
         Update this transaction
       </p>
       <form
-        className="w-full max-w-lg flex flex-col gap-5 px-3 "
+        className="w-full max-w-lg flex flex-col gap-5 px-3"
         onSubmit={handleSubmit}
       >
         {/* TRANSACTION */}
@@ -93,7 +91,7 @@ const TransactionPage = () => {
               Transaction
             </label>
             <input
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              className="appearance-none block w-full bg-[#1b1b1b] text-white border border-[#04c8b7] rounded py-3 px-4 leading-tight focus:outline-none focus:bg-[#333] focus:border-[#04c8b7]"
               id="description"
               name="description"
               type="text"
@@ -103,6 +101,7 @@ const TransactionPage = () => {
             />
           </div>
         </div>
+
         {/* PAYMENT TYPE */}
         <div className="flex flex-wrap gap-3">
           <div className="w-full flex-1 mb-6 md:mb-0">
@@ -114,7 +113,7 @@ const TransactionPage = () => {
             </label>
             <div className="relative">
               <select
-                className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                className="block appearance-none w-full bg-[#1b1b1b] text-white border border-[#04c8b7] py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-[#333] focus:border-[#04c8b7]"
                 id="paymentType"
                 name="paymentType"
                 onChange={handleInputChange}
@@ -145,7 +144,7 @@ const TransactionPage = () => {
             </label>
             <div className="relative">
               <select
-                className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                className="block appearance-none w-full bg-[#1b1b1b] text-white border border-[#04c8b7] py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-[#333] focus:border-[#04c8b7]"
                 id="category"
                 name="category"
                 onChange={handleInputChange}
@@ -176,7 +175,7 @@ const TransactionPage = () => {
               Amount($)
             </label>
             <input
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              className="appearance-none block w-full bg-[#1b1b1b] text-white border border-[#04c8b7] rounded py-3 px-4 leading-tight focus:outline-none focus:bg-[#333] focus:border-[#04c8b7]"
               id="amount"
               name="amount"
               type="number"
@@ -198,7 +197,7 @@ const TransactionPage = () => {
               Location
             </label>
             <input
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border  rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+              className="appearance-none block w-full bg-[#1b1b1b] text-white border border-[#04c8b7] rounded py-3 px-4 leading-tight focus:outline-none focus:bg-[#333]"
               id="location"
               name="location"
               type="text"
@@ -220,8 +219,7 @@ const TransactionPage = () => {
               type="date"
               name="date"
               id="date"
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border  rounded py-[11px] px-4 mb-3 leading-tight focus:outline-none
-						 focus:bg-white"
+              className="appearance-none block w-full bg-[#1b1b1b] text-white border border-[#04c8b7] rounded py-[11px] px-4 mb-3 leading-tight focus:outline-none focus:bg-[#333] focus:border-[#04c8b7]"
               placeholder="Select date"
               value={formData.date}
               onChange={handleInputChange}
@@ -229,10 +227,10 @@ const TransactionPage = () => {
             />
           </div>
         </div>
+
         {/* SUBMIT BUTTON */}
         <button
-          className="text-white font-bold w-full rounded px-4 py-2 bg-gradient-to-br
-          from-pink-500 to-pink-500 hover:from-pink-600 hover:to-pink-600"
+          className="text-white font-bold w-full rounded px-4 py-2 bg-gradient-to-br from-pink-500 to-pink-500 hover:from-pink-600 hover:to-pink-600"
           type="submit"
           disabled={loading}
         >
@@ -242,4 +240,5 @@ const TransactionPage = () => {
     </div>
   );
 };
+
 export default TransactionPage;

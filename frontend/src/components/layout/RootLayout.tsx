@@ -91,7 +91,7 @@ const RootLayout = () => {
                   <SidebarMenuItem
                     key={item.url}
                     className={`bg-[#28282a] py-2 rounded-md ${
-                      location.pathname.includes(item.url.split('?')[0])
+                      location.pathname.includes(item.url.split("?")[0])
                         ? "text-[#04c8b7] font-bold"
                         : "text-inherit"
                     } px-2 cursor-pointer`}

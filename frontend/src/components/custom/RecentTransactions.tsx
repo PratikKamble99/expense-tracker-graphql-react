@@ -17,7 +17,7 @@ type Transaction = {
   amount: number;
   paymentType: "cash" | "card";
   date: string;
-  location: number;
+  location: string | null;
 };
 
 const columnHelper = createColumnHelper<Transaction>();
@@ -25,32 +25,33 @@ const columnHelper = createColumnHelper<Transaction>();
 const columns = [
   columnHelper.accessor("description", {
     cell: (info) => info.getValue(),
+    header: "Description",
     footer: (info) => info.column.id,
   }),
-  columnHelper.accessor((row) => row.category, {
-    id: "category",
+  columnHelper.accessor("category", {
+    header: "Category",
     cell: (info) => <span>{info.getValue()}</span>,
-    header: () => <span>Category</span>,
     footer: (info) => info.column.id,
   }),
   columnHelper.accessor("amount", {
-    header: () => "Amount",
-    cell: (info) => info.renderValue(),
+    header: "Amount",
+    cell: (info) => `₹ ${info.getValue().toFixed(2)}`,
     footer: (info) => info.column.id,
   }),
   columnHelper.accessor("paymentType", {
-    header: () => <span>PaymentType</span>,
+    header: "Payment Type",
+    cell: (info) => <span className="capitalize">{info.getValue()}</span>,
     footer: (info) => info.column.id,
   }),
   columnHelper.accessor("date", {
-    header: "date",
-    footer: (info) => info.column.id,
+    header: "Date",
     cell: (info) => formatDate(info.getValue()),
+    footer: (info) => info.column.id,
   }),
   columnHelper.accessor("location", {
     header: "Location",
-    footer: (info) => info.column.id,
     cell: (info) => info.getValue() || "N/A",
+    footer: (info) => info.column.id,
   }),
 ];
 
@@ -65,26 +66,40 @@ const RecentTransactions = () => {
 
   const table = useReactTable({
     data: data?.transactions || [],
-    columns: columns,
+    columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
   return (
-    <div className="min-h-[250px] rounded-xl p-4 bg-[#1B1B1B]">
-      <div className="flex justify-between">
-        <p className="text-xl  font-bold">Recent 5 Transactions</p>
-        <p className="underline">
-          <Link to={"/transactions"}>view more</Link>
-        </p>
+    <div className="min-h-[250px] rounded-xl p-6 bg-[#1b1b1b] shadow-lg w-full">
+      {/* Header Section */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold text-white">Recent Transactions</h2>
+        <Link
+          to="/transactions"
+          className="text-sm text-[#04c8b7] hover:underline"
+        >
+          View More
+        </Link>
       </div>
-      <Separator className="mt-4 bg-zinc-600" />
-      <div className="w-[300px] sm:w-full relative overflow-x-auto">
-        <table className="w-full text-sm text-left rtl:text-right">
-          <thead className="uppercase">
+
+      <Separator className="bg-zinc-600" />
+
+      {/* Table Section */}
+      <div className="mt-4 overflow-x-auto">
+        <table className="w-full text-sm text-left text-gray-400">
+          <thead className="uppercase bg-[#292929] text-gray-300">
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="border-b">
+              <tr
+                key={headerGroup.id}
+                className="border-b border-gray-700 w-fit"
+              >
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id} align="left" scope="col" className="py-2">
+                  <th
+                    key={header.id}
+                    scope="col"
+                    className="px-4 py-3 text-xs font-medium tracking-wide"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -97,15 +112,38 @@ const RecentTransactions = () => {
             ))}
           </thead>
           <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} scope="row" className="py-2">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
+            {loading ? (
+              <tr>
+                <td colSpan={columns.length} className="py-4 text-center">
+                  <span className="text-gray-500">Loading...</span>
+                </td>
               </tr>
-            ))}
+            ) : table.getRowModel().rows.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} className="py-4 text-center">
+                  <span className="text-gray-500">No transactions found.</span>
+                </td>
+              </tr>
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <tr
+                  key={row.id}
+                  className="border-b border-gray-700 hover:bg-[#2e2e2e] transition duration-150"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      className="px-4 py-2 whitespace-nowrap text-gray-300"
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

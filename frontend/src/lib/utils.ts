@@ -15,35 +15,35 @@ export function getDateRangeBasedOnFilter(filter: string | null) {
   switch (filter) {
     case "today":
       return {
-        dateOptionValue: 1,
+        // dateOptionValue: 1,
         startDate: DateTime.now().startOf("day").toMillis(),
         endDate: DateTime.now().endOf("day").toMillis(),
       };
 
     case "this-week":
       return {
-        dateOptionValue: 2,
+        // dateOptionValue: 2,
         startDate: DateTime.local().startOf("week").toMillis(),
         endDate: DateTime.local().endOf("week").toMillis(),
       };
 
     case "this-month":
       return {
-        dateOptionValue: 3,
+        // dateOptionValue: 3,
         startDate: DateTime.local().startOf("month").toMillis(),
         endDate: DateTime.local().endOf("month").toMillis(),
       };
 
     case "this-year":
       return {
-        dateOptionValue: 4,
+        // dateOptionValue: 4,
         startDate: DateTime.local().startOf("year").toMillis(),
         endDate: DateTime.local().endOf("year").toMillis(),
       };
 
     case "all-time":
       return {
-        dateOptionValue: 0,
+        // dateOptionValue: 0,
         startDate: null,
         endDate: null,
       };
@@ -51,6 +51,10 @@ export function getDateRangeBasedOnFilter(filter: string | null) {
     default:
       return null;
   }
+}
+
+export function convertMiliSecIntoDate(millis: number) {
+  return DateTime.fromMillis(millis).toISODate() || "";
 }
 
 export function getYearsFromBirth(birthYear: number) {

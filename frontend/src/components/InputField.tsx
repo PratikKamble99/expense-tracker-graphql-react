@@ -9,9 +9,8 @@ type Props = {
   value: string;
   disabled?: boolean;
   autoComplete?: string;
-  error?: string | null
-  required?: boolean
-
+  error?: string | null;
+  required?: boolean;
 };
 
 const InputField = ({
@@ -44,7 +43,7 @@ const InputField = ({
         disabled={disabled}
         {...props}
       />
-      {error ? <p className="text-red-600">{error}</p>: null}
+      {error ? <p className="text-red-600">{error}</p> : null}
     </div>
   );
 };

@@ -10,19 +10,34 @@ const transactionResolver = {
         if (!user) throw new Error("unauthenticated");
 
         const limit = input?.limit || 0;
+        const category = input?.category;
+        const startDate = input?.startDate;
+        const endDate = input?.endDate;
+        const paymentType = input?.paymentType;
+        // accept category, payment_type,date FROM input
 
-        if (input?.startDate && input?.endDate) {          
-          const transactions = await Transaction.find({
+        if (startDate && endDate) {
+          const query = {
             userId: user._id,
             date: {
-              $gte: input.startDate.toString(),
-              $lte: input.endDate.toString(),
+              $gte: startDate.toString(),
+              $lte: endDate.toString(),
             },
-          }).limit(limit).sort({date: limit ? -1 : 1});
+          };
+
+          if (category) query.category = category;
+          if (paymentType) query.paymentType = paymentType;
+          const transactions = await Transaction.find(query)
+            .limit(limit)
+            .sort({ date: limit ? -1 : 1 });
+
+          console.log(transactions);
           return transactions;
         } else {
-          const transactions = await Transaction.find({ userId: user._id }).limit(limit).sort({date: limit ? -1 : 1});
-          console.log('-->', transactions)
+          const transactions = await Transaction.find({ userId: user._id })
+            .limit(limit)
+            .sort({ date: limit ? -1 : 1 });
+          console.log("-->", transactions);
           return transactions;
         }
       } catch (error) {
