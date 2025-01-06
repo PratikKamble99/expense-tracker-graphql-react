@@ -128,8 +128,6 @@ export function getCurrentMonthDays() {
   const currentYear = today.getFullYear();
   const currentMonth = today.getMonth();
 
-  console.log(today, "today");
-
   // Get the first day of the month
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
 
@@ -156,7 +154,6 @@ export function getCurrentMonthDays() {
   if (yesterday > firstDayOfMonth) {
     const allDaysBeforeYesterday = [];
     const day = new Date(firstDayOfMonth);
-    console.log(day, "day");
     while (day < yesterday) {
       allDaysBeforeYesterday.push(day.toDateString());
       day.setDate(day.getDate() + 1);

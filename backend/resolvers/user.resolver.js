@@ -5,7 +5,6 @@ import Transaction from "../models/transaction.model.js";
 import { generatePassword } from "../utils/utils.js";
 import { getTransporter } from "../mail-service/sendMail.js";
 
-
 const userResolver = {
   Query: {
     users: async (parent, args, context) => {
@@ -142,7 +141,7 @@ const userResolver = {
           to: email, // list of receivers
           subject: "Updated password", // Subject line
           text: "You this password to login", // plain text body
-          html:  `<h3>Your <b>${newPassword}</b> password to login</h3>`, // html body
+          html: `<h3>Your <b>${newPassword}</b> password to login</h3>`, // html body
         });
 
         const salt = await bcrypt.genSalt(10); // 10 means length of 10 chars
@@ -184,6 +183,26 @@ const userResolver = {
         await findUser.save();
 
         return { message: "Changed password successfully" };
+      } catch (error) {
+        console.log(error);
+        throw new Error(error.message || "Internal server error");
+      }
+    },
+    deleteUserAccount: async (_, __, context) => {
+      try {
+        const { req, res } = context;
+        const user = await context.getUser();
+
+        if (!user) throw new Error("unauthenticated");
+        await User.findByIdAndDelete(user._id);
+        await context.logout();
+
+        req.session.destroy((err) => {
+          if (err) throw err;
+        });
+
+        res.clearCookie("connect.sid");
+        return { message: "Account deleted successfully" };
       } catch (error) {
         console.log(error);
         throw new Error(error.message || "Internal server error");

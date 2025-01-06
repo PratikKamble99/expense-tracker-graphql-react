@@ -9,6 +9,7 @@ import {
 import { Link } from "react-router-dom";
 import { Separator } from "../ui/separator";
 import { formatDate } from "@/lib/utils";
+import LoadingSpinner from "./Loading";
 
 type Transaction = {
   _id: string | number;
@@ -87,7 +88,7 @@ const RecentTransactions = () => {
 
       {/* Table Section */}
       <div className="relative overflow-x-auto">
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <table className="w-full h-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="uppercase bg-[#292929] text-gray-300">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr
@@ -114,8 +115,8 @@ const RecentTransactions = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={columns.length} className="py-4 text-center">
-                  <span className="text-gray-500">Loading...</span>
+                <td colSpan={6} className="py-8">
+                  <LoadingSpinner />
                 </td>
               </tr>
             ) : table.getRowModel().rows.length === 0 ? (

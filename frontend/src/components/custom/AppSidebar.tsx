@@ -60,8 +60,16 @@ export default function AppSidebar() {
 
   const handleLogout = async () => {
     try {
-      await logoutUser();
-      client.resetStore();
+      const promise = new Promise((res, rej) => {
+        const response = logoutUser();
+        client.resetStore();
+        res(response);
+      });
+      toast.promise(promise, {
+        loading: "Logging out...",
+        success: "Logged out successfully",
+        error: "Failed to log out",
+      });
     } catch (error) {
       //@ts-ignore
       toast.error(error?.message);
@@ -94,7 +102,7 @@ export default function AppSidebar() {
                 <SidebarMenuItem
                   key={item.title}
                   className={`bg-[#28282a] py-2 rounded-md ${
-                    location.pathname.includes(item.url.split('?')[0])
+                    location.pathname.includes(item.url.split("?")[0])
                       ? "text-[#04c8b7] font-bold"
                       : "text-inherit"
                   } px-2`}

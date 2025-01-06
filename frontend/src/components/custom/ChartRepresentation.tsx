@@ -180,7 +180,23 @@ const ChartRepresentation = () => {
         columnWidth: "20px",
       },
     },
+    noData: {
+      text: "bvacsgvsgvshs",
+      align: "center",
+      verticalAlign: "middle",
+      offsetX: 0,
+      offsetY: 0,
+      style: {
+        color: undefined,
+        fontSize: "14px",
+        fontFamily: undefined,
+      },
+    },
   };
+
+  const noDataFound = barChartDataConsumption.every(
+    (item) => item.data.length == 0
+  );
 
   return (
     <div className="rounded-xl p-4 bg-[#1B1B1B] mt-6  flex flex-col lg:flex-row gap-2">
@@ -215,8 +231,10 @@ const ChartRepresentation = () => {
                 : ""
             }`}
           >
-            {barChartDataConsumption.length <= 0 ? (
-              <p className="text-lg font-semibold">No Transactions found</p>
+            {noDataFound ? (
+              <div className="h-full flex justify-center items-center">
+                <p className="text-gray-500">No Transactions found</p>
+              </div>
             ) : (
               <Chart
                 options={barChartOptionsConsumption}
@@ -236,8 +254,12 @@ const ChartRepresentation = () => {
           </p>
           <Separator className="mt-4 bg-zinc-600" />
         </div>
-        <div className="flex-1 items-center self-center pt-6">
-          {statisticsData?.categoryStatistics.length > 0 && (
+        <div
+          className={`flex-1 items-center self-center ${
+            statisticsData?.categoryStatistics.length ? "pt-6" : ""
+          }`}
+        >
+          {statisticsData?.categoryStatistics.length > 0 ? (
             <div className="h-[360px]">
               <Chart
                 options={{
@@ -264,6 +286,10 @@ const ChartRepresentation = () => {
                 width="100%"
                 height="100%"
               />
+            </div>
+          ) : (
+            <div className="h-full flex justify-center items-center">
+              <p className="text-gray-500">No Transactions found</p>
             </div>
           )}
         </div>

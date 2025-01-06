@@ -30,8 +30,16 @@ const RootLayout = () => {
 
   const handleLogout = async () => {
     try {
-      await logoutUser();
-      client.resetStore();
+      const promise = new Promise((res, rej) => {
+        const response = logoutUser();
+        client.resetStore();
+        res(response);
+      });
+      toast.promise(promise, {
+        loading: "Logging out...",
+        success: "Logged out successfully",
+        error: "Failed to log out",
+      });
     } catch (error) {
       //@ts-ignore
       toast.error(error?.message);

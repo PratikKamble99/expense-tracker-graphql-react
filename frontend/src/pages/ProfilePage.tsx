@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { GET_AUTH_USER } from "@/graphql/query/user.query";
 import { useQuery } from "@apollo/client";
@@ -9,10 +8,12 @@ import EditProfileForm from "@/components/custom/EditProfileForm";
 import EditProfileImage from "@/components/custom/EditProfileImage";
 import { formatDate } from "@/lib/utils";
 import ChangePasswordForm from "@/components/custom/ChangePasswordForm";
+import DeleteAccountModal from "@/components/custom/DeleteAccountModal";
 
 const ProfilePage = () => {
   const { data: authUserData } = useQuery(GET_AUTH_USER);
   const [changePassword, setChangePassword] = useState(false);
+  const [openDeleteAccountModal, setOpenDeleteAccountModal] = useState(false);
 
   return (
     <div className="p-6 bg-[#1b1b1b] min-h-screen">
@@ -57,6 +58,26 @@ const ProfilePage = () => {
           <div className="bg-[#1b1b1b] p-4 rounded-md">
             <EditProfileForm />
           </div>
+          <div className="rounded-lg border border-[#6e101c]">
+            <div className="rounded-t-lg bg-black p-[24px]">
+              <SectionHeading
+                icon={<User className="text-[#04c8b7]" />}
+                label="Settings"
+              />
+              <p>
+                The Account will be permanently deleted, including your data.
+                This action is irreversible and can not be undone.
+              </p>
+            </div>
+            <div className="bg-[#440d13] p-2  flex justify-end">
+              <Button
+                className="bg-[#e1162a] text-white hover:bg-[#c65554] focus:ring-2 focus:ring-offset-2 focus:ring-[#D96665] transition-all duration-300"
+                onClick={() => setOpenDeleteAccountModal(true)}
+              >
+                Delete Account
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -65,6 +86,12 @@ const ProfilePage = () => {
         <ChangePasswordForm
           isOpen={changePassword}
           setOpen={setChangePassword}
+        />
+      )}
+      {openDeleteAccountModal && (
+        <DeleteAccountModal
+          open={openDeleteAccountModal}
+          setOpen={setOpenDeleteAccountModal}
         />
       )}
     </div>

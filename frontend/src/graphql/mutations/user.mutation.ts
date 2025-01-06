@@ -40,6 +40,14 @@ const CHANGE_PASSWORD = gql`
   }
 `;
 
+const DELETE_ACCOUNT = gql`
+  mutation deleteUserAccount {
+    deleteUserAccount {
+      message
+    }
+  }
+`;
+
 const LOG_OUT = gql`
   mutation logoutUser {
     logout {
@@ -56,4 +64,12 @@ const FORGOT_PASSWORD = gql`
   }
 `;
 
-export { SIGN_UP, LOGIN, LOG_OUT, EDIT_USER, FORGOT_PASSWORD, CHANGE_PASSWORD };
+export {
+  SIGN_UP,
+  LOGIN,
+  LOG_OUT,
+  EDIT_USER,
+  FORGOT_PASSWORD,
+  CHANGE_PASSWORD,
+  DELETE_ACCOUNT,
+};

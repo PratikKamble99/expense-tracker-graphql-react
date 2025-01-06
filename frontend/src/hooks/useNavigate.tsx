@@ -6,7 +6,6 @@ const useNavigation = () => {
 
   const navigate = (to: string) => {
     const path = location.pathname + location.search;
-    console.log(to, "--", path);
     _navigate(to, { state: { from: path } });
   };
 

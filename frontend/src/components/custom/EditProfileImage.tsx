@@ -94,7 +94,7 @@ const EditProfileImage = ({ authUserData }: Props) => {
       {/* Buttons */}
       <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
         <Button
-          className="bg-[#04c8b7] text-white hover:bg-[#03b6a4] focus:ring-2 focus:ring-offset-2 focus:ring-[#04c8b7] transition-all duration-300"
+          className="bg-[#04c8b7] text-white hover:bg-[#03b6a4] focus:ring-2 focus:ring-offset-2 focus:ring-[#04c8b7] transition-all duration-300 "
           onClick={handleUploadImage}
         >
           Change Picture

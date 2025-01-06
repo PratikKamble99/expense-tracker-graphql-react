@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { Link } from "react-router-dom";
 import { DateTime } from "luxon";
+import LoadingSpinner from "@/components/custom/Loading";
 
 type Transaction = {
   _id: string;
@@ -56,8 +57,6 @@ export default function TransactionsPage() {
     ...getDateRangeBasedOnFilter("this-month"),
   });
 
-  console.log(filters, "dateRange");
-
   const [openDeleteDialogId, setOpenDeleteDialogId] = useState<string | null>(
     null
   );
@@ -66,7 +65,7 @@ export default function TransactionsPage() {
     pageSize: 10, //default page size
   });
 
-  const { data } = useQuery(GET_TRANSACTIONS, {
+  const { data, loading } = useQuery(GET_TRANSACTIONS, {
     variables: {
       input: {
         startDate: dateRange.startDate,
@@ -141,8 +140,6 @@ export default function TransactionsPage() {
     },
   });
 
-  console.log(table.getPageCount());
-
   async function handleDelete() {
     // Add your delete transaction logic here
     try {
@@ -203,9 +200,9 @@ export default function TransactionsPage() {
   };
 
   return (
-    <div className="bg-[#1b1b1b] text-[#868686] min-h-screen p-6">
+    <div className="bg-[#1b1b1b] text-[#868686] min-h-screen p-6 ">
       {/* Filter Section */}
-      <div className="bg-[#28282a] p-4 rounded-md shadow-lg mb-6">
+      <div className="bg-[#28282a] p-4  shadow-lg mb-6 rounded-xl">
         <div className="flex flex-wrap gap-4 items-end">
           {/* Search */}
           {/* <div className="flex items-center bg-[#1b1b1b] rounded-md p-2 w-full lg:w-auto">
@@ -285,50 +282,59 @@ export default function TransactionsPage() {
       </div>
 
       {/* Transactions Table */}
-      <div className="bg-[#28282a] p-4 rounded-md shadow-lg overflow-x-auto">
-        <table className="w-full text-white">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr
-                key={headerGroup.id}
-                className="text-[#04c8b7] border-b border-[#1b1b1b]"
-              >
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id} align="left" scope="col" className="py-2">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowCount() <= 0 ? (
-              <tr>
-                <td colSpan={5} align="center">
-                  No transactions found
-                </td>
-              </tr>
-            ) : (
-              table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="border-b border-[#1b1b1b]">
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} scope="row" className="py-2">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
+      <div className="bg-[#28282a] p-4 shadow-lg overflow-x-auto h-[480px] rounded-xl">
+        {loading ? (
+          <LoadingSpinner />
+        ) : (
+          <table className="w-full text-white">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr
+                  key={headerGroup.id}
+                  className="text-[#04c8b7] border-b border-[#1b1b1b]"
+                >
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      align="left"
+                      scope="col"
+                      className="py-2"
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </th>
                   ))}
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ))}
+            </thead>
+            <tbody>
+              {table.getRowCount() <= 0 ? (
+                <tr>
+                  <td colSpan={6} align="center" className="text-gray-500 py-4">
+                    No transactions found
+                  </td>
+                </tr>
+              ) : (
+                table.getRowModel().rows.map((row) => (
+                  <tr key={row.id} className="border-b border-[#1b1b1b]">
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} scope="row" className="py-2">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
       <div className="mt-3 flex justify-center sm:justify-end">
         {table.getPageCount() > 1 ? (
@@ -348,7 +354,6 @@ export default function TransactionsPage() {
                   <button
                     className="flex items-center justify-center px-3 h-8 leading-tight text-[#04c8b7] bg-[#1b1b1b] border border-[#04c8b7] hover:bg-[#04c8b7] hover:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                     onClick={() => {
-                      console.log(index, "index");
                       table.setPageIndex(index);
                     }}
                   >

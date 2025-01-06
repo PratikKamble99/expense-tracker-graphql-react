@@ -7,7 +7,8 @@ import { Link } from "react-router-dom";
 
 function ForgotPasswordPage() {
   const navigate = useNavigation();
-  const [ForgotPassword, { data, loading, error }] = useMutation(FORGOT_PASSWORD);
+  const [ForgotPassword, { data, loading, error }] =
+    useMutation(FORGOT_PASSWORD);
 
   const [email, setEmail] = React.useState("");
 
@@ -15,11 +16,10 @@ function ForgotPasswordPage() {
     e.preventDefault();
     try {
       const result = await ForgotPassword({ variables: { input: email } });
-      toast.success('Password send to your email.');
-      navigate('/login')
-      console.log(result);
+      toast.success("Password send to your email.");
+      navigate("/login");
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error.message);
       console.log(error);
     }
   };
@@ -46,7 +46,7 @@ function ForgotPasswordPage() {
                 className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="example@example.com"
                 value={email}
-                onChange={(e)=>setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <button
@@ -55,7 +55,7 @@ function ForgotPasswordPage() {
               disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
-              {loading ? 'Sending...': "Send New Password"} 
+              {loading ? "Sending..." : "Send New Password"}
             </button>
           </form>
           <Link
