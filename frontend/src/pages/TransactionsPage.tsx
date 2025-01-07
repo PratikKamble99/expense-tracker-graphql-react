@@ -206,7 +206,7 @@ export default function TransactionsPage() {
         <div className="flex flex-wrap gap-4 items-end">
           {/* Search */}
           {/* <div className="flex items-center bg-[#1b1b1b] rounded-md p-2 w-full lg:w-auto">
-            <Search className="text-[#04c8b7] mr-2" />
+            <Search className="text-text-primary mr-2" />
             <input
               type="text"
               name="search"
@@ -222,7 +222,7 @@ export default function TransactionsPage() {
             name="category"
             value={filters.category}
             onChange={handleFilterChange}
-            className="bg-[#1b1b1b] text-white p-2 rounded-md border border-[#04c8b7] w-full sm:w-auto"
+            className="bg-[#1b1b1b] text-white p-2 rounded-md border border-text-primary w-full sm:w-auto"
           >
             <option value="">All Categories</option>
             <option value="expense">Expense</option>
@@ -235,7 +235,7 @@ export default function TransactionsPage() {
             name="paymentType"
             value={filters.paymentType}
             onChange={handleFilterChange}
-            className="bg-[#1b1b1b] text-white p-2 rounded-md border border-[#04c8b7] w-full sm:w-auto"
+            className="bg-[#1b1b1b] text-white p-2 rounded-md border border-text-primary w-full sm:w-auto"
           >
             <option value="">All Payment Types</option>
             <option value="card">Card</option>
@@ -245,7 +245,7 @@ export default function TransactionsPage() {
           {/* Date Range */}
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             {/* <label htmlFor="startDate">
-              <Calendar className="text-[#04c8b7]" />
+              <Calendar className="text-text-primary" />
             </label> */}
             <div>
               <p>Start Date</p>
@@ -254,7 +254,7 @@ export default function TransactionsPage() {
                 name="startDate"
                 value={convertMiliSecIntoDate(dateRange.startDate)}
                 onChange={handleDateChange}
-                className="bg-[#1b1b1b] text-white p-2 rounded-md border border-[#04c8b7] w-full sm:w-auto"
+                className="bg-[#1b1b1b] text-white p-2 rounded-md border border-text-primary w-full sm:w-auto"
               />
             </div>
           </div>
@@ -265,7 +265,7 @@ export default function TransactionsPage() {
               name="endDate"
               value={convertMiliSecIntoDate(dateRange.endDate)}
               onChange={handleDateChange}
-              className="bg-[#1b1b1b] text-white p-2 rounded-md border border-[#04c8b7] w-full sm:w-auto"
+              className="bg-[#1b1b1b] text-white p-2 rounded-md border border-text-primary w-full sm:w-auto"
             />
           </div>
 
@@ -273,7 +273,7 @@ export default function TransactionsPage() {
           <div className="flex w-full sm:w-auto justify-end">
             <button
               onClick={clearFilters}
-              className="bg-[#04c8b7] text-white py-2 px-4 rounded-md sm:self-end"
+              className="bg-text-primary text-white py-2 px-4 rounded-md sm:self-end"
             >
               Clear Filters
             </button>
@@ -291,7 +291,7 @@ export default function TransactionsPage() {
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr
                   key={headerGroup.id}
-                  className="text-[#04c8b7] border-b border-[#1b1b1b]"
+                  className="text-text-primary border-b border-[#1b1b1b]"
                 >
                   {headerGroup.headers.map((header) => (
                     <th
@@ -342,7 +342,7 @@ export default function TransactionsPage() {
             <ul className="inline-flex -space-x-px text-sm">
               <li>
                 <button
-                  className="rounded-s-lg flex items-center justify-center px-3 h-8 leading-tight text-[#04c8b7] bg-[#1b1b1b] border border-[#04c8b7] disabled:text-opacity-50"
+                  className="rounded-s-lg flex items-center justify-center px-3 h-8 leading-tight text-text-primary bg-[#1b1b1b] border border-text-primary disabled:text-opacity-50"
                   disabled={!table.getCanPreviousPage()}
                   onClick={() => table.previousPage()}
                 >
@@ -352,7 +352,7 @@ export default function TransactionsPage() {
               {Array.from({ length: table.getPageCount() }, (_, index) => (
                 <li key={index}>
                   <button
-                    className="flex items-center justify-center px-3 h-8 leading-tight text-[#04c8b7] bg-[#1b1b1b] border border-[#04c8b7] hover:bg-[#04c8b7] hover:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                    className="flex items-center justify-center px-3 h-8 leading-tight text-text-primary bg-[#1b1b1b] border border-text-primary hover:bg-text-primary hover:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                     onClick={() => {
                       table.setPageIndex(index);
                     }}
@@ -363,7 +363,7 @@ export default function TransactionsPage() {
               ))}
               <li>
                 <button
-                  className="rounded-e-lg flex items-center justify-center px-3 h-8 leading-tight text-[#04c8b7] bg-[#1b1b1b] border border-[#04c8b7] disabled:text-opacity-50"
+                  className="rounded-e-lg flex items-center justify-center px-3 h-8 leading-tight text-text-primary bg-[#1b1b1b] border border-text-primary disabled:text-opacity-50"
                   disabled={!table.getCanNextPage()}
                   onClick={() => table.nextPage()}
                 >
@@ -377,7 +377,7 @@ export default function TransactionsPage() {
 
       <div className="flex flex-col sm:flex-row gap-6 sm:gap-12 mt-6">
         <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
-          <div className="text-2xl font-semibold mb-2 text-[#04c8b7]">
+          <div className="text-2xl font-semibold mb-2 text-text-primary">
             Total Expense
           </div>
           <div className="text-3xl font-bold text-red-600">
@@ -386,7 +386,7 @@ export default function TransactionsPage() {
         </div>
 
         <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
-          <div className="text-2xl font-semibold mb-2 text-[#04c8b7]">
+          <div className="text-2xl font-semibold mb-2 text-text-primary">
             Total Investment
           </div>
           <div className="text-3xl font-bold text-green-500">
@@ -395,7 +395,7 @@ export default function TransactionsPage() {
         </div>
 
         <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
-          <div className="text-2xl font-semibold mb-2 text-[#04c8b7]">
+          <div className="text-2xl font-semibold mb-2 text-text-primary">
             Total Income
           </div>
           <div className="text-3xl font-bold text-yellow-500">
@@ -417,7 +417,7 @@ export default function TransactionsPage() {
             </div>
             <DialogDescription className="text-xl text-center text-white">
               Are you sure you want to delete transaction{" "}
-              <span className="font-bold text-[#04c8b7]">
+              <span className="font-bold text-text-primary">
                 {openDeleteDialogId}
               </span>
               ?
@@ -428,7 +428,7 @@ export default function TransactionsPage() {
               onClick={() => {
                 setOpenDeleteDialogId(null);
               }}
-              className="bg-[#1b1b1b] text-[#04c8b7] hover:bg-[#333] transition-all duration-300"
+              className="bg-[#1b1b1b] text-text-primary hover:bg-[#333] transition-all duration-300"
             >
               Cancel
             </Button>

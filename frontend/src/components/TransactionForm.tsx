@@ -51,7 +51,7 @@ const TransactionForm = () => {
             Transaction
           </label>
           <input
-            className="appearance-none block w-full bg-[#2d2d2d] text-white border border-[#04c8b7] rounded py-3 px-4 leading-tight focus:outline-none focus:bg-[#3e3e3e] focus:border-[#04c8b7]"
+            className="appearance-none block w-full bg-[#2d2d2d] text-white border border-text-primary rounded py-3 px-4 leading-tight focus:outline-none focus:bg-[#3e3e3e] focus:border-text-primary"
             id="description"
             name="description"
             type="text"
@@ -71,7 +71,7 @@ const TransactionForm = () => {
           </label>
           <div className="relative">
             <select
-              className="block appearance-none w-full bg-[#2d2d2d] text-white border border-[#04c8b7] py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-[#3e3e3e] focus:border-[#04c8b7]"
+              className="block appearance-none w-full bg-[#2d2d2d] text-white border border-text-primary py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-[#3e3e3e] focus:border-text-primary"
               id="paymentType"
               name="paymentType"
             >
@@ -100,7 +100,7 @@ const TransactionForm = () => {
           </label>
           <div className="relative">
             <select
-              className="block appearance-none w-full bg-[#2d2d2d] text-white border border-[#04c8b7] py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-[#3e3e3e] focus:border-[#04c8b7]"
+              className="block appearance-none w-full bg-[#2d2d2d] text-white border border-text-primary py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-[#3e3e3e] focus:border-text-primary"
               id="category"
               name="category"
             >
@@ -129,7 +129,7 @@ const TransactionForm = () => {
             Amount($)
           </label>
           <input
-            className="appearance-none block w-full bg-[#2d2d2d] text-white border border-[#04c8b7] rounded py-3 px-4 leading-tight focus:outline-none focus:bg-[#3e3e3e] focus:border-[#04c8b7]"
+            className="appearance-none block w-full bg-[#2d2d2d] text-white border border-text-primary rounded py-3 px-4 leading-tight focus:outline-none focus:bg-[#3e3e3e] focus:border-text-primary"
             id="amount"
             name="amount"
             type="number"
@@ -150,7 +150,7 @@ const TransactionForm = () => {
             Location
           </label>
           <input
-            className="appearance-none block w-full bg-[#2d2d2d] text-white border border-[#04c8b7] rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-[#3e3e3e]"
+            className="appearance-none block w-full bg-[#2d2d2d] text-white border border-text-primary rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-[#3e3e3e]"
             id="location"
             name="location"
             type="text"
@@ -170,7 +170,7 @@ const TransactionForm = () => {
             type="date"
             name="date"
             id="date"
-            className="appearance-none block w-full bg-[#2d2d2d] text-white border border-[#04c8b7] rounded py-[11px] px-4 mb-3 leading-tight focus:outline-none focus:bg-[#3e3e3e] focus:border-[#04c8b7]"
+            className="appearance-none block w-full bg-[#2d2d2d] text-white border border-text-primary rounded py-[11px] px-4 mb-3 leading-tight focus:outline-none focus:bg-[#3e3e3e] focus:border-text-primary"
             placeholder="Select date"
             required
           />

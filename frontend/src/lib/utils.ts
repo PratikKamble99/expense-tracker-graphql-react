@@ -66,104 +66,46 @@ export function getYearsFromBirth(birthYear: number) {
   return years;
 }
 
-export function getWeekOptions() {
-  const today = new Date();
-  const currentYear = today.getFullYear();
-  const currentMonth = today.getMonth();
+export function generateCsvUnicodeString(
+  headers: { label: string; key: string }[],
+  csvData: any
+) {
+  let csv = headers.map((header) => `"${header.label}"`).join(",") + "\n";
+  csv += csvData
+    .map((row) =>
+      headers
+        .map((header) => {
+          const value = row[header.key];
+          if (typeof value === "string" && value.includes(",")) {
+            // Escape commas only if value is a string and contains a comma
+            return `"${value.replace(/,/g, "\\,")}"`;
+          } else {
+            return `"${value}"`;
+          }
+        })
+        .join(",")
+    )
+    .join("\n");
 
-  // Get the first and last days of the month
-  const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-  const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+  const csvBlob = new Blob([generateCsvLink(headers, csvData)], {
+    type: "text/csv",
+  });
+  const encodedUri = URL.createObjectURL(csvBlob);
 
-  // Array to store the week options
-  const weekOptions = [];
-
-  // Generate week options
-  const startOfWeek = new Date(firstDayOfMonth);
-  let weekIndex = 1;
-
-  while (startOfWeek <= lastDayOfMonth) {
-    // Calculate end of the week
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(endOfWeek.getDate() + 6);
-
-    // Ensure the week doesn't exceed the month
-    const formattedStart = new Date(
-      Math.max(startOfWeek, firstDayOfMonth)
-    ).toLocaleDateString(undefined, { day: "2-digit", month: "short" });
-
-    const formattedEnd = new Date(
-      Math.min(endOfWeek, lastDayOfMonth)
-    ).toLocaleDateString(undefined, { day: "2-digit", month: "short" });
-
-    // Add the option
-    weekOptions.push({
-      label: `Week ${weekIndex} (${formattedStart} - ${formattedEnd})`,
-      value: `week-${weekIndex}`,
-    });
-
-    // Move to the next week
-    startOfWeek.setDate(startOfWeek.getDate() + 7);
-    weekIndex++;
-  }
-
-  // Identify "This Week" and "Last Week"
-  // const thisWeekIndex = Math.ceil(today.getDate() / 7);
-  // const lastWeekIndex = thisWeekIndex > 1 ? thisWeekIndex - 1 : null;
-
-  // const selectOptions = weekOptions.map((option, index) => {
-  //   if (index + 1 === thisWeekIndex) {
-  //     return { ...option, label: `This Week (${option.label})` };
-  //   } else if (index + 1 === lastWeekIndex) {
-  //     return { ...option, label: `Last Week (${option.label})` };
-  //   }
-  //   return option;
-  // });
-
-  return weekOptions;
+  return encodedUri;
 }
 
-export function getCurrentMonthDays() {
-  const today = new Date();
-  const currentYear = today.getFullYear();
-  const currentMonth = today.getMonth();
+export function createDynamicLinkAndDownloadFile(
+  fileName: string,
+  encodedUri: string
+) {
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", fileName);
+  document.body.appendChild(link);
 
-  // Get the first day of the month
-  const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+  link.click();
 
-  // Array to store options
-  const selectOptions = [];
-
-  // Today
-  selectOptions.push({
-    label: `Today (${today.toDateString()})`,
-    value: "today",
-  });
-
-  // Yesterday
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-  if (yesterday.getMonth() === currentMonth) {
-    selectOptions.push({
-      label: `Yesterday (${yesterday.toDateString()})`,
-      value: "yesterday",
-    });
-  }
-
-  // All days before yesterday
-  if (yesterday > firstDayOfMonth) {
-    const allDaysBeforeYesterday = [];
-    const day = new Date(firstDayOfMonth);
-    while (day < yesterday) {
-      allDaysBeforeYesterday.push(day.toDateString());
-      day.setDate(day.getDate() + 1);
-    }
-    selectOptions.push({
-      label: `All Days Before Yesterday (${allDaysBeforeYesterday.length} days)`,
-      value: "before-yesterday",
-      details: allDaysBeforeYesterday, // Optional, for debugging or display purposes
-    });
-  }
-
-  return selectOptions;
+  // Cleanup
+  document.body.removeChild(link);
 }

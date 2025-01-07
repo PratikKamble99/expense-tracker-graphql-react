@@ -103,7 +103,7 @@ export default function AppSidebar() {
                   key={item.title}
                   className={`bg-[#28282a] py-2 rounded-md ${
                     location.pathname.includes(item.url.split("?")[0])
-                      ? "text-[#04c8b7] font-bold"
+                      ? "text-text-primary font-bold"
                       : "text-inherit"
                   } px-2`}
                 >

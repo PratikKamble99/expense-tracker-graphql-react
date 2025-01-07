@@ -67,7 +67,7 @@ const EditProfileForm = ({}: Props) => {
     <form className="space-y-6 w-full sm:w-[50%]" onSubmit={handleSubmit}>
       {/* Name Field */}
       <div className="flex flex-col gap-2">
-        <label htmlFor="name" className="text-[#04c8b7] font-medium">
+        <label htmlFor="name" className="text-text-primary font-medium">
           Full Name
         </label>
         <input
@@ -76,14 +76,14 @@ const EditProfileForm = ({}: Props) => {
           type="text"
           value={values.name}
           onChange={handleChange}
-          className="p-3 rounded-md bg-[#1b1b1b] text-white border border-[#292A2E] focus:outline-none focus:ring-2 focus:ring-[#04c8b7] focus:border-[#04c8b7]"
+          className="p-3 rounded-md bg-[#1b1b1b] text-white border border-[#292A2E] focus:outline-none focus:ring-2 focus:ring-text-primary focus:border-text-primary"
           required
         />
       </div>
 
       {/* Email Field */}
       <div className="flex flex-col gap-2">
-        <label htmlFor="email" className="text-[#04c8b7] font-medium">
+        <label htmlFor="email" className="text-text-primary font-medium">
           Email
         </label>
         <input
@@ -99,7 +99,7 @@ const EditProfileForm = ({}: Props) => {
 
       {/* Username Field */}
       <div className="flex flex-col gap-2">
-        <label htmlFor="username" className="text-[#04c8b7] font-medium">
+        <label htmlFor="username" className="text-text-primary font-medium">
           Username
         </label>
         <input
@@ -108,14 +108,14 @@ const EditProfileForm = ({}: Props) => {
           type="text"
           value={values.username}
           onChange={handleChange}
-          className="p-3 rounded-md bg-[#1b1b1b] text-white border border-[#292A2E] focus:outline-none focus:ring-2 focus:ring-[#04c8b7] focus:border-[#04c8b7]"
+          className="p-3 rounded-md bg-[#1b1b1b] text-white border border-[#292A2E] focus:outline-none focus:ring-2 focus:ring-text-primary focus:border-text-primary"
           required
         />
       </div>
 
       {/* Gender Field */}
       <div className="flex flex-col gap-2">
-        <label className="text-[#04c8b7] font-medium">Gender</label>
+        <label className="text-text-primary font-medium">Gender</label>
         <RadioGroup
           name="gender"
           value={values.gender}
@@ -126,7 +126,7 @@ const EditProfileForm = ({}: Props) => {
             <RadioGroupItem
               id="male"
               value="male"
-              className="focus:ring-[#04c8b7]"
+              className="focus:ring-text-primary"
               onClick={(e) =>
                 handleChange({
                   target: {
@@ -144,7 +144,7 @@ const EditProfileForm = ({}: Props) => {
             <RadioGroupItem
               id="female"
               value="female"
-              className="focus:ring-[#04c8b7]"
+              className="focus:ring-text-primary"
               onClick={(e) =>
                 handleChange({
                   target: {
@@ -166,7 +166,7 @@ const EditProfileForm = ({}: Props) => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 bg-[#04c8b7] text-white font-bold rounded-md hover:bg-[#03b6a4] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#04c8b7] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 bg-text-primary text-white font-bold rounded-md hover:bg-[#03b6a4] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-text-primary transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? "Saving..." : "Save Changes"}
         </button>

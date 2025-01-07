@@ -25,13 +25,13 @@ const ProfilePage = () => {
             <h1 className="text-3xl font-bold text-white">Your Profile</h1>
             <p className="mt-1">
               Last edit on{" "}
-              <span className="font-bold text-[#04c8b7]">
+              <span className="font-bold text-text-primary">
                 {formatDate(authUserData?.authenticatedUser.updatedAt)}
               </span>
             </p>
           </div>
           <Button
-            className="bg-[#04c8b7] text-white hover:bg-[#03b6a4]"
+            className="bg-text-primary text-white hover:bg-[#03b6a4]"
             onClick={() => setChangePassword(true)}
           >
             <Lock className="mr-2" />
@@ -43,7 +43,7 @@ const ProfilePage = () => {
         <div className="space-y-8">
           {/* Profile Picture Section */}
           <SectionHeading
-            icon={<Image className="text-[#04c8b7]" />}
+            icon={<Image className="text-text-primary" />}
             label="Profile Picture"
           />
           <div className="bg-[#1b1b1b] p-4 rounded-md">
@@ -52,16 +52,16 @@ const ProfilePage = () => {
 
           {/* Personal Information Section */}
           <SectionHeading
-            icon={<User className="text-[#04c8b7]" />}
+            icon={<User className="text-text-primary" />}
             label="Personal Information"
           />
           <div className="bg-[#1b1b1b] p-4 rounded-md">
             <EditProfileForm />
           </div>
           <div className="rounded-lg border border-[#6e101c]">
-            <div className="rounded-t-lg bg-black p-[24px]">
+            <div className="rounded-t-lg bg-[#1b1b1b] p-[24px]">
               <SectionHeading
-                icon={<User className="text-[#04c8b7]" />}
+                icon={<User className="text-text-primary" />}
                 label="Settings"
               />
               <p>
@@ -71,7 +71,7 @@ const ProfilePage = () => {
             </div>
             <div className="bg-[#440d13] p-2  flex justify-end">
               <Button
-                className="bg-[#e1162a] text-white hover:bg-[#c65554] focus:ring-2 focus:ring-offset-2 focus:ring-[#D96665] transition-all duration-300"
+                className="bg-[#e1162a] text-white hover:bg-danger] focus:ring-2 focus:ring-offset-2 focus:ring-danger transition-all duration-300"
                 onClick={() => setOpenDeleteAccountModal(true)}
               >
                 Delete Account

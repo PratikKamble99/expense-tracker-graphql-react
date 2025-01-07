@@ -76,9 +76,9 @@ const EditProfileImage = ({ authUserData }: Props) => {
     <div className="flex flex-col sm:flex-row items-center gap-4 py-6">
       {/* Avatar */}
       <div>
-        <Avatar className="w-24 h-24 border-2 border-[#04c8b7]">
+        <Avatar className="w-24 h-24 border-2 border-text-primary">
           <AvatarImage src={imageUrl} alt="Profile Picture" />
-          <AvatarFallback className="bg-[#292A2E] text-[#04c8b7] font-bold">
+          <AvatarFallback className="bg-[#292A2E] text-text-primary font-bold">
             {authUserData?.authenticatedUser.name?.slice(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
@@ -94,13 +94,13 @@ const EditProfileImage = ({ authUserData }: Props) => {
       {/* Buttons */}
       <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
         <Button
-          className="bg-[#04c8b7] text-white hover:bg-[#03b6a4] focus:ring-2 focus:ring-offset-2 focus:ring-[#04c8b7] transition-all duration-300 "
+          className="bg-text-primary text-white hover:bg-[#03b6a4] focus:ring-2 focus:ring-offset-2 focus:ring-text-primary transition-all duration-300 "
           onClick={handleUploadImage}
         >
           Change Picture
         </Button>
         <Button
-          className="bg-[#D96665] text-white hover:bg-[#c65554] focus:ring-2 focus:ring-offset-2 focus:ring-[#D96665] transition-all duration-300"
+          className="bg-danger text-white hover:bg-danger] focus:ring-2 focus:ring-offset-2 focus:ring-danger transition-all duration-300"
           onClick={() => toast.error("Delete Picture feature coming soon!")}
         >
           Delete Picture

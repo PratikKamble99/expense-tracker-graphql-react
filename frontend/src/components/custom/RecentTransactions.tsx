@@ -78,7 +78,7 @@ const RecentTransactions = () => {
         <h2 className="text-xl font-bold text-white">Recent Transactions</h2>
         <Link
           to="/transactions"
-          className="text-sm text-[#04c8b7] hover:underline"
+          className="text-sm text-text-primary hover:underline"
         >
           View More
         </Link>

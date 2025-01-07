@@ -26,7 +26,7 @@ function ForgotPasswordPage() {
 
   return (
     <div className="h-screen flex justify-center items-center">
-      <div className=" w-[80%]  sm:w-screen  border-red-700 rounded-lg flex px-10 pt-16 pb-8 justify-center items-center bg-gradient-to-r from-blue-100 via-purple-50 to-white">
+      <div className=" w-[80%] sm:w-[500px]  border-red-700 rounded-lg flex px-10 pt-16 pb-8 justify-center items-center bg-gradient-to-r from-blue-100 via-purple-50 to-white">
         <div className="max-w-md w-full">
           <h2 className="text-3xl font-semibold text-gray-800 mb-4">
             Forgot Password
