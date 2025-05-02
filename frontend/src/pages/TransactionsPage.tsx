@@ -7,11 +7,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  convertMiliSecIntoDate,
-  formatDate,
-  getDateRangeBasedOnFilter,
-} from "@/lib/utils";
+import { convertMiliSecIntoDate, formatDate } from "@/lib/utils";
 import { GET_TRANSACTIONS } from "@/graphql/query/transaction.query";
 import { useMutation, useQuery } from "@apollo/client";
 import { DELETE_TRANSACTION } from "@/graphql/mutations/transaction.mutation";
