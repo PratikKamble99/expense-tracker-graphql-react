@@ -9,6 +9,7 @@ const transactionTypeDefs = `#graphql
         location: String
         date: String!
         user:  User!
+        type: String
     }
     
     type Query {
@@ -30,6 +31,7 @@ const transactionTypeDefs = `#graphql
         amount: Float!
         location: String
         date: String!
+        type: String
     }
 
     input transactionInput {
@@ -38,6 +40,7 @@ const transactionTypeDefs = `#graphql
         limit: Float,
         category: String,
         paymentType: String
+        type: String
     }
 
     input updateTransactionInput {
@@ -48,6 +51,8 @@ const transactionTypeDefs = `#graphql
         amount: Float
         location: String
         date: String
+        type: String!
+
     }
 
     type CategoryStatistics {

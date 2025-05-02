@@ -14,6 +14,7 @@ const transactionResolver = {
         const startDate = input?.startDate;
         const endDate = input?.endDate;
         const paymentType = input?.paymentType;
+        const type = input?.type;
         // accept category, payment_type,date FROM input
 
         if (startDate && endDate) {
@@ -27,11 +28,10 @@ const transactionResolver = {
 
           if (category) query.category = category;
           if (paymentType) query.paymentType = paymentType;
+          if (type) query.type = type;
           const transactions = await Transaction.find(query)
             .limit(limit)
             .sort({ date: limit ? -1 : 1 });
-
-          console.log(transactions);
           return transactions;
         } else {
           const transactions = await Transaction.find({ userId: user._id })

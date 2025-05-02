@@ -25,6 +25,12 @@ import {
 import { Link } from "react-router-dom";
 import { DateTime } from "luxon";
 import LoadingSpinner from "@/components/custom/Loading";
+import { categoryOptions } from "@/components/TransactionForm";
+import {
+  setTransactionFilterDate,
+  setTransactionType,
+  useGetTransactionFilterState,
+} from "@/context/ZustLandContext";
 
 type Transaction = {
   _id: string;
@@ -33,6 +39,7 @@ type Transaction = {
   amount: number;
   paymentType: "cash" | "card";
   date: string;
+  type: string;
   location: number;
   _: React.ReactNode;
 };
@@ -47,14 +54,12 @@ export default function TransactionsPage() {
     { refetchQueries: ["fetchTransactions", "fetchCategoryStatistics"] }
   );
 
+  const state = useGetTransactionFilterState();
+
   const [filters, setFilters] = useState({
     category: "",
     paymentType: "",
     search: "",
-  });
-
-  const [dateRange, setDateRange] = useState<any>({
-    ...getDateRangeBasedOnFilter("this-month"),
   });
 
   const [openDeleteDialogId, setOpenDeleteDialogId] = useState<string | null>(
@@ -68,10 +73,11 @@ export default function TransactionsPage() {
   const { data, loading } = useQuery(GET_TRANSACTIONS, {
     variables: {
       input: {
-        startDate: dateRange.startDate,
-        endDate: dateRange.endDate,
+        startDate: state.dateRange.startDate,
+        endDate: state.dateRange.endDate,
         category: filters.category,
         paymentType: filters.paymentType,
+        type: state.transactionTypeFilter,
       },
     },
     // skip:
@@ -94,8 +100,13 @@ export default function TransactionsPage() {
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor("paymentType", {
-      header: () => <span>PaymentType</span>,
+      header: () => <span>Payment Method</span>,
       footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor("type", {
+      header: () => <span>Payment Type</span>,
+      footer: (info) => info.column.id,
+      cell: (info) => info.getValue() || "N/A",
     }),
     columnHelper.accessor("date", {
       header: "date",
@@ -188,7 +199,7 @@ export default function TransactionsPage() {
     const { name, value } = e.target;
     const date = DateTime.fromISO(value);
     const millis = date.toMillis();
-    setDateRange((prev) => ({ ...prev, [name]: millis }));
+    setTransactionFilterDate({ ...state.dateRange, [name]: millis });
   };
 
   const clearFilters = () => {
@@ -229,6 +240,25 @@ export default function TransactionsPage() {
             <option value="investment">Investment</option>
             <option value="saving">Income</option>
           </select>
+          <select
+            name="type"
+            value={state.transactionTypeFilter}
+            onChange={(e) => {
+              setTransactionType(e.target.value);
+            }}
+            className="bg-[#1b1b1b] text-white p-2 rounded-md border border-text-primary w-full sm:w-auto"
+          >
+            <option value="">Select a category</option>
+            {categoryOptions.map((group) => (
+              <optgroup key={group.label} label={group.label}>
+                {group.options.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
 
           {/* Payment Type Filter */}
           <select
@@ -252,7 +282,7 @@ export default function TransactionsPage() {
               <input
                 type="date"
                 name="startDate"
-                value={convertMiliSecIntoDate(dateRange.startDate)}
+                value={convertMiliSecIntoDate(state.dateRange.startDate)}
                 onChange={handleDateChange}
                 className="bg-[#1b1b1b] text-white p-2 rounded-md border border-text-primary w-full sm:w-auto"
               />
@@ -263,7 +293,7 @@ export default function TransactionsPage() {
             <input
               type="date"
               name="endDate"
-              value={convertMiliSecIntoDate(dateRange.endDate)}
+              value={convertMiliSecIntoDate(state.dateRange.endDate)}
               onChange={handleDateChange}
               className="bg-[#1b1b1b] text-white p-2 rounded-md border border-text-primary w-full sm:w-auto"
             />

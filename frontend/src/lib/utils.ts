@@ -49,7 +49,11 @@ export function getDateRangeBasedOnFilter(filter: string | null) {
       };
 
     default:
-      return null;
+      return {
+        // dateOptionValue: 0,
+        startDate: null,
+        endDate: null,
+      };
   }
 }
 

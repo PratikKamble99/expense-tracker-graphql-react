@@ -20,6 +20,20 @@ const transactionSchema = new mongoose.Schema({
     enum: ["saving", "expense", "investment"],
     required: true,
   },
+  type: {
+    type: String,
+    enum: [
+      "personal:food",
+      "personal:other",
+      "housing:rent",
+      "housing:utilities:electricity",
+      "housing:utilities:internet",
+      "personal:clothing",
+      "personal:fitness",
+      "transfer:home_support",
+    ],
+    // required: true,
+  },
   amount: {
     type: Number,
     required: true,
