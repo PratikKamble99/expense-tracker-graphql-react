@@ -26,7 +26,7 @@ import {
   setTransactionFilterDate,
   setTransactionType,
   useGetTransactionFilterState,
-} from "@/context/ZustLandContext";
+} from "@/context/ZustlandContext";
 
 type Transaction = {
   _id: string;
