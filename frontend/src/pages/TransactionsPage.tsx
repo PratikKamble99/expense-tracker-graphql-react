@@ -186,6 +186,32 @@ export default function TransactionsPage() {
       return acc;
     }, 0) || 0;
 
+  const personalExpense =
+    data?.transactions.reduce((acc, curr) => {
+      if (curr.type?.includes("personal")) {
+        acc += curr.amount;
+      }
+      return acc;
+    }, 0) || 0;
+
+  const transferExpense =
+    data?.transactions.reduce((acc, curr) => {
+      if (curr.type?.includes("transfer")) {
+        acc += curr.amount;
+      }
+      return acc;
+    }, 0) || 0;
+
+  const housingExpense =
+    data?.transactions.reduce((acc, curr) => {
+      if (curr.type?.includes("housing")) {
+        acc += curr.amount;
+      }
+      return acc;
+    }, 0) || 0;
+
+  console.log(housingExpense);
+
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
@@ -426,6 +452,35 @@ export default function TransactionsPage() {
           </div>
           <div className="text-3xl font-bold text-yellow-500">
             {totalIncome.toLocaleString()}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-6 sm:gap-12 mt-6">
+        <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
+          <div className="text-2xl font-semibold mb-2 text-text-primary">
+            Housing Expense
+          </div>
+          <div className="text-3xl font-bold text-red-600">
+            {housingExpense.toLocaleString()}
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
+          <div className="text-2xl font-semibold mb-2 text-text-primary">
+            Personal Expense
+          </div>
+          <div className="text-3xl font-bold text-green-500">
+            {personalExpense.toLocaleString()}
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
+          <div className="text-2xl font-semibold mb-2 text-text-primary">
+            Transfer Expense
+          </div>
+          <div className="text-3xl font-bold text-yellow-500">
+            {transferExpense.toLocaleString()}
           </div>
         </div>
       </div>
