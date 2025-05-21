@@ -35,7 +35,7 @@ const SignUpPage = () => {
         password: "",
         gender: "",
       },
-      async onSubmit(values, formikHelpers) {
+      async onSubmit(values) {
         try {
           await signup({
             variables: {

@@ -9,6 +9,8 @@ import useNavigation from "@/hooks/useNavigate";
 import { X } from "lucide-react";
 import { LOG_OUT } from "@/graphql/mutations/user.mutation";
 import toast from "react-hot-toast";
+import { Dialog, DialogContent } from "../ui/dialog";
+import VerifyEmail from "../VerifyEmailCard";
 
 const RootLayout = () => {
   const location = useLocation();
@@ -16,9 +18,11 @@ const RootLayout = () => {
 
   const { data } = useQuery(GET_AUTH_USER);
 
-  const [logoutUser, { loading, client }] = useMutation(LOG_OUT, {
+  const [logoutUser, { client }] = useMutation(LOG_OUT, {
     refetchQueries: ["GetAuthenticatedUser"],
   });
+
+  console.log("data", data?.authenticatedUser.isEmailValid);
 
   const [openMobNav, setOpenMobNav] = useState(false);
 
@@ -41,7 +45,6 @@ const RootLayout = () => {
         error: "Failed to log out",
       });
     } catch (error) {
-      //@ts-ignore
       toast.error(error?.message);
     }
   };
@@ -131,7 +134,15 @@ const RootLayout = () => {
           <AppSidebar />
         </SidebarProvider>
       </aside>
-      <div className={`w-[calc(100%_-_${SIDEBAR_WIDTH})] flex-grow`}>
+      <div className={`w-[calc(100%_-_${SIDEBAR_WIDTH})] flex-grow relative`}>
+        <Dialog open={data?.authenticatedUser?.isEmailValid == false}>
+          <DialogContent closeColor={"white"}>
+            <VerifyEmail
+              handleLogout={handleLogout}
+              email={data.authenticatedUser.email}
+            />
+          </DialogContent>
+        </Dialog>
         <Outlet />
       </div>
     </div>

@@ -56,6 +56,33 @@ const LOG_OUT = gql`
   }
 `;
 
+// This mutation takes an OTP as an argument and returns a message
+/* 
+  const VERIFY_EMAIL = gql`
+    mutation VerifyEmail($input: String!) { // after mutation name is refers from the client
+      verifyEmail(otp: $input) { // this is the name of the mutation in the server
+        message
+      }
+    }
+  `;
+*/
+const VERIFY_EMAIL = gql`
+  mutation VerifyEmail($input: String!) {
+    verifyEmail(otp: $input) {
+      message
+    }
+  }
+`;
+
+// This mutation not takes any arguments and returns a message
+const RESEND_OTP = gql`
+  mutation ResendOtp {
+    resendOtp {
+      message
+    }
+  }
+`;
+
 const FORGOT_PASSWORD = gql`
   mutation ForgotPassword($input: String!) {
     forgotPassword(email: $input) {
@@ -72,4 +99,6 @@ export {
   FORGOT_PASSWORD,
   CHANGE_PASSWORD,
   DELETE_ACCOUNT,
+  VERIFY_EMAIL,
+  RESEND_OTP,
 };

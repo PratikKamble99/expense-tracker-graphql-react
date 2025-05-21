@@ -29,6 +29,23 @@ const userSchema = new mongoose.Schema(
       enum: ["male", "female"],
       required: true,
     },
+    currency: {
+      type: String,
+      enum: ["USD", "EUR", "INR"],
+      default: "INR",
+    },
+    isEmailValid: {
+      type: Boolean,
+      default: false,
+    },
+    verificationCode: {
+      type: String,
+      default: "",
+    },
+    otpExpireTime: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );

@@ -15,7 +15,7 @@ function ForgotPasswordPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const result = await ForgotPassword({ variables: { input: email } });
+      await ForgotPassword({ variables: { input: email } });
       toast.success("Password send to your email.");
       navigate("/login");
     } catch (error) {

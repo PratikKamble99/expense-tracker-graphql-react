@@ -41,6 +41,19 @@ const GET_TRANSACTION_BY_ID = gql`
   }
 `;
 
+const GET_DASHBOARD_SUMMERY = gql`
+  query fetchDashboardSummery {
+    dashboardSummary {
+      totalIncome
+      totalExpense
+      totalSaving
+      percentIncome
+      percentExpense
+      percentSaving
+    }
+  }
+`;
+
 const GET_CATEGORY_STATISTICS = gql`
   query fetchCategoryStatistics {
     categoryStatistics {
@@ -50,4 +63,9 @@ const GET_CATEGORY_STATISTICS = gql`
   }
 `;
 
-export { GET_TRANSACTIONS, GET_TRANSACTION_BY_ID, GET_CATEGORY_STATISTICS };
+export {
+  GET_TRANSACTIONS,
+  GET_TRANSACTION_BY_ID,
+  GET_CATEGORY_STATISTICS,
+  GET_DASHBOARD_SUMMERY,
+};

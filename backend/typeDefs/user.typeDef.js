@@ -11,6 +11,10 @@ const userTypeDef = `#graphql
             gender: String!,
             transactions:  [Transaction!]!
             updatedAt: String
+            createdAt: String
+            isEmailValid: Boolean
+            verificationCode: String
+            currency: String
         }
 
         type Query {
@@ -22,11 +26,13 @@ const userTypeDef = `#graphql
         type Mutation {
             signup(input: SignupInput!): User
             login(input: LoginInput!): User
-            logout: LogoutResponse
+            logout: StringResponse
             editUser(input: EditUserInput!): User
-            forgotPassword(email: String!): ForgotPasswordResponse
-            changePassword(input: ChangePasswordInput!): ChangePasswordResponse
-            deleteUserAccount: LogoutResponse
+            verifyEmail(otp: String!): StringResponse
+            resendOtp: StringResponse
+            forgotPassword(email: String!): StringResponse
+            changePassword(input: ChangePasswordInput!): StringResponse
+            deleteUserAccount: StringResponse
         }
 
         input SignupInput {
@@ -56,15 +62,7 @@ const userTypeDef = `#graphql
             confirmPassword: String!
         }
 
-        type ChangePasswordResponse {
-            message: String!
-        }
-
-        type LogoutResponse {
-            message: String!
-        }
-
-        type ForgotPasswordResponse {
+        type StringResponse {
             message: String!
         }
     `;

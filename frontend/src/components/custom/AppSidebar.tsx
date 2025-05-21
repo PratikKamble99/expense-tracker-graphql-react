@@ -1,13 +1,4 @@
-import {
-  Calendar,
-  Home,
-  Inbox,
-  LogOut,
-  Phone,
-  Search,
-  Settings,
-  User,
-} from "lucide-react";
+import { Home, Inbox, LogOut, Phone, User } from "lucide-react";
 
 import {
   Sidebar,
@@ -21,7 +12,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { GET_AUTH_USER } from "@/graphql/query/user.query";
 import { useMutation, useQuery } from "@apollo/client";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { LOG_OUT } from "@/graphql/mutations/user.mutation";
 import toast from "react-hot-toast";
 import RouterLink from "../modified/RouterLink";
@@ -29,7 +20,7 @@ import RouterLink from "../modified/RouterLink";
 // Menu items.
 export const items = [
   {
-    title: "Home",
+    title: "Dashboard",
     url: "dashboard",
     icon: Home,
   },
@@ -54,7 +45,7 @@ export default function AppSidebar() {
   const location = useLocation();
 
   const { data } = useQuery(GET_AUTH_USER);
-  const [logoutUser, { loading, client }] = useMutation(LOG_OUT, {
+  const [logoutUser, { client }] = useMutation(LOG_OUT, {
     refetchQueries: ["GetAuthenticatedUser"],
   });
 

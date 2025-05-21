@@ -1,7 +1,7 @@
 import { useMutation } from "@apollo/client";
-import React from "react";
 import { CREATE_TRANSACTION } from "../graphql/mutations/transaction.mutation";
 import toast from "react-hot-toast";
+import { TRANSACITON_TYPES } from "@/constants";
 
 export const categoryOptions = [
   {
@@ -133,9 +133,11 @@ const TransactionForm = () => {
               id="category"
               name="category"
             >
-              <option value={"saving"}>Saving</option>
-              <option value={"expense"}>Expense</option>
-              <option value={"investment"}>Investment</option>
+              {TRANSACITON_TYPES.map((type) => (
+                <option value={type.toLocaleLowerCase()}>
+                  {type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()}{" "}
+                </option>
+              ))}
             </select>
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
               <svg

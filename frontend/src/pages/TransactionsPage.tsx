@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Calendar, Pencil, Search, Trash2 } from "lucide-react";
 import {
   createColumnHelper,
@@ -23,7 +23,9 @@ import { DateTime } from "luxon";
 import LoadingSpinner from "@/components/custom/Loading";
 import { categoryOptions } from "@/components/TransactionForm";
 import {
+  resetTransactionFilter,
   setTransactionFilterDate,
+  setTransactionFilterField,
   setTransactionType,
   useGetTransactionFilterState,
 } from "@/context/ZustlandContext";
@@ -52,12 +54,6 @@ export default function TransactionsPage() {
 
   const state = useGetTransactionFilterState();
 
-  const [filters, setFilters] = useState({
-    category: "",
-    paymentType: "",
-    search: "",
-  });
-
   const [openDeleteDialogId, setOpenDeleteDialogId] = useState<string | null>(
     null
   );
@@ -71,8 +67,8 @@ export default function TransactionsPage() {
       input: {
         startDate: state.dateRange.startDate,
         endDate: state.dateRange.endDate,
-        category: filters.category,
-        paymentType: filters.paymentType,
+        category: state.category,
+        paymentType: state.paymentType,
         type: state.transactionTypeFilter,
       },
     },
@@ -210,11 +206,10 @@ export default function TransactionsPage() {
       return acc;
     }, 0) || 0;
 
-  console.log(housingExpense);
-
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters((prev) => ({ ...prev, [name]: value }));
+
+    setTransactionFilterField(name, value);
   };
 
   const handleDateChange = (e) => {
@@ -225,11 +220,7 @@ export default function TransactionsPage() {
   };
 
   const clearFilters = () => {
-    setFilters({
-      category: "",
-      paymentType: "",
-      search: "",
-    });
+    resetTransactionFilter();
   };
 
   return (
@@ -237,23 +228,10 @@ export default function TransactionsPage() {
       {/* Filter Section */}
       <div className="bg-[#28282a] p-4  shadow-lg mb-6 rounded-xl">
         <div className="flex flex-wrap gap-4 items-end">
-          {/* Search */}
-          {/* <div className="flex items-center bg-[#1b1b1b] rounded-md p-2 w-full lg:w-auto">
-            <Search className="text-text-primary mr-2" />
-            <input
-              type="text"
-              name="search"
-              placeholder="Search..."
-              value={filters.search}
-              onChange={handleFilterChange}
-              className="bg-transparent border-none outline-none text-white w-full"
-            />
-          </div> */}
-
           {/* Category Filter */}
           <select
             name="category"
-            value={filters.category}
+            value={state.category}
             onChange={handleFilterChange}
             className="bg-[#1b1b1b] text-white p-2 rounded-md border border-text-primary w-full sm:w-auto"
           >
@@ -285,7 +263,7 @@ export default function TransactionsPage() {
           {/* Payment Type Filter */}
           <select
             name="paymentType"
-            value={filters.paymentType}
+            value={state.paymentType}
             onChange={handleFilterChange}
             className="bg-[#1b1b1b] text-white p-2 rounded-md border border-text-primary w-full sm:w-auto"
           >
@@ -404,7 +382,11 @@ export default function TransactionsPage() {
               {Array.from({ length: table.getPageCount() }, (_, index) => (
                 <li key={index}>
                   <button
-                    className="flex items-center justify-center px-3 h-8 leading-tight text-text-primary bg-[#1b1b1b] border border-text-primary hover:bg-text-primary hover:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                    className={`flex items-center justify-center px-3 h-8 leading-tight text-text-primary bg-[#1b1b1b] border border-text-primary hover:bg-text-primary hover:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white ${
+                      index == +pagination.pageIndex
+                        ? "bg-text-primary text-white"
+                        : ""
+                    }`}
                     onClick={() => {
                       table.setPageIndex(index);
                     }}

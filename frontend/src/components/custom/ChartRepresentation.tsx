@@ -30,9 +30,11 @@ const ChartRepresentation = () => {
   let obj = {};
 
   const totalIncome =
-    data?.transactions.reduce((acc, curr) => {
-      if (curr.category == "savings") {
-        acc += curr.amount;
+    statisticsData?.categoryStatistics.reduce((acc, curr) => {
+      if (curr.category == "investment") {
+        // acc += curr.amount;
+      } else {
+        acc += curr.totalAmount;
       }
       return acc;
     }, 0) || 0;

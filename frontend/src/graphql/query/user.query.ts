@@ -10,6 +10,8 @@ const GET_AUTH_USER = gql`
       username
       gender
       updatedAt
+      createdAt
+      isEmailValid
     }
   }
 `;
@@ -17,19 +19,19 @@ const GET_AUTH_USER = gql`
 const GET_USER_AND_TRANSACTIONS = gql`
   query getUserAndTransactions($id: ID!) {
     user(userId: $id) {
+      _id
+      profilePicture
+      name
+      username
+      # Relationship with Transactions table
+      transactions {
         _id
-        profilePicture
-        name
-        username
-        # Relationship with Transactions table
-        transactions {
-          _id
-          category 
-          amount
-          date
-          description
-          location
-        }
+        category
+        amount
+        date
+        description
+        location
+      }
     }
   }
 `;

@@ -16,12 +16,22 @@ const transactionTypeDefs = `#graphql
         transactions(input:transactionInput): [Transaction!]
         transaction(transactionId:ID!): Transaction
         categoryStatistics:[CategoryStatistics!]
+        dashboardSummary: DashboardSummary!
     }
 
     type Mutation {
         createTransaction(input:createTransactionInput!): Transaction!
         updateTransaction(input:updateTransactionInput!): Transaction!
         deleteTransaction(transactionId: ID!): Transaction!
+    }
+
+    type DashboardSummary {
+        totalIncome: Float!
+        totalExpense: Float!
+        totalSaving: Float!
+        percentIncome: Int!,
+        percentExpense: Int!,
+        percentSaving: Int!,
     }
 
     input createTransactionInput {

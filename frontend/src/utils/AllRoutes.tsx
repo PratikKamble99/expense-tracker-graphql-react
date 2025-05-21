@@ -1,7 +1,6 @@
 import RootLayout from "@/components/layout/RootLayout";
 import { GET_AUTH_USER } from "@/graphql/query/user.query";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
-import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
 import NotFound from "@/pages/NotFoundPage";
 import SignUpPage from "@/pages/SignUpPage";
@@ -12,6 +11,7 @@ import ProtectedRoutes from "./ProtectedRoutes";
 import ProfilePage from "@/pages/ProfilePage";
 import TransactionsPage from "@/pages/TransactionsPage";
 import AddTransaction from "@/pages/AddTransaction";
+import Dashboard from "@/pages/Dashboard";
 
 const AllRoutes = () => {
   const location = useLocation();
@@ -44,7 +44,7 @@ const AllRoutes = () => {
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route element={<ProtectedRoutes />}>
         <Route path="/" element={<RootLayout />}>
-          <Route index path="/dashboard" element={<HomePage />} />
+          <Route index path="/dashboard" element={<Dashboard />} />
           <Route index path="/add-transaction" element={<AddTransaction />} />
           <Route index path="/transactions" element={<TransactionsPage />} />
           <Route index path="/profile" element={<ProfilePage />} />

@@ -17,9 +17,7 @@ const ProfilePage = () => {
 
   return (
     <div className="p-6 bg-[#1b1b1b] min-h-screen">
-      {/* Profile Container */}
       <div className="bg-[#28282a] rounded-xl shadow-lg p-8 text-[#868686]">
-        {/* Header Section */}
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-3xl font-bold text-white">Your Profile</h1>
@@ -39,9 +37,7 @@ const ProfilePage = () => {
           </Button>
         </div>
 
-        {/* Profile Sections */}
         <div className="space-y-8">
-          {/* Profile Picture Section */}
           <SectionHeading
             icon={<Image className="text-text-primary" />}
             label="Profile Picture"
