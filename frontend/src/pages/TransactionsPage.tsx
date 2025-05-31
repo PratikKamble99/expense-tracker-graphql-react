@@ -47,7 +47,7 @@ const columnHelper = createColumnHelper<Transaction>();
 const empty = [];
 
 export default function TransactionsPage() {
-  const [deleteTransaction, { loading: delLoading, error }] = useMutation(
+  const [deleteTransaction, { loading: delLoading }] = useMutation(
     DELETE_TRANSACTION,
     { refetchQueries: ["fetchTransactions", "fetchCategoryStatistics"] }
   );
@@ -57,6 +57,7 @@ export default function TransactionsPage() {
   const [openDeleteDialogId, setOpenDeleteDialogId] = useState<string | null>(
     null
   );
+
   const [pagination, setPagination] = useState({
     pageIndex: 0, //initial page index
     pageSize: 10, //default page size
@@ -168,7 +169,7 @@ export default function TransactionsPage() {
 
   const totalIncome =
     data?.transactions.reduce((acc, curr) => {
-      if (curr.category == "saving") {
+      if (curr.category == "saving" || curr.category == "income") {
         acc += curr.amount;
       }
       return acc;
@@ -238,7 +239,7 @@ export default function TransactionsPage() {
             <option value="">All Categories</option>
             <option value="expense">Expense</option>
             <option value="investment">Investment</option>
-            <option value="saving">Income</option>
+            <option value="income">Income</option>
           </select>
           <select
             name="type"

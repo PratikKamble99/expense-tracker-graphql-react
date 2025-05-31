@@ -14,6 +14,9 @@
   "dependencies": {
     "@apollo/server": "^4.11.0",
     "@graphql-tools/merge": "^9.0.8",
+    "@azure-rest/ai-inference": "latest",
+    "@azure/core-auth": "latest",
+    "@azure/core-sse": "latest",
     "apollo-server-express": "^3.13.0",
     "bcryptjs": "^2.4.3",
     "connect-mongodb-session": "^5.0.0",
@@ -25,6 +28,7 @@
     "helmet": "^8.1.0",
     "luxon": "^3.5.0",
     "mongoose": "^8.7.1",
+    "node-cron": "^4.1.0",
     "nodemailer": "^6.9.15",
     "passport": "^0.7.0",
     "yup": "^1.4.0"

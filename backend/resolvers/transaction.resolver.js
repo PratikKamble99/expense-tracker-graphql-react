@@ -66,12 +66,19 @@ const transactionResolver = {
 
         const categoryStatistics = transactions.reduce((acc, transaction) => {
           if (!acc[transaction.category]) {
-            acc[transaction.category] = transaction.amount;
+            if (transaction.category == "income") {
+            } else {
+              acc[transaction.category] = transaction.amount;
+            }
           } else if (transaction.category == "expense") {
             acc["saving"] -= transaction.amount;
             acc[transaction.category] += transaction.amount;
           } else {
-            acc[transaction.category] += transaction.amount;
+            if (transaction.category == "income") {
+              acc["saving"] += transaction.amount;
+            } else {
+              acc[transaction.category] += transaction.amount;
+            }
           }
 
           return acc;

@@ -13,7 +13,7 @@ const Dashboard = () => {
   const { data: authUserData } = useQuery(GET_AUTH_USER);
   const { data } = useQuery(GET_DASHBOARD_SUMMERY);
 
-  console.log(data, "Data");
+  // console.log(data, "Data");
 
   return (
     <div className=" flex flex-col gap-6 p-8 z-20 relative justify-center w-full pt-4">

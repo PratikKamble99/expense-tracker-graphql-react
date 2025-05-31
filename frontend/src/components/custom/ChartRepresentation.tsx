@@ -45,7 +45,10 @@ const ChartRepresentation = () => {
 
     if (obj[month]) {
       const expense = item["category"] == "expense" ? amount : 0;
-      const saving = item["category"] == "saving" ? amount : 0;
+      const saving =
+        item["category"] == "saving" || item["category"] == "income"
+          ? amount
+          : 0;
 
       obj[month].expense += expense;
       obj[month].saving += saving;
