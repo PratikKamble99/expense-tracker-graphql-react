@@ -16,7 +16,7 @@ import { emailQueueProducer } from "../queue/emailQueue.js";
 dotenv.config();
 
 export const emailCron = () => {
-  cron.schedule("0 0 1 * *", async () => {
+  cron.schedule("0 0 2 * *", async () => {
     const users = await User.find({}).select("email name");
 
     for (let i = 0; i < users.length; i++) {
