@@ -18,7 +18,7 @@ import {
   DialogContent,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { DateTime } from "luxon";
 import LoadingSpinner from "@/components/custom/Loading";
 import { categoryOptions } from "@/components/TransactionForm";
@@ -47,6 +47,8 @@ const columnHelper = createColumnHelper<Transaction>();
 const empty = [];
 
 export default function TransactionsPage() {
+  const navigate = useNavigate();
+
   const [deleteTransaction, { loading: delLoading }] = useMutation(
     DELETE_TRANSACTION,
     { refetchQueries: ["fetchTransactions", "fetchCategoryStatistics"] }
@@ -169,7 +171,7 @@ export default function TransactionsPage() {
 
   const totalIncome =
     data?.transactions.reduce((acc, curr) => {
-      if (curr.category == "saving" || curr.category == "income") {
+      if (curr.category == "income") {
         acc += curr.amount;
       }
       return acc;
@@ -182,6 +184,8 @@ export default function TransactionsPage() {
       }
       return acc;
     }, 0) || 0;
+
+  const totalSaving = totalIncome - totalExpense - totalInvestment;
 
   const personalExpense =
     data?.transactions.reduce((acc, curr) => {
@@ -309,9 +313,14 @@ export default function TransactionsPage() {
               Clear Filters
             </button>
           </div>
+        <Button
+          className="max-w-fit self-end mt-1 sm:mt-0 border"
+          onClick={() => navigate("/add-transaction")}
+        >
+          Add Transactions
+        </Button>
         </div>
       </div>
-
       {/* Transactions Table */}
       <div className="bg-[#28282a] p-4 shadow-lg overflow-x-auto h-[480px] rounded-xl">
         {loading ? (
@@ -409,7 +418,6 @@ export default function TransactionsPage() {
           </nav>
         ) : null}
       </div>
-
       <div className="flex flex-col sm:flex-row gap-6 sm:gap-12 mt-6">
         <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
           <div className="text-2xl font-semibold mb-2 text-text-primary">
@@ -437,8 +445,15 @@ export default function TransactionsPage() {
             {totalIncome.toLocaleString()}
           </div>
         </div>
+        <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
+          <div className="text-2xl font-semibold mb-2 text-text-primary">
+            Total Savings
+          </div>
+          <div className="text-3xl font-bold text-yellow-500">
+            {totalSaving.toLocaleString()}
+          </div>
+        </div>
       </div>
-
       <div className="flex flex-col sm:flex-row gap-6 sm:gap-12 mt-6">
         <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
           <div className="text-2xl font-semibold mb-2 text-text-primary">
@@ -467,7 +482,6 @@ export default function TransactionsPage() {
           </div>
         </div>
       </div>
-
       <Dialog
         open={!!openDeleteDialogId}
         onOpenChange={() => {

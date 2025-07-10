@@ -33,7 +33,7 @@ const TransactionPage = () => {
   });
 
   useEffect(() => {
-    if (data) {
+    if (data && id) {
       setFormData({
         description: data.transaction.description,
         paymentType: data.transaction.paymentType,
@@ -44,7 +44,7 @@ const TransactionPage = () => {
         type: data.transaction.type,
       });
     }
-  }, [data]);
+  }, [data, id]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

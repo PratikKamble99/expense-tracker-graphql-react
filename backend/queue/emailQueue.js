@@ -1,5 +1,5 @@
 import { Queue, Worker } from "bullmq";
-import { redisConnection } from "../redis/config.js";
+import { redisClient } from "../redis/config.js";
 import ModelClient from "@azure-rest/ai-inference";
 import { AzureKeyCredential } from "@azure/core-auth";
 import Transaction from "../models/transaction.model.js";
@@ -7,19 +7,21 @@ import { generateDataAnalysisPrompt } from "../utils/prompts.js";
 import { getTransporter } from "../mail-service/sendMail.js";
 import { DateTime } from "luxon";
 
+const QUEUE_NAME='email-queue'
+
 const token = process.env.TOKEN;
 const endpoint = process.env.ENDPOINT;
 const model1 = process.env.MODEL;
 const client = ModelClient(endpoint, new AzureKeyCredential(token));
 
 // Queue setup
-const emailQueue = new Queue("email-queue", {
-  connection: redisConnection,
+const emailQueue = new Queue(QUEUE_NAME, {
+  connection: redisClient
 });
 
 // Worker to process job
 const emailWorker = new Worker(
-  "email-queue",
+  QUEUE_NAME,
   async (job) => {
     try {
       const { user } = job.data;
@@ -73,20 +75,21 @@ const emailWorker = new Worker(
 
       console.log(`✅ Report sent to ${user.email}`);
     } catch (error) {
-      console.error("❌ Failed to process email job:", error);
+      console.error("Failed to process email job:", error);
     }
   },
   {
-    connection: redisConnection,
+    connection: redisClient,
   }
 );
 
 // Queue producer function
 export const emailQueueProducer = async (user) => {
   try {
+    // console.log(`📧 Adding job for ${user.email}`);
     await emailQueue.add("send-analytics-email", { user }, { attempts: 2 });
-    console.log(`📬 Job queued for ${user.email}`);
+    // console.log(`Job queued for ${user.email}`);
   } catch (error) {
-    console.error("❌ Failed to queue email job:", error);
+    console.error("Failed to queue email job:", error);
   }
 };

@@ -22,8 +22,6 @@ const RootLayout = () => {
     refetchQueries: ["GetAuthenticatedUser"],
   });
 
-  console.log("data", data?.authenticatedUser.isEmailValid);
-
   const [openMobNav, setOpenMobNav] = useState(false);
 
   useEffect(() => {
