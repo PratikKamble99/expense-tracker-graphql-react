@@ -96,7 +96,7 @@ export default function DateSelectorPopover({
               className={cn(
                 'transition-colors',
                 mode === 'today' 
-                  ? 'bg-primary text-primary-foreground border-primary hover:bg-primary/90' 
+                  ? 'bg-primary text-white border-primary hover:bg-primary/90' 
                   : 'text-black hover:bg-[#2a2a2a] border-primary hover:text-white'
               )}
               onClick={() => handlePredefinedSelect('today')}
@@ -109,7 +109,7 @@ export default function DateSelectorPopover({
               className={cn(
                 'transition-colors',
                 mode === 'week' 
-                  ? 'bg-primary text-primary-foreground border-primary hover:bg-primary/90' 
+                  ? 'bg-primary text-white border-primary hover:bg-primary/90' 
                   : 'text-black hover:bg-[#2a2a2a] border-primary hover:text-white'
               )}
               onClick={() => handlePredefinedSelect('week')}
@@ -122,7 +122,7 @@ export default function DateSelectorPopover({
               className={cn(
                 'transition-colors',
                 mode === 'month' 
-                  ? 'bg-primary text-primary-foreground border-primary hover:bg-primary/90' 
+                  ? 'bg-primary text-white border-primary hover:bg-primary/90' 
                   : 'text-black hover:bg-[#2a2a2a] border-primary hover:text-white'
               )}
               onClick={() => handlePredefinedSelect('month')}
@@ -135,7 +135,7 @@ export default function DateSelectorPopover({
               className={cn(
                 'transition-colors',
                 mode === 'year' 
-                  ? 'bg-[#1b1b1b] text-primary-foreground border-primary hover:bg-primary/90' 
+                  ? 'bg-[#1b1b1b] text-white border-primary hover:bg-primary/90' 
                   : 'text-black hover:bg-[#2a2a2a] border-primary hover:text-white'
               )}
               onClick={() => handlePredefinedSelect('year')}
