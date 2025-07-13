@@ -51,6 +51,7 @@ const transactionTypeDefs = `#graphql
         category: String,
         paymentType: String
         type: String
+        searchQuery: String
     }
 
     input updateTransactionInput {

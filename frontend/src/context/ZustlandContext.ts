@@ -9,6 +9,7 @@ type TValue = {
   };
   category: string;
   paymentType: string;
+  searchQuery:string
 };
 
 const transactionsStateStore = create<TValue>(() => ({
@@ -18,6 +19,7 @@ const transactionsStateStore = create<TValue>(() => ({
   },
   category: "",
   paymentType: "",
+  searchQuery: "",
 }));
 
 export function useGetTransactionFilterState() {
@@ -33,8 +35,8 @@ export function setTransactionFilterDate(dateRange: TValue["dateRange"]) {
 }
 
 export function setTransactionFilterField(
-  name: "category" | "paymentType",
-  value: TValue["category"] | TValue["paymentType"]
+  name: "category" | "paymentType" | "searchQuery",
+  value: TValue["category"] | TValue["paymentType"] | TValue["searchQuery"]
 ) {
   return transactionsStateStore.setState({ [name]: value });
 }
@@ -47,5 +49,8 @@ export function resetTransactionFilter() {
     },
     category: "",
     paymentType: "",
+    searchQuery: "",
   });
 }
+
+

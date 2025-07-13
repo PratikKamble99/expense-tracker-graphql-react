@@ -7,7 +7,11 @@ export function cn(...inputs: ClassValue[]) {
 }
 export function formatDate(timestamp: string) {
   const date = new Date(parseInt(timestamp)); // Parse the timestamp to ensure it's an integer representing milliseconds
-  const options = { day: "2-digit", month: "short", year: "numeric" };
+  const options: Intl.DateTimeFormatOptions = { 
+    day: "2-digit", 
+    month: "short", 
+    year: "numeric" 
+  };
   return date.toLocaleDateString("en-US", options);
 }
 
@@ -57,7 +61,7 @@ export function getDateRangeBasedOnFilter(filter: string | null) {
   }
 }
 
-export function convertMiliSecIntoDate(millis: number) {
+export function convertMiliSecIntoDate(millis: number): string {
   return DateTime.fromMillis(millis).toISODate() || "";
 }
 
@@ -113,3 +117,17 @@ export function createDynamicLinkAndDownloadFile(
   // Cleanup
   document.body.removeChild(link);
 }
+
+
+export function debounce(func: Function, wait: number) {
+  let timeout: NodeJS.Timeout;
+  return function (...args: any[]) {
+    console.log(timeout)
+    if(timeout) clearTimeout(timeout);
+    timeout = setTimeout(()=>{
+      console.log("func called", args[0].target.value)
+      func(...args)
+    }, wait);
+  };
+}
+  

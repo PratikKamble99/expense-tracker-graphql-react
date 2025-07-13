@@ -28,6 +28,7 @@ const transactionResolver = {
         const endDate = input?.endDate;
         const paymentType = input?.paymentType;
         const type = input?.type;
+        const searchQuery = input?.searchQuery;
         // accept category, payment_type,date FROM input
 
         if (startDate && endDate) {
@@ -42,7 +43,8 @@ const transactionResolver = {
           if (category) query.category = category;
           if (paymentType) query.paymentType = paymentType;
           if (type) query.type = type;
-          const transactions = await Transaction.find(query)
+          if (searchQuery) query.$or = [{ description: { $regex: searchQuery, $options: "i" } }];
+            const transactions = await Transaction.find(query)
             .limit(limit)
             .sort({ date: limit ? -1 : 1 });
           return transactions;

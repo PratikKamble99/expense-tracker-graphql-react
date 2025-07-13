@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Calendar, Pencil, Search, Trash2 } from "lucide-react";
+import React, { useState } from "react";
+import { Pencil, Trash2 } from "lucide-react";
 import {
   createColumnHelper,
   flexRender,
@@ -7,7 +7,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { convertMiliSecIntoDate, formatDate } from "@/lib/utils";
+import { debounce, formatDate } from "@/lib/utils";
 import { GET_TRANSACTIONS } from "@/graphql/query/transaction.query";
 import { useMutation, useQuery } from "@apollo/client";
 import { DELETE_TRANSACTION } from "@/graphql/mutations/transaction.mutation";
@@ -16,10 +16,8 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import { Link, useNavigate } from "react-router-dom";
-import { DateTime } from "luxon";
 import LoadingSpinner from "@/components/custom/Loading";
 import { categoryOptions } from "@/components/TransactionForm";
 import {
@@ -29,6 +27,8 @@ import {
   setTransactionType,
   useGetTransactionFilterState,
 } from "@/context/ZustlandContext";
+import { Input } from "@/components/ui/input";
+import DateSelectorPopover from "@/components/custom/DateSelectPopover";
 
 type Transaction = {
   _id: string;
@@ -65,7 +65,7 @@ export default function TransactionsPage() {
     pageSize: 10, //default page size
   });
 
-  const { data, loading } = useQuery(GET_TRANSACTIONS, {
+  const { data, loading, refetch } = useQuery(GET_TRANSACTIONS, {
     variables: {
       input: {
         startDate: state.dateRange.startDate,
@@ -73,6 +73,7 @@ export default function TransactionsPage() {
         category: state.category,
         paymentType: state.paymentType,
         type: state.transactionTypeFilter,
+        searchQuery: state.searchQuery,
       },
     },
     // skip:
@@ -211,28 +212,66 @@ export default function TransactionsPage() {
       return acc;
     }, 0) || 0;
 
-  const handleFilterChange = (e) => {
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-
-    setTransactionFilterField(name, value);
-  };
-
-  const handleDateChange = (e) => {
-    const { name, value } = e.target;
-    const date = DateTime.fromISO(value);
-    const millis = date.toMillis();
-    setTransactionFilterDate({ ...state.dateRange, [name]: millis });
+    setTransactionFilterField(name as any, value);
   };
 
   const clearFilters = () => {
     resetTransactionFilter();
   };
 
+  // const handleSearchChange = React.useCallback(debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+  //   console.log(e.target.value);
+  //   setTransactionFilterField("searchQuery", e.target.value);
+  // }, 500), []);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>)=>{
+    setTransactionFilterField("searchQuery", e.target.value);
+  }
+
   return (
     <div className="bg-[#1b1b1b] text-[#868686] min-h-screen p-6 ">
       {/* Filter Section */}
       <div className="bg-[#28282a] p-4  shadow-lg mb-6 rounded-xl">
         <div className="flex flex-wrap gap-4 items-end">
+          <Input 
+            placeholder="Search" 
+            className="bg-[#1b1b1b] text-white p-2 rounded-md border border-text-primary w-full sm:w-auto"
+            value={state.searchQuery}
+            onChange={handleSearchChange}
+          />
+          <DateSelectorPopover 
+            dateRange={{
+              from: state.dateRange.startDate ? new Date(state.dateRange.startDate) : null,
+              to: state.dateRange.endDate ? new Date(state.dateRange.endDate) : null
+            }}
+            onDateChange={({ from, to }) => {
+              setTransactionFilterDate({
+                startDate: from?.getTime() || null,
+                endDate: to?.getTime() || null
+              });
+              
+              // Reset pagination when date range changes
+              setPagination(prev => ({
+                ...prev,
+                pageIndex: 0
+              }));
+              
+              // Trigger refetch with new date range
+              refetch({
+                input: {
+                  startDate: from?.getTime() || null,
+                  endDate: to?.getTime() || null,
+                  category: state.category,
+                  paymentType: state.paymentType,
+                  type: state.transactionTypeFilter,
+                  searchQuery: state.searchQuery,
+                },
+              });
+            }}
+          />
+          
           {/* Category Filter */}
           <select
             name="category"
@@ -276,49 +315,21 @@ export default function TransactionsPage() {
             <option value="card">Card</option>
             <option value="cash">Cash</option>
           </select>
-
-          {/* Date Range */}
-          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-            {/* <label htmlFor="startDate">
-              <Calendar className="text-text-primary" />
-            </label> */}
-            <div>
-              <p>Start Date</p>
-              <input
-                type="date"
-                name="startDate"
-                value={convertMiliSecIntoDate(state.dateRange.startDate)}
-                onChange={handleDateChange}
-                className="bg-[#1b1b1b] text-white p-2 rounded-md border border-text-primary w-full sm:w-auto"
-              />
-            </div>
-          </div>
-          <div className="w-full sm:w-auto">
-            <p>End Date</p>
-            <input
-              type="date"
-              name="endDate"
-              value={convertMiliSecIntoDate(state.dateRange.endDate)}
-              onChange={handleDateChange}
-              className="bg-[#1b1b1b] text-white p-2 rounded-md border border-text-primary w-full sm:w-auto"
-            />
-          </div>
-
+          
           {/* Clear Filters */}
-          <div className="flex w-full sm:w-auto justify-end">
-            <button
-              onClick={clearFilters}
-              className="bg-text-primary text-white py-2 px-4 rounded-md sm:self-end"
-            >
-              Clear Filters
-            </button>
-          </div>
-        <Button
-          className="max-w-fit self-end mt-1 sm:mt-0 border"
-          onClick={() => navigate("/add-transaction")}
-        >
-          Add Transactions
-        </Button>
+          <button
+            onClick={clearFilters}
+            className="bg-text-primary text-white py-2 px-4 rounded-md sm:self-end"
+          >
+            Clear Filters
+          </button>
+          
+          <Button
+            className="max-w-fit self-end mt-1 sm:mt-0 border"
+            onClick={() => navigate("/add-transaction")}
+          >
+            Add Transactions
+          </Button>
         </div>
       </div>
       {/* Transactions Table */}
@@ -482,44 +493,46 @@ export default function TransactionsPage() {
           </div>
         </div>
       </div>
-      <Dialog
-        open={!!openDeleteDialogId}
-        onOpenChange={() => {
-          setOpenDeleteDialogId(null);
-        }}
-      >
-        <DialogContent className="rounded-xl sm:max-w-[425px] w-[80%] bg-[#2d2d2d] p-6 shadow-lg transition-all duration-300 transform scale-105">
-          <div className="mb-4">
-            <div className="flex justify-center mb-4">
-              <Trash2 className="w-[50px] h-[50px] text-[#f44336]" />
+      <Dialog open={!!openDeleteDialogId} onOpenChange={() => setOpenDeleteDialogId(null)}>
+        <DialogContent className="bg-[#1e1e1e] border border-[#333] rounded-lg p-6 max-w-md w-[95%] mx-auto">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="p-3 bg-red-500/10 rounded-full">
+              <Trash2 className="w-8 h-8 text-red-500" />
             </div>
-            <DialogDescription className="text-xl text-center text-white">
-              Are you sure you want to delete transaction{" "}
-              <span className="font-bold text-text-primary">
-                {openDeleteDialogId}
-              </span>
-              ?
-            </DialogDescription>
-          </div>
-          <div className="flex justify-center gap-4 mt-6">
-            <Button
-              onClick={() => {
-                setOpenDeleteDialogId(null);
-              }}
-              className="bg-[#1b1b1b] text-text-primary hover:bg-[#333] transition-all duration-300"
-            >
-              Cancel
-            </Button>
-            <Button
-              className="bg-red-600 hover:bg-red-700 text-white transition-all duration-300"
-              onClick={handleDelete}
-            >
-              {delLoading ? (
-                <span className="animate-pulse">Deleting...</span>
-              ) : (
-                "Yes, I'm sure"
-              )}
-            </Button>
+            <h3 className="text-lg font-medium text-white">Delete Transaction</h3>
+            <p className="text-sm text-gray-300 text-center">
+              Are you sure you want to delete this transaction? This action cannot be undone.
+            </p>
+            
+            <div className="flex justify-end w-full gap-3 pt-4 mt-2 border-t border-[#333]">
+              <Button
+                type="button"
+                variant="outline"
+                className="px-4 py-2 text-sm font-medium text-gray-300 bg-transparent border border-[#333] hover:bg-[#2a2a2a] transition-colors"
+                onClick={() => setOpenDeleteDialogId(null)}
+                disabled={delLoading}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors"
+                onClick={handleDelete}
+                disabled={delLoading}
+              >
+                {delLoading ? (
+                  <span className="flex items-center">
+                    <svg className="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Deleting...
+                  </span>
+                ) : (
+                  'Delete'
+                )}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
