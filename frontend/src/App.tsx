@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client";
 import { GET_AUTH_USER } from "./graphql/query/user.query";
 import { Toaster } from "react-hot-toast";
 import AllRoutes from "./utils/AllRoutes";
-import { ThemeProvider } from "./components/theme-provider";
+import { HelmetProvider } from "react-helmet-async";
 
 function App() {
   const { loading } = useQuery(GET_AUTH_USER);
@@ -10,12 +10,11 @@ function App() {
   if (loading) return null;
 
   return (
-    <>
-      {/* <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme"> */}
+    <HelmetProvider>
       <AllRoutes />
       <Toaster />
-      {/* </ThemeProvider> */}
-    </>
+    </HelmetProvider>
   );
 }
+
 export default App;

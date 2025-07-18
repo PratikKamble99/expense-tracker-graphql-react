@@ -16,6 +16,7 @@ import mergedTypeDefs from "./typeDefs/index.js";
 import { connectDB } from "./db/connectDB.js";
 import { configurePassport } from "./passport/passport.config.js";
 import { emailCron } from "./cronjob/email-cron.js";
+import authRoutes from "./routes/auth.routes.js";
 
 // Load environment variables
 dotenv.config();
@@ -35,22 +36,38 @@ const store = new MongoDBStore({
 store.on("error", (err) => console.error("Session Store Error:", err));
 
 // Session middleware
+app.set('trust proxy', 1); // Trust first proxy in production
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    store,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Required for cross-origin in production
     },
-    store,
   })
 );
+
+// Initialize Passport and restore authentication state from session
+app.use(passport.initialize());
+app.use(passport.session());
+
+// CORS configuration
+const corsOptions = {
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  credentials: true,
+};
 
 // Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Auth routes
+app.use('/auth', cors(corsOptions), authRoutes);
 
 async function init() {
   // Create Apollo Server
@@ -73,10 +90,7 @@ async function init() {
 
   app.use(
     "/graphql",
-    cors({
-      origin: "http://localhost:5173",
-      credentials: true,
-    }),
+    cors(corsOptions),
     express.json(),
     expressMiddleware(server, {
       context: async ({ req, res }) => buildContext({ req, res }),

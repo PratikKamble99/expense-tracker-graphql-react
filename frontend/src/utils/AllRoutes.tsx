@@ -4,6 +4,7 @@ import ForgotPasswordPage from "@/pages/ForgotPasswordPage";
 import LoginPage from "@/pages/LoginPage";
 import NotFound from "@/pages/NotFoundPage";
 import SignUpPage from "@/pages/SignUpPage";
+import AuthCallbackPage from "@/pages/AuthCallbackPage";
 import TransactionPage from "@/pages/TransactionPage";
 import { useQuery } from "@apollo/client";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
@@ -42,6 +43,7 @@ const AllRoutes = () => {
         }
       />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/auth/callback" element={<AuthCallbackPage />} />
       <Route element={<ProtectedRoutes />}>
         <Route path="/" element={<RootLayout />}>
           <Route index path="/dashboard" element={<Dashboard />} />

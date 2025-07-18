@@ -303,6 +303,13 @@ const userResolver = {
         const user = await context.getUser();
 
         if (!user) throw new Error("unauthenticated");
+        
+        // Prevent deletion of specific email addresses
+        const protectedEmails = ["pratikkamble522000@gmail.com"];
+        if (protectedEmails.includes(user.email.toLowerCase())) {
+          throw new Error("This account cannot be deleted for security reasons");
+        }
+
         await User.findByIdAndDelete(user._id);
         await context.logout();
 

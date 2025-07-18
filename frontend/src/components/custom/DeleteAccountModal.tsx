@@ -1,5 +1,8 @@
 import { useMutation } from "@apollo/client";
+import { useNavigate } from "react-router-dom";
+import { DELETE_ACCOUNT } from "@/graphql/mutations/user.mutation";
 import { Button } from "../ui/button";
+import { toast } from "react-hot-toast";
 import {
   Dialog,
   DialogContent,
@@ -8,9 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import { DELETE_ACCOUNT } from "@/graphql/mutations/user.mutation";
-import toast from "react-hot-toast";
-import useNavigation from "@/hooks/useNavigate";
 
 const DeleteAccountModal = ({
   open,
@@ -19,25 +19,32 @@ const DeleteAccountModal = ({
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const navigate = useNavigate();
   const [deleteUserAccount, { loading, client }] = useMutation(DELETE_ACCOUNT);
 
   async function handleDelete() {
     try {
-      const promise = new Promise((res, rej) => {
-        const response = deleteUserAccount();
-        client.resetStore();
-        res(response);
+      const promise = new Promise(async (resolve, reject) => {
+        try {
+          const response = await deleteUserAccount();
+          await client.resetStore();
+          resolve(response);
+          // Navigate to login after successful deletion
+          navigate('/login');
+        } catch (error) {
+          reject(error);
+        }
       });
+      
       toast.promise(promise, {
         loading: "Deleting...",
-        success: <b>Account deleted successfully!</b>,
-        error: <b>Could not delete.</b>,
+        success: <b>Account deleted successfully! Redirecting to login...</b>,
+        error: (error) => <b>{error?.message || 'Could not delete account'}</b>,
       });
     } catch (error) {
-      console.log(error);
-      toast.error(error?.message);
+      console.error('Delete account error:', error);
+      toast.error(error?.message || 'An error occurred while deleting your account');
     }
-    deleteUserAccount();
   }
 
   return (

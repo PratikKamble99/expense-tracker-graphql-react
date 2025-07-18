@@ -6,6 +6,8 @@ import { SIGN_UP } from "../graphql/mutations/user.mutation";
 import toast from "react-hot-toast";
 import * as yup from "yup";
 import { useFormik } from "formik";
+import { Separator } from "@/components/ui/separator";
+import GoogleOAuthButton from "@/components/GoogleOAuthButton";
 
 const validationSchema = yup.object().shape({
   name: yup.string().required(),
@@ -42,8 +44,8 @@ const SignUpPage = () => {
               input: values,
             },
           });
-        } catch (error) {
-          toast.error(error?.message);
+        } catch (error: any) {
+          toast.error(error?.message || 'An error occurred during signup');
         }
       },
       validationSchema,
@@ -139,10 +141,26 @@ const SignUpPage = () => {
                 </button>
               </div>
             </form>
-            <div className="mt-4 text-sm text-gray-600 text-center">
-              <p>
+            <div className="space-y-4 w-full">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <Separator className="w-full" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
+
+              <GoogleOAuthButton 
+                className="mt-4"
+                text="Sign up with Google"
+              />
+
+              <p className="text-center text-sm text-gray-500 mt-4">
                 Already have an account?{" "}
-                <Link to="/login" className="text-black hover:underline">
+                <Link to="/login" className="text-black hover:underline font-medium">
                   Login here
                 </Link>
               </p>

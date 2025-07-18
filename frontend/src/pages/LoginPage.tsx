@@ -8,6 +8,8 @@ import { useMutation } from "@apollo/client";
 import { LOGIN } from "../graphql/mutations/user.mutation";
 import HelmetComponent from "@/seo/Helmet";
 import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
+import GoogleOAuthButton from "@/components/GoogleOAuthButton";
+import { Separator } from "@/components/ui/separator";
 
 import * as yup from "yup";
 import { useFormik } from "formik";
@@ -37,8 +39,8 @@ const LoginPage = () => {
               input: values,
             },
           });
-        } catch (error) {
-          toast.error(error?.message);
+        } catch (error: any) {
+          toast.error(error?.message || 'An error occurred during login');
         }
       },
       validationSchema,
@@ -107,12 +109,30 @@ const LoginPage = () => {
                 </div>
               </form>
               <div className="mt-4 text-sm text-gray-600 text-center">
-                <p>
-                  {"Don't"} have an account?{" "}
-                  <Link to="/signup" className="text-black hover:underline">
-                    Sign Up
-                  </Link>
-                </p>
+                <div className="space-y-4 w-full">
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <Separator className="w-full" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">
+                        Or continue with
+                      </span>
+                    </div>
+                  </div>
+
+                  <GoogleOAuthButton 
+                    className="mt-4"
+                    text="Sign in with Google"
+                  />
+
+                  <p className="text-center text-sm text-gray-500 mt-4">
+                    Don't have an account?{" "}
+                    <Link to="/signup" className="text-black hover:underline font-medium">
+                      Sign up
+                    </Link>
+                  </p>
+                </div>
                 <p>
                   <Link
                     to="/forgot-password"
