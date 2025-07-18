@@ -40,8 +40,7 @@ const GoogleOAuthButton = ({
         import.meta.env.VITE_API_URL || 'http://localhost:4001'
       );
 
-      alert(redirectUri)
-      
+
       // Add required parameters
       authUrl.searchParams.append('redirect_uri', redirectUri);
       authUrl.searchParams.append('state', encodedState);
