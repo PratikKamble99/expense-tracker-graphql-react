@@ -32,7 +32,7 @@ const transactionSchema = new mongoose.Schema({
       "personal:fitness",
       "transfer:home_support",
     ],
-    // required: true,
+    required: true,
   },
   amount: {
     type: Number,

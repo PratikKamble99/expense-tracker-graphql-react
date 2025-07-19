@@ -13,12 +13,12 @@ interface Props {
 
 const INITIAL_VALUES = {
   description: "",
-  paymentType: "CASH",
+  paymentType: "card",
   category: "",
   amount: 0,
   location: "",
   date: new Date().toISOString().split('T')[0],
-  type: TRANSACITON_TYPES[0],
+  type:'',
 }
 
 export const categoryOptions = [
@@ -62,7 +62,7 @@ const TransactionForm = ({transactionId}:Props) => {
     skip: !transactionId,
   });
 
-  const {values, handleSubmit, handleChange, handleBlur, setValues} = useFormik({
+  const {values, handleSubmit, handleChange, handleBlur, setValues, resetForm} = useFormik({
     initialValues: INITIAL_VALUES,
     onSubmit: async (values) => {
       if (transactionId) {
@@ -84,6 +84,7 @@ const TransactionForm = ({transactionId}:Props) => {
             error: "Failed to create transaction",
           }
         );
+        resetForm();
       }
     },
   });
@@ -181,8 +182,8 @@ const TransactionForm = ({transactionId}:Props) => {
           <div className="relative">
             <select
               className="block appearance-none w-full bg-white text-[#000000] border border-[#5F6C72] py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:ring-2 focus:ring-[#009B6B] focus:border-transparent"
-              id="paymentMethod"
-              name="paymentMethod"
+              id="paymentType"
+              name="paymentType"
               value={values.paymentType}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -253,6 +254,7 @@ const TransactionForm = ({transactionId}:Props) => {
               value={values.type}
               onChange={handleChange}
               onBlur={handleBlur}
+              required
             >
               <option value="">Select a category</option>
               {categoryOptions.map((group) => (
