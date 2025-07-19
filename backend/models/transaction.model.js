@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { CATEGORY_ENUM } from "../utils/constants.js";
 
 const transactionSchema = new mongoose.Schema({
   userId: {
@@ -22,16 +23,7 @@ const transactionSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: [
-      "personal:food",
-      "personal:other",
-      "housing:rent",
-      "housing:utilities:electricity",
-      "housing:utilities:internet",
-      "personal:clothing",
-      "personal:fitness",
-      "transfer:home_support",
-    ],
+    enum: CATEGORY_ENUM,
     required: true,
   },
   amount: {

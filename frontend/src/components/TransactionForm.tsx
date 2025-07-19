@@ -1,94 +1,100 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { CREATE_TRANSACTION, UPDATE_TRANSACTION } from "../graphql/mutations/transaction.mutation";
+import {
+  CREATE_TRANSACTION,
+  UPDATE_TRANSACTION,
+} from "../graphql/mutations/transaction.mutation";
 import toast from "react-hot-toast";
-import { TRANSACITON_TYPES } from "@/constants";
+import { CATEGORY_OPTIONS, TRANSACITON_TYPES } from "@/constants";
 import { GET_TRANSACTION_BY_ID } from "@/graphql/query/transaction.query";
 import { useEffect } from "react";
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 
 interface Props {
-  transactionId: string|undefined
+  transactionId: string | undefined;
 }
 
 const INITIAL_VALUES = {
   description: "",
   paymentType: "card",
-  category: "",
+  category: "income",
   amount: 0,
   location: "",
-  date: new Date().toISOString().split('T')[0],
-  type:'',
-}
-
-export const categoryOptions = [
-  {
-    label: "Personal",
-    options: [
-      { value: "personal:food", label: "Food" },
-      { value: "personal:other", label: "Other" },
-      { value: "personal:clothing", label: "Clothing & Shoes" },
-      { value: "personal:fitness", label: "Fitness (e.g. Protein)" },
-    ],
-  },
-  {
-    label: "Housing",
-    options: [
-      { value: "housing:rent", label: "Room Rent" },
-      { value: "housing:utilities:electricity", label: "Electricity Bill" },
-      { value: "housing:utilities:internet", label: "Internet Bill" },
-    ],
-  },
-  {
-    label: "Transfer",
-    options: [{ value: "transfer:home_support", label: "Sent to Home" }],
-  },
-];
+  date: new Date().toISOString().split("T")[0],
+  type: "",
+};
 
 
 
-const TransactionForm = ({transactionId}:Props) => {
+const TransactionForm = ({ transactionId }: Props) => {
   const navigate = useNavigate();
   const [createTransaction, { loading }] = useMutation(CREATE_TRANSACTION, {
     refetchQueries: ["fetchTransactions"],
   });
 
-  const [updateTransaction, { loading: updateLoading }] = useMutation(UPDATE_TRANSACTION, {
-    refetchQueries: ["fetchTransactions"],
-  });
+  const [updateTransaction, { loading: updateLoading }] = useMutation(
+    UPDATE_TRANSACTION,
+    {
+      refetchQueries: ["fetchTransactions"],
+    }
+  );
 
-  const { data: transactionData, loading: transactionLoading } = useQuery(GET_TRANSACTION_BY_ID, {
-    variables: { id: transactionId },
-    skip: !transactionId,
-  });
+  const { data: transactionData, loading: transactionLoading } = useQuery(
+    GET_TRANSACTION_BY_ID,
+    {
+      variables: { id: transactionId },
+      skip: !transactionId,
+    }
+  );
 
-  const {values, handleSubmit, handleChange, handleBlur, setValues, resetForm} = useFormik({
+  const {
+    values,
+    handleSubmit,
+    handleChange,
+    handleBlur,
+    setValues,
+    resetForm,
+  } = useFormik({
     initialValues: INITIAL_VALUES,
     onSubmit: async (values) => {
       if (transactionId) {
-        toast.promise(
-          updateTransaction({ variables: { input: { ...values, transactionId } } }),
-          {
-            loading: "Updating transaction",
-            success: "Transaction updated successfully",
-            error: "Failed to update transaction",
+        const promise = new Promise((resolve, reject) => {
+          try {
+            const response = updateTransaction({
+              variables: { input: { ...values, transactionId } },
+            });
+            resolve(response);
+            navigate("/transactions");
+          } catch (error) {
+            reject(error);
           }
-        );
-        navigate('/transactions');
+        });
+        toast.promise(promise, {
+          loading: "Updating transaction",
+          success: "Transaction updated successfully",
+          error: "Failed to update transaction",
+        });
       } else {
-        toast.promise(
-          createTransaction({ variables: { input: values } }),
-          {
-            loading: "Creating transaction",
-            success: "Transaction created successfully",
-            error: "Failed to create transaction",
-          }
+        const promise = Promise.resolve(
+          createTransaction({ variables: { input: values } })
         );
-        resetForm();
+        promise
+          .then(() => {
+            resetForm();
+            navigate("/transactions");
+          })
+          .catch((error) => {
+            console.error(error, values);
+          });
+
+        toast.promise(promise, {
+          loading: "Creating transaction",
+          success: "Transaction created successfully",
+          error: "Failed to create transaction",
+        });
       }
     },
   });
-
 
   useEffect(() => {
     if (transactionData?.transaction) {
@@ -99,15 +105,14 @@ const TransactionForm = ({transactionId}:Props) => {
         category: transaction.category,
         amount: transaction.amount,
         location: transaction.location,
-        date: new Date(+transaction.date).toISOString().split('T')[0],
-        type: transaction.type||'',
+        date: new Date(+transaction.date).toISOString().split("T")[0],
+        type: transaction.type || "",
       });
     }
-    
+
     return () => {
       setValues(INITIAL_VALUES);
-    }
-    
+    };
   }, [transactionData]);
 
   // const handleSubmitForm  = async (e: any) => {
@@ -257,7 +262,7 @@ const TransactionForm = ({transactionId}:Props) => {
               required
             >
               <option value="">Select a category</option>
-              {categoryOptions.map((group) => (
+              {CATEGORY_OPTIONS.map((group) => (
                 <optgroup key={group.label} label={group.label}>
                   {group.options.map((option) => (
                     <option key={option.value} value={option.value}>
