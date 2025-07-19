@@ -42,18 +42,20 @@ const RootLayout = () => {
 
   const handleLogout = async () => {
       try {
-        const promise = new Promise((res, rej) => {
-          const response = logoutUser();
-          client.resetStore();
-          res(response);
-        });
-        toast.promise(promise, {
-          loading: "Logging out...",
-          success: "Logged out successfully",
-          error: "Failed to log out",
-        });
+        // First, call the logout mutation
+        await logoutUser();
+        
+        // Then reset the Apollo cache
+        await client.resetStore();
+        
+        // Show success message
+        toast.success("Logged out successfully");
+        
+        // Navigate to login page
+        navigate('/login');
       } catch (error) {
-        toast.error(error?.message);
+        console.error('Logout error:', error);
+        toast.error(error?.message || "Failed to log out");
       }
     };
 
@@ -98,10 +100,7 @@ const RootLayout = () => {
                   Settings
                 </Link> */}
                 <button
-                  onClick={() => {
-                    setIsProfileOpen(false);
-                    handleLogout();
-                  }}
+                  onClick={handleLogout}
                   className="w-full text-left flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                 >
                   <LogOut className="w-4 h-4 mr-2" />
