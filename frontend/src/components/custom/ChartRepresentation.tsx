@@ -31,9 +31,7 @@ const ChartRepresentation = () => {
 
   const totalIncome =
     statisticsData?.categoryStatistics.reduce((acc, curr) => {
-      if (curr.category == "investment") {
-        // acc += curr.amount;
-      } else {
+      if (curr.category == "income") {
         acc += curr.totalAmount;
       }
       return acc;
@@ -65,10 +63,14 @@ const ChartRepresentation = () => {
     obj[month].saving -= obj[month].expense;
   });
 
+  console.log(statisticsData)
+
   const backgroundColor = statisticsData?.categoryStatistics.map((state) => {
-    if (state.category == "expense") return "rgba(255, 99, 132)";
-    if (state.category == "saving") return "rgba(75, 192, 192)";
-    if (state.category == "investment") return "rgba(54, 162, 235)";
+    if (state.category == "expense") return "#FF6B6B";
+    if (state.category == "saving") return "#F5C543";
+    if (state.category == "investment") return "#009B6B";
+    if (state.category == "income") return "#0D3F32";
+    return "#FF6B6B";
   });
 
   const dataKeys = Object.keys(obj);
@@ -203,6 +205,7 @@ const ChartRepresentation = () => {
   const noDataFound = barChartDataConsumption.every(
     (item) => item.data.length == 0
   );
+
 
   return (
     <div className="rounded-xl mt-0 lg:mt-6  flex flex-col lg:flex-row gap-2">

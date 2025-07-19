@@ -67,26 +67,20 @@ const transactionResolver = {
         const transactions = await Transaction.find({ userId: user._id });
 
         const categoryStatistics = transactions.reduce((acc, transaction) => {
-          if (!acc[transaction.category]) {
-            if (transaction.category == "income") {
-            } else {
-              acc[transaction.category] = transaction.amount;
-            }
-          } else if (transaction.category == "expense") {
-            acc["saving"] -= transaction.amount;
-            acc[transaction.category] += transaction.amount;
-          } else {
-            if (transaction.category == "income") {
-              acc["saving"] += transaction.amount;
-            } else {
-              acc[transaction.category] += transaction.amount;
-            }
+          const { category, amount } = transaction;
+          // Initialize category if not present
+          if (!acc[category]) {
+            acc[category] = 0;
           }
-
+          // Sum up the category amount
+          acc[category] += amount;
           return acc;
         }, {});
 
-        console.log(categoryStatistics, ":categoryStatistics ");
+        // Calculate savings once
+        if (categoryStatistics.income !== undefined && categoryStatistics.expense !== undefined) {
+          categoryStatistics.saving = categoryStatistics.income - (categoryStatistics.expense + categoryStatistics.investment);
+        }
 
         return Object.entries(categoryStatistics).map(
           ([category, totalAmount]) => ({ category, totalAmount })

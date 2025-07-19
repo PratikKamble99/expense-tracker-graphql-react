@@ -166,8 +166,6 @@ export default function DateSelectorPopover({
             }}
             className="rounded-lg border border-border p-4 [--rdp-background-color:transparent]"
             classNames={{
-              months: 'w-full',
-              month: 'w-full',
               table: 'w-full',
               head_row: 'w-full',
               row: 'w-full',
@@ -187,16 +185,24 @@ export default function DateSelectorPopover({
               caption: 'flex justify-center py-2 relative items-center text-text-primary',
             }}
             showOutsideDays
+            pagedNavigation
+            navLayout='around'
+            captionLayout='dropdown'
             fixedWeeks
+            autoFocus
+            // showWeekNumber
+            title='Select Date Range'
+            footer={
+              <div className="flex justify-between mt-4 text-sm border-t border-border pt-3">
+                <div className="px-3 py-2 bg-background rounded-lg text-text-primary">
+                  {dateRange.from ? format(dateRange.from, 'MMM d, yyyy') : 'Start date'}
+                </div>
+                <div className="px-3 py-2 bg-background rounded-lg text-text-primary">
+                  {dateRange.to ? format(dateRange.to, 'MMM d, yyyy') : 'End date'}
+                </div>
+              </div>
+            }
           />
-          <div className="flex justify-between mt-4 text-sm border-t border-border pt-3">
-            <div className="px-3 py-2 bg-background rounded-lg text-text-primary">
-              {dateRange.from ? format(dateRange.from, 'MMM d, yyyy') : 'Start date'}
-            </div>
-            <div className="px-3 py-2 bg-background rounded-lg text-text-primary">
-              {dateRange.to ? format(dateRange.to, 'MMM d, yyyy') : 'End date'}
-            </div>
-          </div>
         </div>
       </PopoverContent>
     </Popover>

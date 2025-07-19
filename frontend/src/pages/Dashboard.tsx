@@ -55,19 +55,19 @@ const Dashboard = () => {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <SummaryCard
-          label="Income"
+          label="Current Year Income"
           amount={data?.dashboardSummary?.totalIncome || 0}
           percent={data?.dashboardSummary?.percentIncome || 0}
           type="income"
         />
         <SummaryCard
-          label="Expense"
+          label="Current Year Expense"
           amount={data?.dashboardSummary?.totalExpense || 0}
           percent={data?.dashboardSummary?.percentExpense || 0}
           type="expense"
         />
         <SummaryCard
-          label="Savings"
+          label="Current Year Savings"
           amount={data?.dashboardSummary?.totalSaving || 0}
           percent={data?.dashboardSummary?.percentSaving || 0}
           type="savings"

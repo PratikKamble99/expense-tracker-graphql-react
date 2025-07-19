@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
@@ -163,17 +163,64 @@ export default function TransactionsPage() {
     }
   }
 
-  // Calculate total expense when needed - can be uncommented and used as needed
-  // const totalExpense = useMemo(() => {
-  //   if (!data?.transactions) return 0;
-  //   return data.transactions.reduce((acc, curr) => {
-  //     if (curr.category === "expense") {
-  //       return acc + curr.amount;
-  //     }
-  //     return acc;
-  //   }, 0);
-  // }, [data?.transactions]);
+  const totalExpense = useMemo(() => {
+    return data?.transactions.reduce((acc, curr) => {
+      if (curr.category == "expense") {
+        acc += curr.amount;
+      }
+      return acc;
+    }, 0) || 0;
+  }, [data?.transactions]);
 
+  const totalIncome = useMemo(() => {
+    return data?.transactions.reduce((acc, curr) => {
+      if (curr.category == "income") {
+        acc += curr.amount;
+      }
+      return acc;
+    }, 0) || 0;
+  }, [data?.transactions]);
+
+  const totalInvestment = useMemo(() => {
+    return data?.transactions.reduce((acc, curr) => {
+      if (curr.category == "investment") {
+        acc += curr.amount;
+      }
+      return acc;
+    }, 0) || 0;
+    }, [data?.transactions]);
+
+  const totalSaving = useMemo(() => {
+    return totalIncome - totalExpense - totalInvestment;
+  }, [totalIncome, totalExpense, totalInvestment]);
+
+  const personalExpense = useMemo(() => {
+    return data?.transactions.reduce((acc, curr) => {
+      if (curr.type?.includes("personal")) {
+        acc += curr.amount;
+      }
+      return acc;
+    }, 0) || 0;
+  }, [data?.transactions]);
+
+  const transferExpense = useMemo(() => {
+    return data?.transactions.reduce((acc, curr) => {
+      if (curr.type?.includes("transfer")) {
+        acc += curr.amount;
+      }
+      return acc;
+    }, 0) || 0;
+  }, [data?.transactions]);
+
+  const housingExpense = useMemo(() => {
+    return data?.transactions.reduce((acc, curr) => {
+      if (curr.type?.includes("housing")) {
+        acc += curr.amount;
+      }
+      return acc;
+    }, 0) || 0;
+  }, [data?.transactions]);
+  
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     if (name === 'transactionTypeFilter') {
@@ -445,6 +492,75 @@ export default function TransactionsPage() {
             )}
           </div>
         )}
+      </div>
+
+      {/* Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+        {/* Total Expense */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-[#E6F1EC] hover:shadow-md transition-shadow">
+          <div className="text-[#5F6C72] text-sm font-medium mb-1">Total Expense</div>
+          <div className="text-2xl font-bold text-[#0D3F32]">
+            ₹{totalExpense.toLocaleString()}
+          </div>
+          <div className="h-1 w-12 bg-[#F5C543] mt-2 rounded-full"></div>
+        </div>
+
+        {/* Total Investment */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-[#E6F1EC] hover:shadow-md transition-shadow">
+          <div className="text-[#5F6C72] text-sm font-medium mb-1">Total Investment</div>
+          <div className="text-2xl font-bold text-[#0D3F32]">
+            ₹{totalInvestment.toLocaleString()}
+          </div>
+          <div className="h-1 w-12 bg-[#5F6C72] mt-2 rounded-full"></div>
+        </div>
+
+        {/* Total Income */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-[#E6F1EC] hover:shadow-md transition-shadow">
+          <div className="text-[#5F6C72] text-sm font-medium mb-1">Total Income</div>
+          <div className="text-2xl font-bold text-[#0D3F32]">
+            ₹{totalIncome.toLocaleString()}
+          </div>
+          <div className="h-1 w-12 bg-[#0D3F32] mt-2 rounded-full"></div>
+        </div>
+
+        {/* Total Savings */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-[#E6F1EC] hover:shadow-md transition-shadow">
+          <div className="text-[#5F6C72] text-sm font-medium mb-1">Total Savings</div>
+          <div className="text-2xl font-bold text-[#0D3F32]">
+            ₹{totalSaving.toLocaleString()}
+          </div>
+          <div className="h-1 w-12 bg-[#009B6B] mt-2 rounded-full"></div>
+        </div>
+      </div>
+
+      {/* Second Row of Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        {/* Housing Expense */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-[#E6F1EC] hover:shadow-md transition-shadow">
+          <div className="text-[#5F6C72] text-sm font-medium mb-1">Housing Expense</div>
+          <div className="text-2xl font-bold text-[#0D3F32]">
+            ₹{housingExpense.toLocaleString()}
+          </div>
+          <div className="h-1 w-12 bg-[#E6F1EC] mt-2 rounded-full"></div>
+        </div>
+
+        {/* Personal Expense */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-[#E6F1EC] hover:shadow-md transition-shadow">
+          <div className="text-[#5F6C72] text-sm font-medium mb-1">Personal Expense</div>
+          <div className="text-2xl font-bold text-[#0D3F32]">
+            ₹{personalExpense.toLocaleString()}
+          </div>
+          <div className="h-1 w-12 bg-[#C8E6D7] mt-2 rounded-full"></div>
+        </div>
+
+        {/* Transfer Expense */}
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-[#E6F1EC] hover:shadow-md transition-shadow">
+          <div className="text-[#5F6C72] text-sm font-medium mb-1">Transfer Expense</div>
+          <div className="text-2xl font-bold text-[#0D3F32]">
+            ₹{transferExpense.toLocaleString()}
+          </div>
+          <div className="h-1 w-12 bg-[#A4C5B9] mt-2 rounded-full"></div>
+        </div>
       </div>
 
       {/* Delete Dialog */}
