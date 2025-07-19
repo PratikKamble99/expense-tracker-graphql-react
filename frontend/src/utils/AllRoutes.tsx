@@ -50,7 +50,7 @@ const AllRoutes = () => {
           <Route index path="/add-transaction" element={<AddTransaction />} />
           <Route index path="/transactions" element={<TransactionsPage />} />
           <Route index path="/profile" element={<ProfilePage />} />
-          <Route path="/transaction/:id" element={<TransactionPage />} />
+          <Route path="/transaction/:id" element={<AddTransaction isEditMode />} />
         </Route>
       </Route>
       <Route path="*" element={<NotFound />} />

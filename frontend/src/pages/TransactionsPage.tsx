@@ -1,34 +1,29 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { Pencil, Trash2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { format } from "date-fns";
+import { useMutation, useQuery } from "@apollo/client";
 import {
-  createColumnHelper,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { debounce, formatDate } from "@/lib/utils";
-import { GET_TRANSACTIONS } from "@/graphql/query/transaction.query";
-import { useMutation, useQuery } from "@apollo/client";
-import { DELETE_TRANSACTION } from "@/graphql/mutations/transaction.mutation";
-import toast from "react-hot-toast";
+
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-} from "@/components/ui/dialog";
-import { Link, useNavigate } from "react-router-dom";
-import LoadingSpinner from "@/components/custom/Loading";
-import { categoryOptions } from "@/components/TransactionForm";
-import {
-  resetTransactionFilter,
-  setTransactionFilterDate,
-  setTransactionFilterField,
-  setTransactionType,
-  useGetTransactionFilterState,
-} from "@/context/ZustlandContext";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import LoadingSpinner from "@/components/custom/Loading";
 import DateSelectorPopover from "@/components/custom/DateSelectPopover";
+import { GET_TRANSACTIONS } from "@/graphql/query/transaction.query";
+import { DELETE_TRANSACTION } from "@/graphql/mutations/transaction.mutation";
+import {
+  useGetTransactionFilterState,
+  setTransactionFilterField,
+  setTransactionFilterDate,
+  resetTransactionFilter,
+  setTransactionType
+} from "@/context/ZustlandContext";
 
 type Transaction = {
   _id: string;
@@ -38,31 +33,26 @@ type Transaction = {
   paymentType: "cash" | "card";
   date: string;
   type: string;
-  location: number;
-  _: React.ReactNode;
+  location: string;
 };
 
-const columnHelper = createColumnHelper<Transaction>();
-
-const empty = [];
+const empty: Transaction[] = [];
 
 export default function TransactionsPage() {
-  const navigate = useNavigate();
-
-  const [deleteTransaction, { loading: delLoading }] = useMutation(
-    DELETE_TRANSACTION,
-    { refetchQueries: ["fetchTransactions", "fetchCategoryStatistics"] }
-  );
-
-  const state = useGetTransactionFilterState();
-
-  const [openDeleteDialogId, setOpenDeleteDialogId] = useState<string | null>(
-    null
-  );
-
+  const [openDeleteDialogId, setOpenDeleteDialogId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [pagination, setPagination] = useState({
-    pageIndex: 0, //initial page index
-    pageSize: 10, //default page size
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  
+  const state = useGetTransactionFilterState();
+  
+  const [deleteTransaction] = useMutation(DELETE_TRANSACTION, {
+    refetchQueries: [
+      "fetchTransactions",
+      "fetchCategoryStatistics"
+    ],
   });
 
   const { data, loading, refetch } = useQuery(GET_TRANSACTIONS, {
@@ -76,168 +66,148 @@ export default function TransactionsPage() {
         searchQuery: state.searchQuery,
       },
     },
-    // skip:
   });
 
   const columns = [
-    columnHelper.accessor("description", {
-      cell: (info) => info.getValue(),
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor((row) => row.category, {
-      id: "category",
-      cell: (info) => <span>{info.getValue()}</span>,
-      header: () => <span>Category</span>,
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor("amount", {
-      header: () => "Amount",
-      cell: (info) => "₹" + info.renderValue(),
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor("paymentType", {
-      header: () => <span>Payment Method</span>,
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor("type", {
-      header: () => <span>Payment Type</span>,
-      footer: (info) => info.column.id,
-      cell: (info) => info.getValue() || "N/A",
-    }),
-    columnHelper.accessor("date", {
-      header: "date",
-      footer: (info) => info.column.id,
-      cell: (info) => formatDate(info.getValue()),
-    }),
-    columnHelper.accessor("location", {
-      header: "Location",
-      footer: (info) => info.column.id,
-      cell: (info) => info.getValue() || "N/A",
-    }),
-    columnHelper.accessor("_", {
-      header: "Action",
-      footer: (info) => info.column.id,
-      cell: (info) => {
-        return (
-          <div className="flex items-center gap-x-1">
-            <Link
-              to={`/transaction/${info.row.original._id}`}
-              className="cursor-pointer"
-            >
-              <Pencil className="h-4" />
-            </Link>
-            <Trash2
-              className="h-5 cursor-pointer text-red-500"
-              onClick={() => setOpenDeleteDialogId(info.row.original._id)}
-            />
-          </div>
-        );
+    {
+      accessorKey: "description",
+      header: "Description",
+      cell: (info: any) => info.getValue(),
+    },
+    {
+      accessorKey: "category",
+      header: "Category",
+      cell: (info: any) => (
+        <span className="capitalize">{info.getValue()}</span>
+      ),
+    },
+    {
+      accessorKey: "amount",
+      header: "Amount",
+      cell: (info: any) => {
+        const amount = info.row.original.amount;
+        const isExpense = info.row.original.category === 'expense';
+        const amountClass = isExpense ? 'text-[#F5C543]' : 'text-[#009B6B]';
+        return <span className={`font-medium ${amountClass}`}>₹{Math.abs(amount).toLocaleString()}</span>;
       },
-    }),
+    },
+    {
+      accessorKey: "paymentType",
+      header: "Payment",
+      cell: (info: any) => (
+        <span className="px-2 py-1 text-xs rounded-full bg-[#E6F1EC] text-[#0D3F32] capitalize">
+          {info.getValue()}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "date",
+      header: "Date",
+      cell: (info: any) => {
+        const dateValue = info.getValue();
+        if (!dateValue) return 'N/A';
+        const date = new Date(+dateValue);
+        return format(date, 'dd MMM yyyy');
+      } ,
+    },
+    {
+      accessorKey: "location",
+      header: "Location",
+      cell: (info: any) => info.getValue() || "N/A",
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: (info: any) => (
+        <div className="flex items-center gap-x-2">
+          <Link
+            to={`/transaction/${info.row.original._id}`}
+            className="text-[#0D3F32] hover:text-[#009B6B] transition-colors"
+          >
+            <Pencil className="h-4 w-4" />
+          </Link>
+          <button
+            onClick={() => setOpenDeleteDialogId(info.row.original._id)}
+            className="text-[#F5C543] hover:text-red-500 transition-colors"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
+      ),
+    },
   ];
 
   const table = useReactTable({
     data: data?.transactions || empty,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(), //load client-side pagination code
-    onPaginationChange: setPagination, //update the pagination state when internal APIs mutate the pagination state
+    getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination,
     state: {
       pagination,
     },
   });
 
   async function handleDelete() {
-    // Add your delete transaction logic here
+    setIsDeleting(true);
     try {
+      if (!openDeleteDialogId) return;
       await deleteTransaction({
-        variables: {
-          input: openDeleteDialogId,
-        },
+        variables: { input: openDeleteDialogId },
       });
-      toast.success("Transaction deleted successfully");
       setOpenDeleteDialogId(null);
     } catch (error) {
-      toast.error(error?.message);
+      console.error("Error deleting transaction:", error);
+    } finally {
+      setIsDeleting(false);
     }
   }
 
-  const totalExpense =
-    data?.transactions.reduce((acc, curr) => {
-      if (curr.category == "expense") {
-        acc += curr.amount;
-      }
-      return acc;
-    }, 0) || 0;
-
-  const totalIncome =
-    data?.transactions.reduce((acc, curr) => {
-      if (curr.category == "income") {
-        acc += curr.amount;
-      }
-      return acc;
-    }, 0) || 0;
-
-  const totalInvestment =
-    data?.transactions.reduce((acc, curr) => {
-      if (curr.category == "investment") {
-        acc += curr.amount;
-      }
-      return acc;
-    }, 0) || 0;
-
-  const totalSaving = totalIncome - totalExpense - totalInvestment;
-
-  const personalExpense =
-    data?.transactions.reduce((acc, curr) => {
-      if (curr.type?.includes("personal")) {
-        acc += curr.amount;
-      }
-      return acc;
-    }, 0) || 0;
-
-  const transferExpense =
-    data?.transactions.reduce((acc, curr) => {
-      if (curr.type?.includes("transfer")) {
-        acc += curr.amount;
-      }
-      return acc;
-    }, 0) || 0;
-
-  const housingExpense =
-    data?.transactions.reduce((acc, curr) => {
-      if (curr.type?.includes("housing")) {
-        acc += curr.amount;
-      }
-      return acc;
-    }, 0) || 0;
+  // Calculate total expense when needed - can be uncommented and used as needed
+  // const totalExpense = useMemo(() => {
+  //   if (!data?.transactions) return 0;
+  //   return data.transactions.reduce((acc, curr) => {
+  //     if (curr.category === "expense") {
+  //       return acc + curr.amount;
+  //     }
+  //     return acc;
+  //   }, 0);
+  // }, [data?.transactions]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setTransactionFilterField(name as any, value);
+    if (name === 'transactionTypeFilter') {
+      setTransactionType(value);
+    } else if (name === 'category' || name === 'paymentType' || name === 'searchQuery') {
+      setTransactionFilterField(name, value);
+    }
   };
-
   const clearFilters = () => {
     resetTransactionFilter();
   };
-
-  // const handleSearchChange = React.useCallback(debounce((e: React.ChangeEvent<HTMLInputElement>) => {
-  //   console.log(e.target.value);
-  //   setTransactionFilterField("searchQuery", e.target.value);
-  // }, 500), []);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>)=>{
     setTransactionFilterField("searchQuery", e.target.value);
   }
 
   return (
-    <div className="bg-[#1b1b1b] text-[#868686] min-h-screen p-6 ">
-      {/* Filter Section */}
-      <div className="bg-[#28282a] p-4  shadow-lg mb-6 rounded-xl">
+    <div className="bg-white min-h-screen p-6 pb-14 lg:pb-0">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-black">Transactions</h1>
+        <Link to="/add-transaction">
+          <Button className="bg-[#0D3F32] hover:bg-[#0D3F32]/90 text-white">
+            Add Transaction
+          </Button>
+        </Link>
+      </div>
+
+            {/* Filter Section */}
+            <div className="bg-white p-4 border border-[#E6F1EC] shadow-sm mb-6 rounded-lg">
         <div className="flex flex-wrap gap-4 items-end">
           <Input 
-            placeholder="Search" 
-            className="bg-[#1b1b1b] text-white p-2 rounded-md border border-text-primary w-full sm:w-auto"
+            placeholder="Search transactions..." 
+            className="bg-white text-black p-2 rounded-md border border-[#E6F1EC] w-full sm:w-64 focus:ring-2 focus:ring-[#0D3F32] focus:border-transparent"
             value={state.searchQuery}
             onChange={handleSearchChange}
           />
@@ -271,271 +241,237 @@ export default function TransactionsPage() {
               });
             }}
           />
-          
-          {/* Category Filter */}
-          <select
+          <select 
             name="category"
             value={state.category}
             onChange={handleFilterChange}
-            className="bg-[#1b1b1b] text-white p-2 rounded-md border border-text-primary w-full sm:w-auto"
+            className="bg-white text-black p-2 rounded-md border border-[#E6F1EC] w-full sm:w-64 focus:ring-2 focus:ring-[#0D3F32] focus:border-transparent"
           >
             <option value="">All Categories</option>
+            <option value="income">Income</option>
             <option value="expense">Expense</option>
             <option value="investment">Investment</option>
-            <option value="income">Income</option>
           </select>
-          <select
-            name="type"
-            value={state.transactionTypeFilter}
-            onChange={(e) => {
-              setTransactionType(e.target.value);
-            }}
-            className="bg-[#1b1b1b] text-white p-2 rounded-md border border-text-primary w-full sm:w-auto"
-          >
-            <option value="">Select a category</option>
-            {categoryOptions.map((group) => (
-              <optgroup key={group.label} label={group.label}>
-                {group.options.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
-
-          {/* Payment Type Filter */}
-          <select
+          <select 
             name="paymentType"
             value={state.paymentType}
             onChange={handleFilterChange}
-            className="bg-[#1b1b1b] text-white p-2 rounded-md border border-text-primary w-full sm:w-auto"
+            className="bg-white text-black p-2 rounded-md border border-[#E6F1EC] w-full sm:w-64 focus:ring-2 focus:ring-[#0D3F32] focus:border-transparent"
           >
             <option value="">All Payment Types</option>
-            <option value="card">Card</option>
             <option value="cash">Cash</option>
+            <option value="card">Card</option>
+            <option value="online">Online</option>
           </select>
-          
-          {/* Clear Filters */}
-          <button
+          <select 
+            name="transactionTypeFilter"
+            value={state.transactionTypeFilter}
+            onChange={handleFilterChange}
+            className="bg-white text-black p-2 rounded-md border border-[#E6F1EC] w-full sm:w-64 focus:ring-2 focus:ring-[#0D3F32] focus:border-transparent"
+          >
+            <option value="">All Transaction Types</option>
+            <option value="personal">Personal</option>
+            <option value="transfer">Transfer</option>
+            <option value="housing">Housing</option>
+          </select>
+          <Button 
+            className="bg-[#0D3F32] hover:bg-[#0D3F32]/90 text-white"
             onClick={clearFilters}
-            className="bg-text-primary text-white py-2 px-4 rounded-md sm:self-end"
           >
             Clear Filters
-          </button>
-          
-          <Button
-            className="max-w-fit self-end mt-1 sm:mt-0 border"
-            onClick={() => navigate("/add-transaction")}
-          >
-            Add Transactions
           </Button>
         </div>
       </div>
+
       {/* Transactions Table */}
-      <div className="bg-[#28282a] p-4 shadow-lg overflow-x-auto h-[480px] rounded-xl">
+      <div className="bg-white p-4 border border-[#E6F1EC] shadow-sm rounded-lg mb-6">
         {loading ? (
-          <LoadingSpinner />
+          <div className="flex justify-center items-center h-64">
+            <LoadingSpinner className="text-[#0D3F32]" />
+          </div>
         ) : (
-          <table className="w-full text-white">
-            <thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr
-                  key={headerGroup.id}
-                  className="text-text-primary border-b border-[#1b1b1b]"
-                >
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      align="left"
-                      scope="col"
-                      className="py-2"
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowCount() <= 0 ? (
-                <tr>
-                  <td colSpan={6} align="center" className="text-gray-500 py-4">
-                    No transactions found
-                  </td>
-                </tr>
-              ) : (
-                table.getRowModel().rows.map((row) => (
-                  <tr key={row.id} className="border-b border-[#1b1b1b]">
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} scope="row" className="py-2">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left text-gray-700">
+              <thead className="text-xs uppercase" style={{
+                background: 'linear-gradient(to right, #E6F1EC, #F5FAF7)'
+              }}>
+                {table.getHeaderGroups().map(headerGroup => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map(header => (
+                      <th 
+                        key={header.id} 
+                        className="px-6 py-3 font-medium text-[#0D3F32]"
+                      >
                         {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
+                          header.column.columnDef.header,
+                          header.getContext()
                         )}
-                      </td>
+                      </th>
                     ))}
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ))}
+              </thead>
+              <tbody>
+                {table.getRowModel().rows.length > 0 ? (
+                  table.getRowModel().rows.map(row => (
+                    <tr 
+                      key={row.id}
+                      className="border-b border-[#E6F1EC] hover:bg-[#F5FAF7] transition-colors"
+                    >
+                      {row.getVisibleCells().map(cell => (
+                        <td 
+                          key={cell.id}
+                          className="px-6 py-4 font-medium"
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={columns.length} className="px-6 py-4 text-center text-[#7A7A7A]">
+                      No transactions found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+            
+            {/* Pagination */}
+            {table.getPageCount() > 1 && (
+              <div className="mt-6 flex justify-center">
+                <nav aria-label="Page navigation">
+                  <ul className="inline-flex -space-x-px">
+                    <li>
+                      <button
+                        className="rounded-s-lg flex items-center justify-center px-3 h-8 leading-tight text-[#0D3F32] bg-white border border-[#E6F1EC] hover:bg-[#E6F1EC] disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={!table.getCanPreviousPage()}
+                        onClick={() => table.previousPage()}
+                      >
+                        Previous
+                      </button>
+                    </li>
+                    
+                    {/* Always show first page */}
+                    <li>
+                      <button
+                        className={`flex items-center justify-center px-3 h-8 leading-tight border ${
+                          0 === pagination.pageIndex
+                            ? 'bg-[#0D3F32] text-white border-[#0D3F32]'
+                            : 'bg-white text-[#0D3F32] border-[#E6F1EC] hover:bg-[#E6F1EC]'
+                        }`}
+                        onClick={() => table.setPageIndex(0)}
+                      >
+                        1
+                      </button>
+                    </li>
+
+                    {/* Show ellipsis if current page is far from start */}
+                    {pagination.pageIndex > 2 && (
+                      <li className="px-2 flex items-center">
+                        <span className="text-[#0D3F32]">...</span>
+                      </li>
+                    )}
+
+                    {/* Show pages around current page */}
+                    {Array.from({ length: Math.min(3, table.getPageCount()) }, (_, i) => {
+                      // Calculate page index to show
+                      let pageIndex;
+                      if (pagination.pageIndex <= 1) {
+                        pageIndex = i + 1;
+                      } else if (pagination.pageIndex >= table.getPageCount() - 2) {
+                        pageIndex = table.getPageCount() - 3 + i;
+                      } else {
+                        pageIndex = pagination.pageIndex - 1 + i;
+                      }
+
+                      // Skip if out of bounds or already shown
+                      if (pageIndex <= 0 || pageIndex >= table.getPageCount() - 1) {
+                        return null;
+                      }
+
+                      return (
+                        <li key={pageIndex}>
+                          <button
+                            className={`flex items-center justify-center px-3 h-8 leading-tight border ${
+                              pageIndex === pagination.pageIndex
+                                ? 'bg-[#0D3F32] text-white border-[#0D3F32]'
+                                : 'bg-white text-[#0D3F32] border-[#E6F1EC] hover:bg-[#E6F1EC]'
+                            }`}
+                            onClick={() => table.setPageIndex(pageIndex)}
+                          >
+                            {pageIndex + 1}
+                          </button>
+                        </li>
+                      );
+                    })}
+
+                    {/* Show ellipsis if current page is far from end */}
+                    {pagination.pageIndex < table.getPageCount() - 3 && (
+                      <li className="px-2 flex items-center">
+                        <span className="text-[#0D3F32]">...</span>
+                      </li>
+                    )}
+
+                    {/* Always show last page if there's more than one page */}
+                    {table.getPageCount() > 1 && (
+                      <li>
+                        <button
+                          className={`flex items-center justify-center px-3 h-8 leading-tight border ${
+                            table.getPageCount() - 1 === pagination.pageIndex
+                              ? 'bg-[#0D3F32] text-white border-[#0D3F32]'
+                              : 'bg-white text-[#0D3F32] border-[#E6F1EC] hover:bg-[#E6F1EC]'
+                          }`}
+                          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                        >
+                          {table.getPageCount()}
+                        </button>
+                      </li>
+                    )}
+                    
+                    <li>
+                      <button
+                        className="rounded-e-lg flex items-center justify-center px-3 h-8 leading-tight text-[#0D3F32] bg-white border border-[#E6F1EC] hover:bg-[#E6F1EC] disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={!table.getCanNextPage()}
+                        onClick={() => table.nextPage()}
+                      >
+                        Next
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            )}
+          </div>
         )}
       </div>
-      <div className="mt-3 flex justify-center sm:justify-end">
-        {table.getPageCount() > 1 ? (
-          <nav aria-label="Page navigation example">
-            <ul className="inline-flex -space-x-px text-sm">
-              <li>
-                <button
-                  className="rounded-s-lg flex items-center justify-center px-3 h-8 leading-tight text-text-primary bg-[#1b1b1b] border border-text-primary disabled:text-opacity-50"
-                  disabled={!table.getCanPreviousPage()}
-                  onClick={() => table.previousPage()}
-                >
-                  Previous
-                </button>
-              </li>
-              {Array.from({ length: table.getPageCount() }, (_, index) => (
-                <li key={index}>
-                  <button
-                    className={`flex items-center justify-center px-3 h-8 leading-tight text-text-primary bg-[#1b1b1b] border border-text-primary hover:bg-text-primary hover:text-white dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white ${
-                      index == +pagination.pageIndex
-                        ? "bg-text-primary text-white"
-                        : ""
-                    }`}
-                    onClick={() => {
-                      table.setPageIndex(index);
-                    }}
-                  >
-                    {index + 1}
-                  </button>
-                </li>
-              ))}
-              <li>
-                <button
-                  className="rounded-e-lg flex items-center justify-center px-3 h-8 leading-tight text-text-primary bg-[#1b1b1b] border border-text-primary disabled:text-opacity-50"
-                  disabled={!table.getCanNextPage()}
-                  onClick={() => table.nextPage()}
-                >
-                  Next
-                </button>
-              </li>
-            </ul>
-          </nav>
-        ) : null}
-      </div>
-      <div className="flex flex-col sm:flex-row gap-6 sm:gap-12 mt-6">
-        <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
-          <div className="text-2xl font-semibold mb-2 text-text-primary">
-            Total Expense
-          </div>
-          <div className="text-3xl font-bold text-red-600">
-            {totalExpense.toLocaleString()}
-          </div>
-        </div>
 
-        <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
-          <div className="text-2xl font-semibold mb-2 text-text-primary">
-            Total Investment
-          </div>
-          <div className="text-3xl font-bold text-green-500">
-            {totalInvestment.toLocaleString()}
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
-          <div className="text-2xl font-semibold mb-2 text-text-primary">
-            Total Income
-          </div>
-          <div className="text-3xl font-bold text-yellow-500">
-            {totalIncome.toLocaleString()}
-          </div>
-        </div>
-        <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
-          <div className="text-2xl font-semibold mb-2 text-text-primary">
-            Total Savings
-          </div>
-          <div className="text-3xl font-bold text-yellow-500">
-            {totalSaving.toLocaleString()}
-          </div>
-        </div>
-      </div>
-      <div className="flex flex-col sm:flex-row gap-6 sm:gap-12 mt-6">
-        <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
-          <div className="text-2xl font-semibold mb-2 text-text-primary">
-            Housing Expense
-          </div>
-          <div className="text-3xl font-bold text-red-600">
-            {housingExpense.toLocaleString()}
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
-          <div className="text-2xl font-semibold mb-2 text-text-primary">
-            Personal Expense
-          </div>
-          <div className="text-3xl font-bold text-green-500">
-            {personalExpense.toLocaleString()}
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center sm:items-start bg-[#28282A] rounded-lg p-6 shadow-md w-full sm:w-[30%] text-white">
-          <div className="text-2xl font-semibold mb-2 text-text-primary">
-            Transfer Expense
-          </div>
-          <div className="text-3xl font-bold text-yellow-500">
-            {transferExpense.toLocaleString()}
-          </div>
-        </div>
-      </div>
-      <Dialog open={!!openDeleteDialogId} onOpenChange={() => setOpenDeleteDialogId(null)}>
-        <DialogContent className="bg-[#1e1e1e] border border-[#333] rounded-lg p-6 max-w-md w-[95%] mx-auto">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="p-3 bg-red-500/10 rounded-full">
-              <Trash2 className="w-8 h-8 text-red-500" />
-            </div>
-            <h3 className="text-lg font-medium text-white">Delete Transaction</h3>
-            <p className="text-sm text-gray-300 text-center">
-              Are you sure you want to delete this transaction? This action cannot be undone.
-            </p>
-            
-            <div className="flex justify-end w-full gap-3 pt-4 mt-2 border-t border-[#333]">
-              <Button
-                type="button"
-                variant="outline"
-                className="px-4 py-2 text-sm font-medium text-gray-300 bg-transparent border border-[#333] hover:bg-[#2a2a2a] transition-colors"
-                onClick={() => setOpenDeleteDialogId(null)}
-                disabled={delLoading}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 transition-colors"
-                onClick={handleDelete}
-                disabled={delLoading}
-              >
-                {delLoading ? (
-                  <span className="flex items-center">
-                    <svg className="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Deleting...
-                  </span>
-                ) : (
-                  'Delete'
-                )}
-              </Button>
-            </div>
+      {/* Delete Dialog */}
+      { !!openDeleteDialogId && <Dialog 
+        open={!!openDeleteDialogId}
+        onOpenChange={(open) => !open && setOpenDeleteDialogId(null)}
+      >
+        <DialogContent className="p-6">
+          <h2 className="text-lg font-bold text-black mb-4">Delete Transaction</h2>
+          <p className="text-sm text-gray-700 mb-6">Are you sure you want to delete this transaction?</p>
+          <div className="flex justify-end gap-x-4">
+            <Button 
+              className="bg-white text-black border border-[#E6F1EC] hover:bg-[#F5FAF7] transition-colors"
+              onClick={() => setOpenDeleteDialogId(null)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              className="bg-[#F5C543] hover:bg-[#F5C543]/90 text-white"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              Delete
+            </Button>
           </div>
         </DialogContent>
-      </Dialog>
+      </Dialog>}
     </div>
   );
 }

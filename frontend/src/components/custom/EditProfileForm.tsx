@@ -4,7 +4,6 @@ import { useMutation, useQuery } from "@apollo/client";
 import { GET_AUTH_USER } from "@/graphql/query/user.query";
 import { EDIT_USER } from "@/graphql/mutations/user.mutation";
 import toast from "react-hot-toast";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Label } from "../ui/label";
 
 type Props = {};
@@ -13,12 +12,27 @@ const EditProfileForm = ({}: Props) => {
   const { data: authUserData, loading } = useQuery(GET_AUTH_USER);
   const [EditUser] = useMutation(EDIT_USER);
 
-  const { values, handleSubmit, setFieldValue, setValues } = useFormik({
+  const { values, handleSubmit, setFieldValue, setValues, errors, touched } = useFormik({
     initialValues: {
       name: "",
       email: "",
       username: "",
       gender: "",
+    },
+    validate: (values) => {
+      const errors: any = {};
+      if (!values.name) {
+        errors.name = 'Name is required';
+      }
+      if (!values.username) {
+        errors.username = 'Username is required';
+      } else if (!/^[a-z0-9_]+$/.test(values.username)) {
+        errors.username = 'Username can only contain lowercase letters, numbers and underscores';
+      }
+      if (!values.gender) {
+        errors.gender = 'Please select a gender';
+      }
+      return errors;
     },
     onSubmit: async (values) => {
       try {
@@ -40,9 +54,9 @@ const EditProfileForm = ({}: Props) => {
           },
         });
         toast.success("Profile updated successfully.");
-      } catch (error) {
+      } catch (error: any) {
         console.error(error);
-        toast.error(error?.message || "An error occurred.");
+        toast.error(error?.message || 'An error occurred while updating profile');
       }
     },
   });
@@ -58,16 +72,20 @@ const EditProfileForm = ({}: Props) => {
     }
   }, [authUserData]);
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFieldValue(name, value);
   };
 
+  const handleRadioChange = (value: string) => {
+    setFieldValue('gender', value);
+  };
+
   return (
-    <form className="space-y-6 w-full sm:w-[50%]" onSubmit={handleSubmit}>
+    <form className="space-y-6 w-full max-w-lg" onSubmit={handleSubmit}>
       {/* Name Field */}
       <div className="flex flex-col gap-2">
-        <label htmlFor="name" className="text-text-primary font-medium">
+        <label htmlFor="name" className="block text-sm font-medium text-[#7A7A7A] mb-1">
           Full Name
         </label>
         <input
@@ -76,7 +94,7 @@ const EditProfileForm = ({}: Props) => {
           type="text"
           value={values.name}
           onChange={handleChange}
-          className="p-3 rounded-md bg-[#1b1b1b] text-white border border-[#292A2E] focus:outline-none focus:ring-2 focus:ring-text-primary focus:border-text-primary"
+          className="w-full px-4 py-3 bg-white text-[#000000] border border-[#E6F1EC] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009B6B] focus:border-transparent"
           required
         />
       </div>
@@ -93,7 +111,7 @@ const EditProfileForm = ({}: Props) => {
           value={values.email}
           onChange={handleChange}
           disabled
-          className="p-3 rounded-md bg-[#1b1b1b] text-gray-500 border border-[#292A2E] focus:outline-none disabled:cursor-not-allowed"
+          className="w-full px-4 py-3 bg-[#F5FAF7] text-[#7A7A7A] border border-[#E6F1EC] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009B6B] focus:border-transparent disabled:cursor-not-allowed"
         />
       </div>
 
@@ -108,57 +126,49 @@ const EditProfileForm = ({}: Props) => {
           type="text"
           value={values.username}
           onChange={handleChange}
-          className="p-3 rounded-md bg-[#1b1b1b] text-white border border-[#292A2E] focus:outline-none focus:ring-2 focus:ring-text-primary focus:border-text-primary"
+          className="w-full px-4 py-3 bg-white text-[#000000] border border-[#E6F1EC] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009B6B] focus:border-transparent"
           required
         />
       </div>
 
       {/* Gender Field */}
-      <div className="flex flex-col gap-2">
-        <label className="text-text-primary font-medium">Gender</label>
-        <RadioGroup
-          name="gender"
-          value={values.gender}
-          onChange={handleChange}
-          className="flex gap-4"
-        >
+      <div className="space-y-1">
+        <label className="block text-sm font-medium text-[#7A7A7A] mb-1">
+          Gender
+          {errors.gender && touched.gender && (
+            <span className="text-red-500 text-xs font-normal ml-2">{errors.gender}</span>
+          )}
+        </label>
+        <div className="flex gap-6 mt-2">
           <div className="flex items-center space-x-2">
-            <RadioGroupItem
+            <input
+              type="radio"
               id="male"
+              name="gender"
               value="male"
-              className="focus:ring-text-primary"
-              onClick={(e) =>
-                handleChange({
-                  target: {
-                    name: "gender",
-                    value: e.currentTarget.value,
-                  },
-                })
-              }
+              checked={values.gender === 'male'}
+              onChange={() => handleRadioChange('male')}
+              className="h-4 w-4 text-[#0D3F32] border-[#E6F1EC] focus:ring-[#009B6B] focus:ring-offset-0"
             />
-            <Label htmlFor="male" className="text-white">
+            <Label htmlFor="male" className="text-[#000000] font-normal">
               Male
             </Label>
           </div>
           <div className="flex items-center space-x-2">
-            <RadioGroupItem
+            <input
+              type="radio"
               id="female"
+              name="gender"
               value="female"
-              className="focus:ring-text-primary"
-              onClick={(e) =>
-                handleChange({
-                  target: {
-                    name: "gender",
-                    value: e.currentTarget.value,
-                  },
-                })
-              }
+              checked={values.gender === 'female'}
+              onChange={() => handleRadioChange('female')}
+              className="h-4 w-4 text-[#0D3F32] border-[#E6F1EC] focus:ring-[#009B6B] focus:ring-offset-0"
             />
-            <Label htmlFor="female" className="text-white">
+            <Label htmlFor="female" className="text-[#000000] font-normal">
               Female
             </Label>
           </div>
-        </RadioGroup>
+        </div>
       </div>
 
       {/* Submit Button */}
@@ -166,7 +176,7 @@ const EditProfileForm = ({}: Props) => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 bg-text-primary text-white font-bold rounded-md hover:bg-[#03b6a4] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-text-primary transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 bg-[#0D3F32] text-white font-medium rounded-lg hover:bg-[#0D3F32]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#009B6B] transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
         >
           {loading ? "Saving..." : "Save Changes"}
         </button>

@@ -14,15 +14,49 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        danger: "#D96665",
-        text: {
-          primary: "#04c8b7",
+        // Theme colors
+        primary: {
+          DEFAULT: 'var(--color-primary)',
+          light: 'var(--color-primary-light)',
+          dark: 'var(--color-primary-dark)',
+          foreground: 'var(--color-primary-foreground)',
         },
+        secondary: {
+          DEFAULT: 'var(--color-secondary)',
+          light: 'var(--color-secondary-light)',
+          dark: 'var(--color-secondary-dark)',
+          foreground: 'var(--color-secondary-foreground)',
+        },
+        accent: {
+          DEFAULT: 'var(--color-accent)',
+          light: 'var(--color-accent-light)',
+          dark: 'var(--color-accent-dark)',
+          foreground: 'var(--color-accent-foreground)',
+        },
+        background: 'var(--color-background)',
+        foreground: 'var(--color-foreground)',
+        
+        // Status colors
+        success: 'var(--color-success)',
+        warning: 'var(--color-warning)',
+        error: 'var(--color-error)',
+        
+        // Text colors
+        text: {
+          primary: 'var(--color-text-primary)',
+          secondary: 'var(--color-text-secondary)',
+          muted: 'var(--color-text-muted)',
+        },
+        
+        // UI colors
+        border: 'var(--color-border)',
+        input: 'var(--color-input)',
+        ring: 'var(--color-ring)',
+        
+        // Card
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: 'var(--color-card)',
+          foreground: 'var(--color-card-foreground)',
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -74,7 +108,63 @@ module.exports = {
     },
   },
   plugins: [
+    require("tailwindcss-animate"),
     addVariablesForColors,
+    function({ addBase, theme }) {
+      addBase({
+        ':root': {
+          // Theme colors
+          '--color-primary': '#0D3F32',
+          '--color-primary-light': '#1A7F6B',
+          '--color-primary-dark': '#082A22',
+          '--color-primary-foreground': '#FFFFFF',
+          
+          '--color-secondary': '#E6F1EC',
+          '--color-secondary-light': '#F5FAF7',
+          '--color-secondary-dark': '#D0E1D9',
+          '--color-secondary-foreground': '#0D3F32',
+          
+          '--color-accent': '#009B6B',
+          '--color-accent-light': '#00C48C',
+          '--color-accent-dark': '#007A54',
+          '--color-accent-foreground': '#FFFFFF',
+          
+          // Status colors
+          '--color-success': '#009B6B',
+          '--color-warning': '#F5C543',
+          '--color-error': '#D96665',
+          
+          // Background & Foreground
+          '--color-background': '#F5FAF7',
+          '--color-foreground': '#0D3F32',
+          
+          // Text colors
+          '--color-text-primary': '#0D3F32',
+          '--color-text-secondary': '#1A7F6B',
+          '--color-text-muted': '#7A7A7A',
+          
+          // UI colors
+          '--color-border': '#E6F1EC',
+          '--color-input': '#FFFFFF',
+          '--color-ring': '#009B6B',
+          
+          // Card
+          '--color-card': '#FFFFFF',
+          '--color-card-foreground': '#0D3F32',
+        },
+        
+        // Dark mode overrides (if needed in the future)
+        '.dark': {
+          '--color-background': '#0D3F32',
+          '--color-foreground': '#FFFFFF',
+          '--color-card': '#1A7F6B',
+          '--color-card-foreground': '#FFFFFF',
+          '--color-text-primary': '#FFFFFF',
+          '--color-text-secondary': '#E6F1EC',
+          '--color-border': '#1A7F6B',
+        }
+      });
+    },
     function ({ matchUtilities, theme }) {
       matchUtilities(
         {
@@ -97,7 +187,6 @@ module.exports = {
         { values: flattenColorPalette(theme("backgroundColor")), type: "color" }
       );
     },
-    require("tailwindcss-animate"),
   ],
 };
 

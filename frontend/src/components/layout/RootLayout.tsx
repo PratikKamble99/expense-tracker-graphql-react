@@ -1,148 +1,189 @@
-import React, { useEffect, useState } from "react";
-import { SidebarMenuItem, SidebarProvider } from "../ui/sidebar";
+import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import AppSidebar, { items } from "../custom/AppSidebar";
-import { SIDEBAR_WIDTH } from "@/constants";
 import { useMutation, useQuery } from "@apollo/client";
 import { GET_AUTH_USER } from "@/graphql/query/user.query";
 import useNavigation from "@/hooks/useNavigate";
-import { X } from "lucide-react";
+import { Home, Plus, List, User, LogOut, Wallet, Settings } from "lucide-react";
 import { LOG_OUT } from "@/graphql/mutations/user.mutation";
 import toast from "react-hot-toast";
-import { Dialog, DialogContent } from "../ui/dialog";
-import VerifyEmail from "../VerifyEmailCard";
+import { useClickAway } from "@uidotdev/usehooks";
+
+interface MobileTab {
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  path: string;
+}
 
 const RootLayout = () => {
   const location = useLocation();
   const navigate = useNavigation();
 
   const { data } = useQuery(GET_AUTH_USER);
-
   const [logoutUser, { client }] = useMutation(LOG_OUT, {
     refetchQueries: ["GetAuthenticatedUser"],
   });
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useClickAway(() => {
+    setIsProfileOpen(false);
+  });
 
-  const [openMobNav, setOpenMobNav] = useState(false);
+  const mobileTabs: MobileTab[] = [
+    { title: 'Home', icon: Home, path: '/dashboard' },
+    { title: 'Add', icon: Plus, path: '/add-transaction' },
+    { title: 'Transactions', icon: List, path: '/transactions' },
+    { title: 'Profile', icon: User, path: '/profile' },
+  ];
 
   useEffect(() => {
-    if (data?.authenticatedUser && location?.pathname == "/") {
-      navigate(location?.state?.from || "/dashboard");
+    if (data?.authenticatedUser && location?.pathname === "/") {
+      navigate("/dashboard");
     }
-  }, []);
+  }, [data, location, navigate]);
 
   const handleLogout = async () => {
-    try {
-      const promise = new Promise((res, rej) => {
-        const response = logoutUser();
-        client.resetStore();
-        res(response);
-      });
-      toast.promise(promise, {
-        loading: "Logging out...",
-        success: "Logged out successfully",
-        error: "Failed to log out",
-      });
-    } catch (error) {
-      toast.error(error?.message);
-    }
-  };
+      try {
+        const promise = new Promise((res, rej) => {
+          const response = logoutUser();
+          client.resetStore();
+          res(response);
+        });
+        toast.promise(promise, {
+          loading: "Logging out...",
+          success: "Logged out successfully",
+          error: "Failed to log out",
+        });
+      } catch (error) {
+        toast.error(error?.message);
+      }
+    };
 
   return (
-    <div className="lg:flex h-full">
-      <nav className="lg:hidden w-full relative">
-        <div className="flex flex-wrap items-center justify-between p-4">
-          <h1 className="md:text-6xl text-4xl lg:text-8xl font-bold text-center  relative z-50 text-white">
-            Expense <Link to="/">GQL</Link>
-          </h1>
-          <button
-            data-collapse-toggle="navbar-default"
-            type="button"
-            className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg lg:hidden hover:bg-[#28282A] focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-            aria-controls="navbar-default"
-            aria-expanded="false"
-            onClick={() => setOpenMobNav(true)}
-          >
-            <span className="sr-only">Open main menu</span>
-            <svg
-              className="w-5 h-5"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 17 14"
-            >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M1 1h15M1 7h15M1 13h15"
-              />
-            </svg>
-          </button>
-          {openMobNav ? (
-            <div
-              className="fixed top-0 right-0 left-0 z-[999] bg-[#232323] p-3 transition-all "
-              id="navbar-default"
-            >
-              <div className="relative flex">
-                <div className="flex gap-2 p-1 flex-grow">
-                  <h1 className="md:text-6xl text-4xl lg:text-8xl font-bold text-center  relative z-50 text-white">
-                    Expense <Link to="/">GQL</Link>
-                  </h1>
-                </div>
-                <X
-                  className="absolute right-0 top-3 cursor-pointer"
-                  onClick={() => setOpenMobNav(false)}
-                />
-              </div>
-              <ul className="font-medium flex flex-col gap-y-2 p-4 md:p-0 mt-4 rounded-lg  lg:flex-row lg:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 lg:bg-white dark:bg-gray-800 lg:dark:bg-gray-900 dark:border-gray-700">
-                {items.map((item) => (
-                  <SidebarMenuItem
-                    key={item.url}
-                    className={`bg-[#28282a] py-2 rounded-md ${
-                      location.pathname.includes(item.url.split("?")[0])
-                        ? "text-text-primary font-bold"
-                        : "text-inherit"
-                    } px-2 cursor-pointer`}
-                  >
-                    <Link
-                      to={item.url}
-                      aria-current="page"
-                      onClick={() => setOpenMobNav(false)}
-                    >
-                      {item.title}
-                    </Link>
-                  </SidebarMenuItem>
-                ))}
-                <SidebarMenuItem
-                  className={`bg-[#28282a] py-2 rounded-md px-2 cursor-pointer`}
-                >
-                  <div className="flex cursor-pointer" onClick={handleLogout}>
-                    {/* <LogOut /> */}
-                    <span>logout</span>
-                  </div>
-                </SidebarMenuItem>
-              </ul>
+    <div className="min-h-screen bg-[#F5FAF7] flex flex-col lg:flex-row" style={{ background: 'linear-gradient(to bottom, #E6F1EC, #F5FAF7)' }}>
+      {/* Mobile Header */}
+      <header className="lg:hidden w-full bg-[#0D3F32] shadow-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+              <Wallet className="w-4 h-4 text-white" />
             </div>
-          ) : null}
+            <h1 className="text-lg font-semibold text-white">Expense Tracker</h1>
+          </div>
+          <div 
+            ref={profileRef}
+            className="relative"
+          >
+            <button 
+              onClick={() => setIsProfileOpen(!isProfileOpen)}
+              className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+            >
+              <User className="w-4 h-4 text-white" />
+            </button>
+            
+            {isProfileOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50 border border-gray-100">
+                {/* <Link
+                  to="/profile"
+                  onClick={() => setIsProfileOpen(false)}
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  <User className="w-4 h-4 mr-2" />
+                  Profile
+                </Link> */}
+                {/* <Link
+                  to="/settings"
+                  onClick={() => setIsProfileOpen(false)}
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Settings
+                </Link> */}
+                <button
+                  onClick={() => {
+                    setIsProfileOpen(false);
+                    handleLogout();
+                  }}
+                  className="w-full text-left flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+      
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex lg:fixed lg:top-0 lg:left-0 lg:bottom-0 lg:w-64 lg:flex-col bg-[#0D3F32] text-white overflow-y-auto">
+        <div className="p-6">
+          <div className="flex items-center space-x-3 mb-8">
+            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center">
+              <Wallet className="w-5 h-5 text-[#0D3F32]" />
+            </div>
+            <h2 className="text-lg font-semibold text-white">Expense Tracker</h2>
+          </div>
+          <nav className="space-y-1">
+            {mobileTabs.map((tab) => {
+              const isActive = location.pathname === tab.path;
+              const Icon = tab.icon;
+              return (
+                <Link
+                  key={tab.path}
+                  to={tab.path}
+                  className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
+                    isActive 
+                      ? 'bg-white/10 text-white' 
+                      : 'text-white/80 hover:bg-white/5'
+                  }`}
+                >
+                  <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-white/60'}`} />
+                  <span>{tab.title}</span>
+                </Link>
+              );
+            })}
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-white/80 hover:bg-white/5 mt-4"
+            >
+              <LogOut className="w-5 h-5 text-white/60" />
+              <span>Logout</span>
+            </button>
+          </nav>
+        </div>
+      </aside>
+      
+      {/* Main Content */}
+      <main className="flex-1 lg:pl-64 w-full lg:pt-0">
+        <div className="px-4 py-6 lg:py-8 h-full overflow-y-auto">
+          <div className="bg-white rounded-xl shadow-sm text-[#000000]">
+            <Outlet />
+          </div>
+        </div>
+      </main>
+      
+      {/* Mobile Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-[#0D3F32] border-t border-white/10 lg:hidden z-50 shadow-lg">
+        <div className="flex justify-around items-center h-16 px-2 safe-area-inset-bottom">
+          {mobileTabs.map((tab) => {
+            const isActive = location.pathname === tab.path;
+            const Icon = tab.icon;
+            return (
+              <Link
+                key={tab.path}
+                to={tab.path}
+                className={`flex flex-col items-center justify-center w-full h-full ${
+                  isActive ? 'text-white' : 'text-white/60'
+                } transition-colors`}
+              >
+                <div className={`p-2 rounded-lg ${isActive ? 'bg-white/10' : ''}`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+                <span className="text-xs mt-0.5">{tab.title}</span>
+              </Link>
+            );
+          })}
         </div>
       </nav>
-      <aside className={`w-[${SIDEBAR_WIDTH}] hidden lg:block`}>
-        <SidebarProvider>
-          <AppSidebar />
-        </SidebarProvider>
-      </aside>
-      <div className={`w-[calc(100%_-_${SIDEBAR_WIDTH})] flex-grow relative`}>
-        <Dialog open={data?.authenticatedUser?.isEmailValid == false}>
-          <DialogContent closeColor={"white"}>
-            <VerifyEmail
-              handleLogout={handleLogout}
-              email={data.authenticatedUser.email}
-            />
-          </DialogContent>
-        </Dialog>
-        <Outlet />
-      </div>
     </div>
   );
 };

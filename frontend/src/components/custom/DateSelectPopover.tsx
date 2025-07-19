@@ -78,17 +78,17 @@ export default function DateSelectorPopover({
         <Button
           variant="outline"
           className={cn(
-            'w-[240px] justify-start text-left font-normal bg-[#1b1b1b] text-[#e2e2e2] border-text-primary hover:bg-[#2a2a2a] hover:text-white',
-            !dateRange.from && 'text-muted-foreground',
+            'w-[240px] justify-start text-left font-normal bg-input text-text-primary border-border hover:bg-secondary-light hover:border-accent rounded-lg transition-colors',
+            !dateRange.from && 'text-text-muted',
             className
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4 text-[#868686]" />
+          <CalendarIcon className="mr-2 h-4 w-4 text-text-muted" />
           <span className="truncate">{formatDateRange()}</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
-        <div className="p-4">
+      <PopoverContent className="w-auto p-0 border-border shadow-lg" align="start">
+        <div className="p-4 bg-card rounded-lg">
           <div className="flex gap-2 mb-4 flex-wrap">
             <Button
               variant="outline"
@@ -96,8 +96,8 @@ export default function DateSelectorPopover({
               className={cn(
                 'transition-colors',
                 mode === 'today' 
-                  ? 'bg-primary text-white border-primary hover:bg-primary/90' 
-                  : 'text-black hover:bg-[#2a2a2a] border-primary hover:text-white'
+                  ? 'bg-primary text-primary-foreground border-primary hover:bg-primary/90' 
+                  : 'text-text-primary hover:bg-secondary border-border hover:border-accent'
               )}
               onClick={() => handlePredefinedSelect('today')}
             >
@@ -109,8 +109,8 @@ export default function DateSelectorPopover({
               className={cn(
                 'transition-colors',
                 mode === 'week' 
-                  ? 'bg-primary text-white border-primary hover:bg-primary/90' 
-                  : 'text-black hover:bg-[#2a2a2a] border-primary hover:text-white'
+                  ? 'bg-[#0D3F32] text-white border-[#0D3F32] hover:bg-[#0D3F32]/90' 
+                  : 'text-[#0D3F32] hover:bg-[#E6F1EC] border-[#E6F1EC] hover:border-[#009B6B]'
               )}
               onClick={() => handlePredefinedSelect('week')}
             >
@@ -122,8 +122,8 @@ export default function DateSelectorPopover({
               className={cn(
                 'transition-colors',
                 mode === 'month' 
-                  ? 'bg-primary text-white border-primary hover:bg-primary/90' 
-                  : 'text-black hover:bg-[#2a2a2a] border-primary hover:text-white'
+                  ? 'bg-[#0D3F32] text-white border-[#0D3F32] hover:bg-[#0D3F32]/90' 
+                  : 'text-[#0D3F32] hover:bg-[#E6F1EC] border-[#E6F1EC] hover:border-[#009B6B]'
               )}
               onClick={() => handlePredefinedSelect('month')}
             >
@@ -135,8 +135,8 @@ export default function DateSelectorPopover({
               className={cn(
                 'transition-colors',
                 mode === 'year' 
-                  ? 'bg-[#1b1b1b] text-white border-primary hover:bg-primary/90' 
-                  : 'text-black hover:bg-[#2a2a2a] border-primary hover:text-white'
+                  ? 'bg-[#0D3F32] text-white border-[#0D3F32] hover:bg-[#0D3F32]/90' 
+                  : 'text-[#0D3F32] hover:bg-[#E6F1EC] border-[#E6F1EC] hover:border-[#009B6B]'
               )}
               onClick={() => handlePredefinedSelect('year')}
             >
@@ -164,29 +164,36 @@ export default function DateSelectorPopover({
                 onDateChange({ from: null, to: null });
               }
             }}
-            className="rounded-md border border-[#3a3a3a]  p-3"
+            className="rounded-lg border border-border p-4 [--rdp-background-color:transparent]"
             classNames={{
+              months: 'w-full',
               month: 'w-full',
               table: 'w-full',
               head_row: 'w-full',
               row: 'w-full',
+              head_cell: 'text-text-muted text-sm font-normal p-2',
+              cell: 'p-0',
+              day: 'h-9 w-9 p-0 font-normal rounded-md hover:bg-secondary',
               day_selected: 'bg-primary text-primary-foreground hover:bg-primary/90',
-              day_outside: 'text-muted-foreground opacity-50',
-              day_disabled: 'text-muted-foreground opacity-50',
-              head_cell: 'text-muted-foreground text-sm font-normal',
-              nav_button: 'opacity-100 hover: rounded-md',
+              day_range_middle: 'bg-secondary text-text-primary',
+              day_range_start: 'bg-primary text-primary-foreground hover:bg-primary/90',
+              day_range_end: 'bg-primary text-primary-foreground hover:bg-primary/90',
+              day_today: 'bg-background text-text-primary font-medium',
+              day_outside: 'text-text-muted opacity-50',
+              day_disabled: 'text-text-muted opacity-30',
+              nav_button: 'opacity-100 hover:bg-secondary rounded-md p-1',
               nav_button_previous: 'absolute left-3',
               nav_button_next: 'absolute right-3',
-              caption: 'flex justify-center py-2 relative items-center',
+              caption: 'flex justify-center py-2 relative items-center text-text-primary',
             }}
             showOutsideDays
             fixedWeeks
           />
-          <div className="flex justify-between mt-4 text-sm">
-            <div className="px-2 py-1  rounded">
+          <div className="flex justify-between mt-4 text-sm border-t border-border pt-3">
+            <div className="px-3 py-2 bg-background rounded-lg text-text-primary">
               {dateRange.from ? format(dateRange.from, 'MMM d, yyyy') : 'Start date'}
             </div>
-            <div className="px-2 py-1  rounded">
+            <div className="px-3 py-2 bg-background rounded-lg text-text-primary">
               {dateRange.to ? format(dateRange.to, 'MMM d, yyyy') : 'End date'}
             </div>
           </div>

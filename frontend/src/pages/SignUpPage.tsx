@@ -52,14 +52,14 @@ const SignUpPage = () => {
     });
 
   return (
-    <div className="h-screen flex justify-center items-center">
-      <div className="flex rounded-lg overflow-hidden z-50 bg-gray-300">
-        <div className="w-full bg-gray-100 min-w-80 sm:min-w-96 flex items-center justify-center">
-          <div className="max-w-md w-full p-4">
-            <h1 className="text-3xl font-semibold mb-2 text-black text-center">
+    <div className="h-screen flex justify-center items-center bg-gradient-to-b from-[#E6F1EC] to-[#F5FAF7]">
+      <div className="flex rounded-lg overflow-hidden z-50 bg-white shadow-lg">
+        <div className="w-full min-w-[400px] lg:min-w-[500px] flex items-center justify-center">
+          <div className="max-w-md w-full p-8">
+            <h1 className="text-3xl font-semibold mb-2 text-[#0D3F32] text-center">
               Sign Up
             </h1>
-            <h1 className="text-sm font-semibold mb-2 text-gray-500 text-center">
+            <h1 className="text-sm font-semibold mb-2 text-[#5F6C72] text-center">
               Join to keep track of your expenses
             </h1>
             <form className="space-y-2" onSubmit={handleSubmit}>
@@ -134,7 +134,7 @@ const SignUpPage = () => {
               <div>
                 <button
                   type="submit"
-                  className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black  focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#0D3F32] text-white p-2.5 rounded-md hover:bg-[#0D3F32]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0D3F32]/30 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={loading}
                 >
                   {loading ? "loading..." : "Sign Up"}
@@ -146,21 +146,21 @@ const SignUpPage = () => {
                 <div className="absolute inset-0 flex items-center">
                   <Separator className="w-full" />
                 </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
+                <div className="relative mt-3 flex justify-center text-xs uppercase">
+                  <span className="bg-white px-2 text-[#5F6C72]">
                     Or continue with
                   </span>
                 </div>
               </div>
 
               <GoogleOAuthButton 
-                className="mt-4"
+                className="mt-4 w-full  text-[#0D3F32] border-[#E6F1EC] hover:border-[#0D3F32]/30 transition-colors"
                 text="Sign up with Google"
               />
 
-              <p className="text-center text-sm text-gray-500 mt-4">
+              <p className="text-center text-sm text-[#5F6C72] mt-4">
                 Already have an account?{" "}
-                <Link to="/login" className="text-black hover:underline font-medium">
+                <Link to="/login" className="text-[#0D3F32] hover:underline font-medium hover:text-[#0D3F32]/90 transition-colors">
                   Login here
                 </Link>
               </p>

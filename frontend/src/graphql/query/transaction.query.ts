@@ -12,13 +12,33 @@ const GET_TRANSACTIONS = gql`
       location
       date
       type
+    }
+  }
+`;
+
+
+/* 
+
+const GET_TRANSACTIONS = gql`
+  query fetchTransactions($input: transactionInput) {
+    transactions(input: $input) {
+      _id
+      userId
+      description
+      paymentType
+      category
+      amount
+      location
+      date
+      type
       user {
-        profilePicture
+        profilePicture    // This way we can fetch the user profile picture which is joined from the user table
       }
     }
   }
 `;
 
+*/
 const GET_TRANSACTION_BY_ID = gql`
   query fetchTransactions($id: ID!) {
     transaction(transactionId: $id) {
@@ -31,12 +51,6 @@ const GET_TRANSACTION_BY_ID = gql`
       location
       date
       type
-      user {
-        _id
-        name
-        profilePicture
-        username
-      }
     }
   }
 `;

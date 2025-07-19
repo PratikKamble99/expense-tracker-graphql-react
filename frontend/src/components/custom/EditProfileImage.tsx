@@ -100,7 +100,7 @@ const EditProfileImage = ({ authUserData }: Props) => {
           Change Picture
         </Button>
         <Button
-          className="bg-danger text-white hover:bg-danger] focus:ring-2 focus:ring-offset-2 focus:ring-danger transition-all duration-300"
+          className="bg-danger bg-[#F5C543] text-white hover:bg-danger] focus:ring-2 focus:ring-offset-2 focus:ring-danger transition-all duration-300"
           onClick={() => toast.error("Delete Picture feature coming soon!")}
         >
           Remove Picture

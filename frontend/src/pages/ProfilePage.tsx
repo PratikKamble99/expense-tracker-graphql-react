@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { GET_AUTH_USER } from "@/graphql/query/user.query";
 import { useQuery } from "@apollo/client";
-import { Image, User, Lock } from "lucide-react";
+import { Image, User, Lock, Mail, Calendar } from "lucide-react";
 import React, { useState } from "react";
-
 import EditProfileForm from "@/components/custom/EditProfileForm";
 import EditProfileImage from "@/components/custom/EditProfileImage";
 import { formatDate } from "@/lib/utils";
@@ -14,64 +13,89 @@ const ProfilePage = () => {
   const { data: authUserData } = useQuery(GET_AUTH_USER);
   const [changePassword, setChangePassword] = useState(false);
   const [openDeleteAccountModal, setOpenDeleteAccountModal] = useState(false);
+  const user = authUserData?.authenticatedUser;
 
   return (
-    <div className="p-6 bg-[#1b1b1b] min-h-screen">
-      <div className="bg-[#28282a] rounded-xl shadow-lg p-8 text-[#868686]">
-        <div className="flex justify-between items-center mb-6">
+    <div className="p-4 md:p-6 pb-14 lg:pb-0 max-w-4xl mx-auto">
+      <div className="bg-white rounded-xl shadow-sm p-0 lg:p-6 space-y-8">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white">Your Profile</h1>
-            <p className="mt-1">
-              Last edit on{" "}
-              <span className="font-bold text-text-primary">
-                {formatDate(authUserData?.authenticatedUser.updatedAt)}
-              </span>
+            <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Manage your account information and settings
             </p>
           </div>
           <Button
-            className="bg-text-primary text-white hover:bg-[#03b6a4]"
+            variant="outline"
+            className="border-blue-100 text-blue-600 hover:bg-blue-50 flex items-center gap-2"
             onClick={() => setChangePassword(true)}
           >
-            <Lock className="mr-2" />
+            <Lock className="w-4 h-4" />
             Change Password
           </Button>
         </div>
 
-        <div className="space-y-8">
-          <SectionHeading
-            icon={<Image className="text-text-primary" />}
-            label="Profile Picture"
-          />
-          <div className="bg-[#1b1b1b] p-4 rounded-md">
-            <EditProfileImage authUserData={authUserData} />
+        {/* Profile Section */}
+        <div className="space-y-6 ">
+          {/* Profile Picture */}
+          <div className="space-y-4 bg-[#F5FAF7] p-4">
+            <h2 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+              <Image className="w-5 h-5 text-gray-500" />
+              Profile Picture
+            </h2>
+            <div className="p-4 border border-gray-100 rounded-lg">
+              <EditProfileImage authUserData={authUserData} />
+            </div>
           </div>
 
-          {/* Personal Information Section */}
-          <SectionHeading
-            icon={<User className="text-text-primary" />}
-            label="Personal Information"
-          />
-          <div className="bg-[#1b1b1b] p-4 rounded-md">
-            <EditProfileForm />
-          </div>
-          <div className="rounded-lg border border-[#6e101c]">
-            <div className="rounded-t-lg bg-[#1b1b1b] p-[24px]">
-              <SectionHeading
-                icon={<User className="text-text-primary" />}
-                label="Settings"
-              />
-              <p>
-                The Account will be permanently deleted, including your data.
-                This action is irreversible and can not be undone.
-              </p>
+          {/* User Information */}
+          <div className="space-y-4 bg-[#F5FAF7] p-4">
+            <h2 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+              <User className="w-5 h-5 text-gray-500" />
+              Personal Information
+            </h2>
+            <div className="p-4 border border-gray-100 rounded-lg">
+              <div className="space-y-4 mb-6">
+                <div className="flex items-center gap-3 text-gray-700">
+                  <Mail className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-500">Email</p>
+                    <p className="font-medium">{user?.email}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 text-gray-700">
+                  <Calendar className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-500">Member since</p>
+                    <p className="font-medium">
+                      {formatDate(+user?.createdAt)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <EditProfileForm />
             </div>
-            <div className="bg-[#440d13] p-2  flex justify-end">
-              <Button
-                className="bg-[#e1162a] text-white hover:bg-danger] focus:ring-2 focus:ring-offset-2 focus:ring-danger transition-all duration-300"
-                onClick={() => setOpenDeleteAccountModal(true)}
-              >
-                Delete Account
-              </Button>
+          </div>
+
+          {/* Danger Zone */}
+          <div className="space-y-4 pt-4">
+            <div className="border border-red-100 rounded-lg overflow-hidden">
+              <div className="bg-red-50 p-4">
+                <h3 className="font-medium text-red-800">Danger Zone</h3>
+                <p className="text-sm text-red-600 mt-1">
+                  This action cannot be undone. This will permanently delete your account and all associated data.
+                </p>
+              </div>
+              <div className="p-4 flex justify-end bg-white">
+                <Button
+                  variant="destructive"
+                  onClick={() => setOpenDeleteAccountModal(true)}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  Delete Account
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -84,6 +108,8 @@ const ProfilePage = () => {
           setOpen={setChangePassword}
         />
       )}
+      
+      {/* Delete Account Modal */}
       {openDeleteAccountModal && (
         <DeleteAccountModal
           open={openDeleteAccountModal}
@@ -95,18 +121,3 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
-
-const SectionHeading = ({
-  icon,
-  label,
-}: {
-  icon: React.ReactNode;
-  label: string;
-}) => {
-  return (
-    <div className="flex gap-3 items-center mb-4">
-      {icon}
-      <h2 className="text-2xl font-bold text-white">{label}</h2>
-    </div>
-  );
-};

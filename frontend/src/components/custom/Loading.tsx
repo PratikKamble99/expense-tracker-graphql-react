@@ -1,12 +1,15 @@
-import React from "react";
+interface LoadingSpinnerProps {
+  showText?: boolean;
+  className?: string;
+}
 
-const LoadingSpinner = ({ showText }: { showText?: boolean }) => {
+const LoadingSpinner = ({ showText, className = '' }: LoadingSpinnerProps) => {
   return (
-    <div className="flex items-center justify-center w-full bg-[#1B1B1B] text-white">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-12 h-12 border-4 border-t-transparent border-indigo-500 rounded-full animate-spin"></div>
+    <div className={`flex items-center justify-center w-full ${className}`}>
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-7 h-7 border-[3px] border-t-transparent border-[#0D3F32] rounded-full animate-spin"></div>
         {showText ? (
-          <p className="text-lg font-medium">Loading, please wait...</p>
+          <p className="text-sm font-medium text-[#7A7A7A]">Loading, please wait...</p>
         ) : null}
       </div>
     </div>

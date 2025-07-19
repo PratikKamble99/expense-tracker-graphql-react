@@ -40,7 +40,7 @@ const ChartRepresentation = () => {
     }, 0) || 0;
 
   data?.transactions.forEach((item) => {
-    const month = DateTime.fromMillis(+item.date).toFormat("MMMM");
+    const month = DateTime.fromMillis(+item.date).toFormat("MMM");
     const amount = item.amount;
 
     if (obj[month]) {
@@ -72,7 +72,7 @@ const ChartRepresentation = () => {
   });
 
   const dataKeys = Object.keys(obj);
-  const bars = ["saving", "expense", "Income"];
+  const bars = [ "Income", "expense", "saving",];
 
   const barChartDataConsumption = bars.map((type, index) => ({
     name: type,
@@ -109,7 +109,7 @@ const ChartRepresentation = () => {
       labels: {
         show: true,
         style: {
-          colors: "#A3AED0",
+          colors: "#0D3F32",
           fontSize: "14px",
           fontWeight: "500",
         },
@@ -130,7 +130,7 @@ const ChartRepresentation = () => {
           return value + " ₹";
         },
         style: {
-          colors: "#ffffff",
+          colors: "#0D3F32",
           fontSize: "14px",
           fontWeight: "500",
         },
@@ -164,9 +164,10 @@ const ChartRepresentation = () => {
     fill: {
       type: "solid",
       colors: [
-        "rgba(75, 192, 192)",
-        "rgba(255, 99, 132)",
-        "rgba(54, 162, 235)",
+        "#0D3F32",
+        "#F5C543",
+        "#009B6B",
+
       ],
     },
     legend: {
@@ -204,13 +205,13 @@ const ChartRepresentation = () => {
   );
 
   return (
-    <div className="rounded-xl p-4 bg-[#1B1B1B] mt-6  flex flex-col lg:flex-row gap-2">
+    <div className="rounded-xl mt-0 lg:mt-6  flex flex-col lg:flex-row gap-2">
       <div className="flex-1 flex flex-col">
-        <div>
+        <div className="p-4">
           <div className="flex justify-between pr-4">
             <p className="text-xl font-bold ">Monthly Report</p>
             <select
-              className="bg-[#1B1B1B]"
+              className="bg-[#E6F1EC] text-[#0D3F32] rounded-lg px-2 ring-0 focus:ring-0 focus:ring-[#0D3F32] outline-none"
               value={selectedYear}
               onChange={(e) => setSelectedYear(+e.target.value)}
             >
@@ -226,7 +227,7 @@ const ChartRepresentation = () => {
               ))}
             </select>
           </div>
-          <Separator className="mt-4 bg-zinc-600" />
+          <Separator className="mt-4 bg-[#009B6B]" />
         </div>
         <div className="flex-1 flex">
           <div
@@ -253,16 +254,16 @@ const ChartRepresentation = () => {
         </div>
       </div>
       <div className="flex flex-col flex-1 pt-2 sm:pt-0">
-        <div>
+        <div className="p-4">
           <p className="text-xl font-bold">
             Overall Report: {totalIncome} (Income)
           </p>
-          <Separator className="mt-4 bg-zinc-600" />
+          <Separator className="mt-4 bg-[#009B6B]" />
         </div>
         <div
           className={`flex-1 items-center self-center ${
             statisticsData?.categoryStatistics.length ? "pt-6" : ""
-          }`}
+          } min-h-[360px]`}
         >
           {statisticsData?.categoryStatistics.length > 0 ? (
             <div className="h-[360px]">
@@ -293,7 +294,7 @@ const ChartRepresentation = () => {
               />
             </div>
           ) : (
-            <div className="h-full flex justify-center items-center">
+            <div className="h-full flex justify-center items-center min-h-[360px]">
               <p className="text-gray-500">No Transactions found</p>
             </div>
           )}
