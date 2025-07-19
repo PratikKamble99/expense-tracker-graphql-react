@@ -8,6 +8,7 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import { Separator } from "@/components/ui/separator";
 import GoogleOAuthButton from "@/components/GoogleOAuthButton";
+import { useState } from "react";
 
 const validationSchema = yup.object().shape({
   name: yup.string().required(),
@@ -28,6 +29,8 @@ const SignUpPage = () => {
     refetchQueries: ["GetAuthenticatedUser"],
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const { values, handleChange, handleSubmit, handleBlur, errors, touched } =
     useFormik({
       initialValues: {
@@ -45,17 +48,17 @@ const SignUpPage = () => {
             },
           });
         } catch (error: any) {
-          toast.error(error?.message || 'An error occurred during signup');
+          toast.error(error?.message || "An error occurred during signup");
         }
       },
       validationSchema,
     });
 
   return (
-    <div className="h-screen flex justify-center items-center bg-gradient-to-b from-[#E6F1EC] to-[#F5FAF7]">
-      <div className="flex rounded-lg overflow-hidden z-50 bg-white shadow-lg">
-        <div className="w-full min-w-[400px] lg:min-w-[500px] flex items-center justify-center">
-          <div className="max-w-md w-full p-8">
+    <div className="flex justify-center items-center h-screen">
+      <div className="flex min-h-screen min-w-[400px] lg:min-w-[600px] items-center justify-center p-4">
+        <div className="w-full max-w-md space-y-6 rounded-xl bg-white p-8 shadow-md border border-[#E6F1EC]">
+          <div className="max-w-md w-full p-4 lg:p-8">
             <h1 className="text-3xl font-semibold mb-2 text-[#0D3F32] text-center">
               Sign Up
             </h1>
@@ -104,6 +107,9 @@ const SignUpPage = () => {
                 error={
                   touched.password && errors.password ? errors.password : null
                 }
+                isPassword
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
               />
               <div>
                 <div className="flex gap-10">
@@ -153,14 +159,17 @@ const SignUpPage = () => {
                 </div>
               </div>
 
-              <GoogleOAuthButton 
+              <GoogleOAuthButton
                 className="mt-4 w-full  text-[#0D3F32] border-[#E6F1EC] hover:border-[#0D3F32]/30 transition-colors"
                 text="Sign up with Google"
               />
 
               <p className="text-center text-sm text-[#5F6C72] mt-4">
                 Already have an account?{" "}
-                <Link to="/login" className="text-[#0D3F32] hover:underline font-medium hover:text-[#0D3F32]/90 transition-colors">
+                <Link
+                  to="/login"
+                  className="text-[#0D3F32] hover:underline font-medium hover:text-[#0D3F32]/90 transition-colors"
+                >
                   Login here
                 </Link>
               </p>

@@ -38,7 +38,7 @@ const LoginPage = () => {
             },
           });
         } catch (error: any) {
-          toast.error(error?.message || 'An error occurred during login');
+          toast.error(error?.message || "An error occurred during login");
         }
       },
       validationSchema,
@@ -51,8 +51,12 @@ const LoginPage = () => {
         <div className="flex min-h-screen min-w-[400px] lg:min-w-[600px] items-center justify-center p-4">
           <div className="w-full max-w-md space-y-6 rounded-xl bg-white p-8 shadow-md border border-[#E6F1EC]">
             <div className="text-center">
-              <h1 className="text-3xl font-bold text-[#0D3F32] mb-2">Welcome Back</h1>
-              <p className="text-[#5F6C72]">Log in to your account to continue</p>
+              <h1 className="text-3xl font-bold text-[#0D3F32] mb-2">
+                Welcome Back
+              </h1>
+              <p className="text-[#5F6C72]">
+                Log in to your account to continue
+              </p>
             </div>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <InputField
@@ -66,7 +70,7 @@ const LoginPage = () => {
                 }
                 onBlur={handleBlur}
               />
-                <InputField
+              <InputField
                 label="Password"
                 id="password"
                 name="password"
@@ -81,7 +85,7 @@ const LoginPage = () => {
                 showPassword={showPassword}
                 setShowPassword={setShowPassword}
               />
-                {/* <div className="flex group focus-within:ring-2 focus-within:ring-gray-300 focus-within:ring-offset-2 focus-within:border-gray-200 transition-colors duration-300">
+              {/* <div className="flex group focus-within:ring-2 focus-within:ring-gray-300 focus-within:ring-offset-2 focus-within:border-gray-200 transition-colors duration-300">
                   <input
                     id="password"
                     name="password"
@@ -106,8 +110,8 @@ const LoginPage = () => {
                   type="submit"
                   className={`w-full px-4 text-white bg-[#0D3F32] py-2.5 rounded-lg border ${
                     touched.username && errors.username
-                      ? 'border-red-500'
-                      : 'border-[#E6F1EC] hover:border-[#0D3F32]/50'
+                      ? "border-red-500"
+                      : "border-[#E6F1EC] hover:border-[#0D3F32]/50"
                   } focus:ring-2 focus:ring-[#0D3F32]/30 focus:border-transparent transition-all duration-200`}
                   disabled={loading}
                 >
